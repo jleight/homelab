@@ -11,7 +11,7 @@ data "onepassword_item" "cloudflare_api_token" {
   title = "Cloudflare API Token"
 }
 
-data "cloudflare_zones" "leighthaus" {
+data "cloudflare_zones" "cluster" {
   count = local.enabled ? 1 : 0
 
   name = var.k8s_cluster_domain

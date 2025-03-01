@@ -1,7 +1,7 @@
 resource "cloudflare_dns_record" "this" {
   count = local.enabled ? 1 : 0
 
-  zone_id = local.leighthaus_zone_id
+  zone_id = local.dns_zone_id
 
   name    = var.k8s_cluster_subdomain
   comment = "Kubernetes cluster endpoint (${local.environment}). Managed by Terraform."
