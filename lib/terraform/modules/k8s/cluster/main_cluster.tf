@@ -53,12 +53,3 @@ resource "talos_machine_bootstrap" "this" {
 
   depends_on = [talos_machine_configuration_apply.control_plane]
 }
-
-resource "talos_cluster_kubeconfig" "this" {
-  count = local.enabled ? 1 : 0
-
-  client_configuration = local.talos_client_config
-  node                 = local.enabled ? values(local.node_ips)[0] : null
-
-  depends_on = [talos_machine_bootstrap.this]
-}

@@ -16,4 +16,7 @@ inputs = {
       mac_address = "52:54:00:ea:d8:cb"
     }
   }
+
+  kgateway_crds_version = "v1.2.1"
+  kgateway_version      = "v2.0.0-main"
 }

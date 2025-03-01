@@ -4,6 +4,11 @@ variable "sudo_password" {
   sensitive   = true
 }
 
+variable "dot_kube_directory" {
+  description = "Path to your .kube directory."
+  type        = string
+}
+
 variable "network_interface" {
   description = "The network interface that accesses the home network."
   type        = string
@@ -34,9 +39,4 @@ variable "k8s_cluster_nodes" {
   type = map(object({
     mac_address = string
   }))
-}
-
-variable "dot_kube_directory" {
-  description = "Path to your .kube directory."
-  type        = string
 }

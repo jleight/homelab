@@ -20,5 +20,6 @@ locals {
     ][0]
   } : {}
 
-  kubeconfig = local.enabled ? talos_cluster_kubeconfig.this[0].kubeconfig_raw : null
+  kubeconfig_file = local.enabled ? "${var.dot_kube_directory}/${module.this.id}" : null
+  kubeconfig      = local.enabled ? talos_cluster_kubeconfig.this[0].kubeconfig_raw : null
 }
