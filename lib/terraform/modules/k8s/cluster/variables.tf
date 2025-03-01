@@ -19,24 +19,18 @@ variable "network_subnet" {
   type        = string
 }
 
-variable "k8s_cluster_ip_offset" {
-  description = "The IP address offset for the Kubernetes cluster based on `network_subnet`."
-  type        = number
-}
-
-variable "k8s_cluster_domain" {
-  description = "The domain of the Kubernetes cluster."
-  type        = string
-}
-
-variable "k8s_cluster_subdomain" {
-  description = "The subdomain of the Kubernetes cluster."
-  type        = string
-}
-
-variable "k8s_cluster_nodes" {
-  description = "The nodes of the Kubernetes cluster."
-  type = map(object({
-    mac_address = string
-  }))
+variable "k8s_cluster" {
+  description = "Settings for the Kubernetes cluster."
+  type = object({
+    domain    = string
+    subdomain = string
+    ip_offset = number
+    nodes = map(object({
+      mac_address = string
+    }))
+    kgateway = optional(object({
+      crds  = string
+      chart = string
+    }))
+  })
 }

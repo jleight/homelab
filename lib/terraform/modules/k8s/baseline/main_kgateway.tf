@@ -1,12 +1,16 @@
 locals {
-  kgateway_enabled   = local.enabled && var.k8s_cluster_baseline.kgateway != null
+  kgateway_enabled = local.enabled && var.k8s_cluster.kgateway != null
+
+  kgateway_crds_version  = local.kgateway_enabled ? var.k8s_cluster.kgateway.crds : null
+  kgateway_chart_version = local.kgateway_enabled ? var.k8s_cluster.kgateway.chart : null
+
   kgateway_crds_yaml = local.kgateway_enabled ? data.http.kgateway_crds[0].response_body : null
 }
 
 data "http" "kgateway_crds" {
   count = local.kgateway_enabled ? 1 : 0
 
-  url = "https://github.com/kubernetes-sigs/gateway-api/releases/download/${var.k8s_cluster_baseline.kgateway.crds_version}/standard-install.yaml"
+  url = "https://github.com/kubernetes-sigs/gateway-api/releases/download/${local.kgateway_crds_version}/standard-install.yaml"
 }
 
 resource "kubectl_manifest" "kgateway_crds" {
@@ -21,7 +25,7 @@ resource "helm_release" "kgateway" {
   name       = "kgateway"
   repository = "oci://ghcr.io/kgateway-dev/charts"
   chart      = "kgateway"
-  version    = var.k8s_cluster_baseline.kgateway.service_version
+  version    = local.kgateway_chart_version
 
   create_namespace = true
   namespace        = "kgateway-system"

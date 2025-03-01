@@ -12,7 +12,7 @@ data "talos_machine_configuration" "control_plane" {
 }
 
 resource "talos_machine_configuration_apply" "control_plane" {
-  for_each = local.enabled ? var.k8s_cluster_nodes : {}
+  for_each = local.enabled ? var.k8s_cluster.nodes : {}
 
   node                        = local.enabled ? local.node_ips[each.key] : null
   client_configuration        = local.talos_client_config

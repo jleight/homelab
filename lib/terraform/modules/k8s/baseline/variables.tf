@@ -3,12 +3,18 @@ variable "cluster_kubeconfig_file" {
   type        = string
 }
 
-variable "k8s_cluster_baseline" {
-  description = "Settings for baselining the Kubernetes cluster."
+variable "k8s_cluster" {
+  description = "Settings for the Kubernetes cluster."
   type = object({
+    domain    = string
+    subdomain = string
+    ip_offset = number
+    nodes = map(object({
+      mac_address = string
+    }))
     kgateway = optional(object({
-      crds_version    = string
-      service_version = string
+      crds  = string
+      chart = string
     }))
   })
 }

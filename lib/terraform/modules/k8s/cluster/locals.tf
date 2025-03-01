@@ -6,8 +6,8 @@ locals {
   dns_zone_id   = local.enabled ? one(data.cloudflare_zones.cluster[0].result).id : null
   dns_zone_name = local.enabled ? one(data.cloudflare_zones.cluster[0].result).name : null
 
-  cluster_ip       = local.enabled ? cidrhost(var.network_subnet, var.k8s_cluster_ip_offset) : null
-  cluster_dns_name = local.enabled ? "${var.k8s_cluster_subdomain}.${local.dns_zone_name}" : null
+  cluster_ip       = local.enabled ? cidrhost(var.network_subnet, var.k8s_cluster.ip_offset) : null
+  cluster_dns_name = local.enabled ? "${var.k8s_cluster.subdomain}.${local.dns_zone_name}" : null
 
   talos_endpoint      = local.enabled ? "https://${local.cluster_dns_name}:6443" : null
   talos_secrets       = local.enabled ? talos_machine_secrets.this[0].machine_secrets : null
@@ -15,7 +15,7 @@ locals {
   talos_cp_config     = local.enabled ? data.talos_machine_configuration.control_plane[0].machine_configuration : null
 
   node_ips = local.enabled ? {
-    for k, v in var.k8s_cluster_nodes : k => [
+    for k, v in var.k8s_cluster.nodes : k => [
       for i in split(",", data.external.node_ip[k].result.ips) : i if i != local.cluster_ip
     ][0]
   } : {}
