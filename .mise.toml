@@ -1,0 +1,4 @@
+[tools]
+"aqua:jqlang/jq" = "latest"
+"aqua:opentofu/opentofu" = "latest"
+"aqua:gruntwork-io/terragrunt" = "latest"
