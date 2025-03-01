@@ -10,11 +10,18 @@ variable "k8s_cluster" {
     subdomain = string
     ip_offset = number
     nodes = map(object({
-      mac_address = string
+      disk              = string
+      network_interface = string
+      mac_address       = string
     }))
     kgateway = optional(object({
       crds  = string
       chart = string
+    }))
+    cilium = optional(object({
+      chart         = string
+      replace_proxy = optional(bool, true)
+      gateway       = optional(bool, true)
     }))
   })
 }

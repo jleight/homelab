@@ -14,21 +14,22 @@ data "talos_machine_configuration" "control_plane" {
 resource "talos_machine_configuration_apply" "control_plane" {
   for_each = local.enabled ? var.k8s_cluster.nodes : {}
 
-  node                        = local.enabled ? local.node_ips[each.key] : null
-  client_configuration        = local.talos_client_config
+  client_configuration = local.talos_client_config
+  node                 = local.enabled ? local.node_ips[each.key] : null
+
   machine_configuration_input = local.talos_cp_config
 
   config_patches = [
     yamlencode({
       machine = {
         install = {
-          disk = "/dev/vda"
+          disk = each.value.disk
         }
         network = {
           hostname = each.key
           interfaces = [
             {
-              interface = "ens2"
+              interface = each.value.network_interface
               dhcp      = true
               vip = {
                 ip = local.cluster_ip
@@ -40,6 +41,14 @@ resource "talos_machine_configuration_apply" "control_plane" {
       }
       cluster = {
         allowSchedulingOnControlPlanes = true
+        network = {
+          cni = var.k8s_cluster.cilium == null ? {} : {
+            name = "none"
+          }
+        }
+        proxy = {
+          disabled = var.k8s_cluster.cilium != null && var.k8s_cluster.cilium.replace_proxy
+        }
       }
     })
   ]

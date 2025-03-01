@@ -8,16 +8,22 @@ inputs = {
 
     nodes = {
       "talos-dev-01" = {
-        mac_address = "52:54:00:13:8b:c2"
+        disk              = "/dev/vda"
+        network_interface = "ens2"
+        mac_address       = "52:54:00:13:8b:c2"
       }
       "talos-dev-02" = {
-        mac_address = "52:54:00:c0:47:de"
+        disk              = "/dev/vda"
+        network_interface = "ens2"
+        mac_address       = "52:54:00:c0:47:de"
       }
       "talos-dev-03" = {
-        mac_address = "52:54:00:ea:d8:cb"
+        disk              = "/dev/vda"
+        network_interface = "ens2"
+        mac_address       = "52:54:00:ea:d8:cb"
       }
     }
 
-    kgateway = { crds = "v1.2.1", chart = "v2.0.0-main" }
+    cilium = { chart = "1.17.1" }
   }
 }
