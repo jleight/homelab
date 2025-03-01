@@ -17,6 +17,5 @@ inputs = {
     }
   }
 
-  kgateway_crds_version = "v1.2.1"
-  kgateway_version      = "v2.0.0-main"
+  k8s_cluster_baseline = {}
 }

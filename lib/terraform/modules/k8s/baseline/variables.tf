@@ -3,12 +3,12 @@ variable "cluster_kubeconfig_file" {
   type        = string
 }
 
-variable "kgateway_crds_version" {
-  description = "The version of kgateway CRDs to install."
-  type        = string
-}
-
-variable "kgateway_version" {
-  description = "The version of kgateway to install."
-  type        = string
+variable "k8s_cluster_baseline" {
+  description = "Settings for baselining the Kubernetes cluster."
+  type = object({
+    kgateway = optional(object({
+      crds_version    = string
+      service_version = string
+    }))
+  })
 }
