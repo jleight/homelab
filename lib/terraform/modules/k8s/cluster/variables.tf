@@ -9,14 +9,16 @@ variable "dot_kube_directory" {
   type        = string
 }
 
-variable "network_interface" {
-  description = "The network interface that accesses the home network."
-  type        = string
-}
-
-variable "network_subnet" {
-  description = "The IP subnet for the home network."
-  type        = string
+variable "network" {
+  description = "Settings for the home network."
+  type = object({
+    interface = string
+    subnet    = string
+    ip_offsets = object({
+      gateway = number
+    })
+    nameservers = set(string)
+  })
 }
 
 variable "k8s_cluster" {
@@ -24,11 +26,12 @@ variable "k8s_cluster" {
   type = object({
     domain    = string
     subdomain = string
-    ip_offset = number
     nodes = map(object({
+      name              = string
       disk              = string
       network_interface = string
       mac_address       = string
+      ip_offset         = number
     }))
     kgateway = optional(object({
       crds  = string

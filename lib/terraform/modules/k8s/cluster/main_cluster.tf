@@ -26,16 +26,20 @@ resource "talos_machine_configuration_apply" "control_plane" {
           disk = each.value.disk
         }
         network = {
-          hostname = each.key
+          hostname = each.value.name
           interfaces = [
             {
               interface = each.value.network_interface
-              dhcp      = true
-              vip = {
-                ip = local.cluster_ip
-              }
+              addresses = [cidrhost(module.ipam.pool, each.value.ip_offset)]
+              routes = [
+                {
+                  network = "0.0.0.0/0"
+                  gateway = cidrhost(var.network.subnet, var.network.ip_offsets.gateway)
+                }
+              ]
             }
           ]
+          nameservers = var.network.nameservers
         }
         certSANs = [local.cluster_dns_name]
       }
@@ -58,6 +62,7 @@ resource "talos_machine_bootstrap" "this" {
   count = local.enabled ? 1 : 0
 
   client_configuration = local.talos_client_config
+  endpoint             = local.enabled ? values(local.node_ips)[0] : null
   node                 = local.enabled ? values(local.node_ips)[0] : null
 
   depends_on = [talos_machine_configuration_apply.control_plane]

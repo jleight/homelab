@@ -24,7 +24,13 @@ data "external" "node_ip" {
 
   query = {
     password    = var.sudo_password
-    interface   = var.network_interface
+    interface   = var.network.interface
     mac_address = each.value.mac_address
   }
+}
+
+module "ipam" {
+  source = "../../_registry/ipam"
+
+  environment = var.environment
 }

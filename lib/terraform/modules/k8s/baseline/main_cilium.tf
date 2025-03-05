@@ -2,19 +2,19 @@ locals {
   cilium_enabled = local.enabled && var.k8s_cluster.cilium != null
 
   cilium_chart_version = local.cilium_enabled ? var.k8s_cluster.cilium.chart : null
-  cilium_replace_proxy = local.cilium_enabled ? var.k8s_cluster.cilium.replace_proxy : null
-  cilium_gateway       = local.cilium_enabled ? var.k8s_cluster.cilium.gateway : null
+
+  cilium_replace_proxy = local.cilium_enabled && var.k8s_cluster.cilium.replace_proxy
+  cilium_gateway       = local.cilium_enabled && var.k8s_cluster.cilium.gateway
 }
 
 resource "helm_release" "cilium" {
   count = local.cilium_enabled ? 1 : 0
 
+  namespace  = "kube-system"
   name       = "cilium"
   repository = "https://helm.cilium.io"
   chart      = "cilium"
   version    = local.cilium_chart_version
-
-  namespace = "kube-system"
 
   dynamic "set" {
     for_each = concat(
@@ -87,6 +87,8 @@ resource "helm_release" "cilium" {
       value = set_list.value.value
     }
   }
+
+  depends_on = [kubectl_manifest.kgateway_crds]
 
   provisioner "local-exec" {
     command     = "${path.module}/lib/restart-cilium-unmanaged.sh"

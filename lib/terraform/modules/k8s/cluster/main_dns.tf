@@ -1,13 +1,13 @@
 resource "cloudflare_dns_record" "this" {
-  count = local.enabled ? 1 : 0
+  for_each = local.enabled ? var.k8s_cluster.nodes : {}
 
   zone_id = local.dns_zone_id
 
   name    = var.k8s_cluster.subdomain
-  comment = "Kubernetes cluster endpoint (${local.environment}). Managed by Terraform."
+  comment = "Kubernetes cluster node (${local.environment}, ${each.key}). Managed by Terraform."
 
   type    = "A"
-  content = local.cluster_ip
+  content = cidrhost(module.ipam.pool, each.value.ip_offset)
   ttl     = 1
   proxied = false
 }
