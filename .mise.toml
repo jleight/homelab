@@ -3,3 +3,4 @@
 "aqua:kubernetes/kubectl" = "latest"
 "aqua:opentofu/opentofu" = "latest"
 "aqua:gruntwork-io/terragrunt" = "latest"
+"ubi:cilium/cilium-cli" = { version = "latest", exe = "cilium" }
