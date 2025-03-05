@@ -22,3 +22,7 @@ Other dependencies can be automatically installed by running `mise install`.
 - https://rajsingh.info/p/cilium-unifi/
 - https://gerardsamuel.me/posts/homelab/howto-setup-kubernetes-cilium-bgp-with-unifi-v4.1-router/
 - https://github.com/cilium/cilium/discussions/36804
+
+### Gateway API
+
+- https://github.com/xtineskim/gatewayapi-demo

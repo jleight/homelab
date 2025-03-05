@@ -92,36 +92,6 @@ resource "kubernetes_deployment" "httpbin" {
   }
 }
 
-resource "kubectl_manifest" "httpbin_gateway" {
-  count = local.httpbin ? 1 : 0
-
-  yaml_body = yamlencode({
-    apiVersion = "gateway.networking.k8s.io/v1"
-    kind       = "Gateway"
-
-    metadata = {
-      namespace = local.httpbin_namespace
-      name      = "gateway"
-    }
-
-    spec = {
-      gatewayClassName = "cilium"
-      listeners = [
-        {
-          name     = "default"
-          port     = 80
-          protocol = "HTTP"
-          allowedRoutes = {
-            namespaces = {
-              from = "Same"
-            }
-          }
-        }
-      ]
-    }
-  })
-}
-
 resource "kubectl_manifest" "httpbin_httproute" {
   count = local.httpbin ? 1 : 0
 
@@ -131,15 +101,18 @@ resource "kubectl_manifest" "httpbin_httproute" {
 
     metadata = {
       namespace = local.httpbin_namespace
-      name      = "http"
+      name      = "http-route"
     }
 
     spec = {
       parentRefs = [
         {
-          namespace = local.httpbin_namespace
-          name      = "gateway"
+          namespace = local.cilium_namespace
+          name      = local.cilium_gateway_name
         }
+      ]
+      hostnames = [
+        "httpbin.${var.k8s_cluster.subdomain}.${var.k8s_cluster.domain}"
       ]
       rules = [
         {

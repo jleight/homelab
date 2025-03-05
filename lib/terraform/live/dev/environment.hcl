@@ -29,6 +29,8 @@ inputs = {
       }
     }
 
-    cilium = { chart = "1.17.1" }
+    cilium       = { chart = "1.17.1" }
+    cert_manager = { chart = "v1.17.1" }
+    httpbin      = 2
   }
 }

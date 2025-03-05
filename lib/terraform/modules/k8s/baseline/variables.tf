@@ -37,6 +37,10 @@ variable "k8s_cluster" {
       gateway       = optional(bool, true)
       bgp           = optional(bool, true)
     }))
+    cert_manager = optional(object({
+      chart = string
+      test  = optional(bool, false)
+    }))
     httpbin = optional(number, 0)
   })
 }

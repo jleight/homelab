@@ -3,6 +3,7 @@ locals {
 
   cilium_chart_version = local.cilium_enabled ? var.k8s_cluster.cilium.chart : null
 
+  cilium_namespace     = local.cilium_enabled ? helm_release.cilium[0].namespace : null
   cilium_replace_proxy = local.cilium_enabled && var.k8s_cluster.cilium.replace_proxy
   cilium_gateway       = local.cilium_enabled && var.k8s_cluster.cilium.gateway
   cilium_bgp           = local.cilium_enabled && var.k8s_cluster.cilium.bgp

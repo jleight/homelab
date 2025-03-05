@@ -12,6 +12,9 @@ terraform {
     kubernetes = {
       source = "hashicorp/kubernetes"
     }
+    onepassword = {
+      source = "1Password/onepassword"
+    }
   }
 }
 
@@ -27,4 +30,8 @@ provider "kubectl" {
 
 provider "kubernetes" {
   config_path = local.cluster_kubeconfig_file
+}
+
+provider "onepassword" {
+  account = "my.1password.com"
 }
