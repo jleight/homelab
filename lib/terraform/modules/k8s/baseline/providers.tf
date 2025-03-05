@@ -9,6 +9,9 @@ terraform {
     kubectl = {
       source = "gavinbunney/kubectl"
     }
+    kubernetes = {
+      source = "hashicorp/kubernetes"
+    }
   }
 }
 
@@ -19,5 +22,9 @@ provider "helm" {
 }
 
 provider "kubectl" {
+  config_path = local.cluster_kubeconfig_file
+}
+
+provider "kubernetes" {
   config_path = local.cluster_kubeconfig_file
 }

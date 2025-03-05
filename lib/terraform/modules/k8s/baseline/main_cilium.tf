@@ -5,6 +5,7 @@ locals {
 
   cilium_replace_proxy = local.cilium_enabled && var.k8s_cluster.cilium.replace_proxy
   cilium_gateway       = local.cilium_enabled && var.k8s_cluster.cilium.gateway
+  cilium_bgp           = local.cilium_enabled && var.k8s_cluster.cilium.bgp
 }
 
 resource "helm_release" "cilium" {
@@ -61,6 +62,12 @@ resource "helm_release" "cilium" {
         },
         {
           name  = "gatewayAPI.enableAppProtocol"
+          value = true
+        }
+      ] : [],
+      local.cilium_bgp ? [
+        {
+          name  = "bgpControlPlane.enabled"
           value = true
         }
       ] : []

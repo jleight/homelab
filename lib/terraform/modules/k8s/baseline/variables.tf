@@ -35,6 +35,8 @@ variable "k8s_cluster" {
       chart         = string
       replace_proxy = optional(bool, true)
       gateway       = optional(bool, true)
+      bgp           = optional(bool, true)
     }))
+    httpbin = optional(number, 0)
   })
 }
