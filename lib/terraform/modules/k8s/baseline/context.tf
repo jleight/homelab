@@ -11,7 +11,7 @@ variable "repository" {
 }
 
 variable "stack" {
-  description = "The name of the product's stack."
+  description = "The name of the stack."
   type        = string
   default     = null
 }
@@ -23,7 +23,7 @@ variable "component" {
 }
 
 variable "environment" {
-  description = "The name of the product's environment."
+  description = "The name of the environment."
   type        = string
   default     = null
 }
