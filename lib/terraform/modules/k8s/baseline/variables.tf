@@ -48,6 +48,10 @@ variable "k8s_cluster" {
       test           = optional(bool, false)
       test_namespace = optional(string, "cert-manager-test")
     }))
+    external_dns = optional(object({
+      version   = string
+      namespace = optional(string, "external-dns")
+    }))
 
     httpbin = optional(object({
       namespace = optional(string, "httpbin")

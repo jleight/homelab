@@ -1,4 +1,5 @@
 [tools]
+"aqua:helm/helm" = "latest"
 "aqua:jqlang/jq" = "latest"
 "aqua:kubernetes/kubectl" = "latest"
 "aqua:opentofu/opentofu" = "latest"
