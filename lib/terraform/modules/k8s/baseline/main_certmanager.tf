@@ -1,24 +1,31 @@
 locals {
-  certmanager_enabled = local.enabled && var.k8s_cluster.cert_manager != null
+  certmanager_version = try(var.k8s_cluster.cert_manager.version, null)
+  certmanager_enabled = local.enabled && local.certmanager_version != null
 
-  certmanager_version = local.certmanager_enabled ? var.k8s_cluster.cert_manager.chart : null
+  certmanager_namespace        = local.certmanager_enabled ? var.k8s_cluster.cert_manager.namespace : ""
+  certmanager_create_namespace = local.certmanager_enabled && !contains(local.default_k8s_namespaces, local.certmanager_namespace)
 
-  certmanager_namespace         = local.certmanager_enabled ? helm_release.certmanager[0].namespace : null
+  certmanager_issuer = local.certmanager_enabled ? var.k8s_cluster.cert_manager.issuer : null
+
   certmanager_cloudflare_secret = local.certmanager_enabled ? one(kubernetes_secret.certmanager_cloudflare_api_token[0].metadata).name : null
-  certmanager_staging_issuer    = local.certmanager_enabled ? kubectl_manifest.certmanager_cluster_issuer_staging[0].name : null
-  certmanager_production_issuer = local.certmanager_enabled ? kubectl_manifest.certmanager_cluster_issuer_production[0].name : null
+}
+
+resource "kubernetes_namespace" "certmanager" {
+  count = local.certmanager_create_namespace ? 1 : 0
+
+  metadata {
+    name = local.certmanager_namespace
+  }
 }
 
 resource "helm_release" "certmanager" {
   count = local.certmanager_enabled ? 1 : 0
 
+  namespace  = local.certmanager_namespace
   name       = "cert-manager"
   repository = "https://charts.jetstack.io"
   chart      = "cert-manager"
   version    = local.certmanager_version
-
-  create_namespace = true
-  namespace        = "cert-manager"
 
   dynamic "set" {
     for_each = [
@@ -45,6 +52,8 @@ resource "helm_release" "certmanager" {
       value = set.value.value
     }
   }
+
+  depends_on = [kubernetes_namespace.certmanager]
 }
 
 resource "kubernetes_secret" "certmanager_cloudflare_api_token" {
@@ -58,9 +67,31 @@ resource "kubernetes_secret" "certmanager_cloudflare_api_token" {
   data = {
     apiToken = local.cloudflare_api_token
   }
+
+  depends_on = [kubernetes_namespace.certmanager]
 }
 
-resource "kubectl_manifest" "certmanager_cluster_issuer_staging" {
+resource "kubectl_manifest" "certmanager_issuer_test" {
+  count = local.certmanager_enabled ? 1 : 0
+
+  yaml_body = yamlencode({
+    apiVersion = "cert-manager.io/v1"
+    kind       = "ClusterIssuer"
+
+    metadata = {
+      namespace = local.certmanager_namespace
+      name      = "selfsigned-test"
+    }
+
+    spec = {
+      selfSigned = {}
+    }
+  })
+
+  depends_on = [helm_release.certmanager]
+}
+
+resource "kubectl_manifest" "certmanager_issuer_staging" {
   count = local.certmanager_enabled ? 1 : 0
 
   yaml_body = yamlencode({
@@ -83,7 +114,6 @@ resource "kubectl_manifest" "certmanager_cluster_issuer_staging" {
 
         solvers = [
           {
-            selector = {}
             dns01 = {
               cloudflare = {
                 apiTokenSecretRef = {
@@ -97,9 +127,11 @@ resource "kubectl_manifest" "certmanager_cluster_issuer_staging" {
       }
     }
   })
+
+  depends_on = [helm_release.certmanager]
 }
 
-resource "kubectl_manifest" "certmanager_cluster_issuer_production" {
+resource "kubectl_manifest" "certmanager_issuer_production" {
   count = local.certmanager_enabled ? 1 : 0
 
   yaml_body = yamlencode({
@@ -136,4 +168,6 @@ resource "kubectl_manifest" "certmanager_cluster_issuer_production" {
       }
     }
   })
+
+  depends_on = [helm_release.certmanager]
 }

@@ -29,8 +29,9 @@ inputs = {
       }
     }
 
-    cilium       = { chart = "1.17.1" }
-    cert_manager = { chart = "v1.17.1" }
-    httpbin      = 2
+    gateway      = { version = "v1.2.1" }
+    cilium       = { version = "1.17.1" }
+    cert_manager = { version = "v1.17.1", issuer = "letsencrypt-staging" }
+    httpbin      = { count = 1 }
   }
 }

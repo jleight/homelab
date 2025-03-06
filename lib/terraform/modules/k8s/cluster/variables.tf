@@ -26,6 +26,7 @@ variable "k8s_cluster" {
   type = object({
     domain    = string
     subdomain = string
+
     nodes = map(object({
       name              = string
       disk              = string
@@ -33,20 +34,30 @@ variable "k8s_cluster" {
       mac_address       = string
       ip_offset         = number
     }))
-    kgateway = optional(object({
-      crds  = string
-      chart = string
+
+    gateway = optional(object({
+      version   = string
+      namespace = optional(string, "gateway")
+      install   = optional(string, "experimental")
+      lb_pool   = optional(string, "10.245.0.0/24")
     }))
     cilium = optional(object({
-      chart         = string
+      version       = string
+      namespace     = optional(string, "kube-system")
       replace_proxy = optional(bool, true)
-      gateway       = optional(bool, true)
       bgp           = optional(bool, true)
     }))
     cert_manager = optional(object({
-      chart = string
-      test  = optional(bool, false)
+      version        = string
+      namespace      = optional(string, "cert-manager")
+      issuer         = optional(string, "selfsigned-test")
+      test           = optional(bool, false)
+      test_namespace = optional(string, "cert-manager-test")
     }))
-    httpbin = optional(number, 0)
+
+    httpbin = optional(object({
+      namespace = optional(string, "httpbin")
+      count     = optional(number, 2)
+    }))
   })
 }

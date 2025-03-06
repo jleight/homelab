@@ -1,22 +1,27 @@
 locals {
-  cilium_enabled = local.enabled && var.k8s_cluster.cilium != null
+  cilium_version = try(var.k8s_cluster.cilium.version, null)
+  cilium_enabled = local.enabled && local.cilium_version != null
 
-  cilium_chart_version = local.cilium_enabled ? var.k8s_cluster.cilium.chart : null
+  cilium_namespace        = local.cilium_enabled ? var.k8s_cluster.cilium.namespace : ""
+  cilium_create_namespace = local.cilium_enabled && !contains(local.default_k8s_namespaces, local.cilium_namespace)
+}
 
-  cilium_namespace     = local.cilium_enabled ? helm_release.cilium[0].namespace : null
-  cilium_replace_proxy = local.cilium_enabled && var.k8s_cluster.cilium.replace_proxy
-  cilium_gateway       = local.cilium_enabled && var.k8s_cluster.cilium.gateway
-  cilium_bgp           = local.cilium_enabled && var.k8s_cluster.cilium.bgp
+resource "kubernetes_namespace" "cilium" {
+  count = local.cilium_create_namespace ? 1 : 0
+
+  metadata {
+    name = local.cilium_namespace
+  }
 }
 
 resource "helm_release" "cilium" {
   count = local.cilium_enabled ? 1 : 0
 
-  namespace  = "kube-system"
+  namespace  = local.cilium_namespace
   name       = "cilium"
   repository = "https://helm.cilium.io"
   chart      = "cilium"
-  version    = local.cilium_chart_version
+  version    = local.cilium_version
 
   dynamic "set" {
     for_each = concat(
@@ -24,10 +29,6 @@ resource "helm_release" "cilium" {
         {
           name  = "ipam.mode"
           value = "kubernetes"
-        },
-        {
-          name  = "kubeProxyReplacement"
-          value = local.cilium_replace_proxy
         },
         {
           name  = "cgroup.autoMount.enabled"
@@ -42,7 +43,11 @@ resource "helm_release" "cilium" {
           value = true
         }
       ],
-      local.cilium_replace_proxy ? [
+      local.cilium_enabled && var.k8s_cluster.cilium.replace_proxy ? [
+        {
+          name  = "kubeProxyReplacement"
+          value = true
+        },
         {
           name  = "k8sServiceHost"
           value = "localhost"
@@ -52,7 +57,7 @@ resource "helm_release" "cilium" {
           value = 7445
         }
       ] : [],
-      local.cilium_gateway ? [
+      local.gateway_enabled ? [
         {
           name  = "gatewayAPI.enabled"
           value = true
@@ -66,7 +71,7 @@ resource "helm_release" "cilium" {
           value = true
         }
       ] : [],
-      local.cilium_bgp ? [
+      local.cilium_enabled && var.k8s_cluster.cilium.bgp ? [
         {
           name  = "bgpControlPlane.enabled"
           value = true
@@ -96,7 +101,10 @@ resource "helm_release" "cilium" {
     }
   }
 
-  depends_on = [kubectl_manifest.kgateway_crds]
+  depends_on = [
+    kubectl_manifest.gateway_crds,
+    kubernetes_namespace.cilium
+  ]
 
   provisioner "local-exec" {
     command     = "${path.module}/lib/restart-cilium-unmanaged.sh"

@@ -1,5 +1,7 @@
 locals {
-  router_bgp_conf = join(
+  cilium_bgp_enabled = local.cilium_enabled && var.k8s_cluster.cilium.bgp
+
+  router_bgp_conf = local.cilium_bgp_enabled ? join(
     "\n",
     concat(
       [
@@ -43,18 +45,20 @@ locals {
         EOF
       ]
     )
-  )
+  ) : null
 }
 
 resource "kubectl_manifest" "cilium_bgp_cluster_config" {
-  count = local.cilium_bgp ? 1 : 0
+  count = local.cilium_bgp_enabled ? 1 : 0
 
   yaml_body = yamlencode({
     apiVersion = "cilium.io/v2alpha1"
     kind       = "CiliumBGPClusterConfig"
+
     metadata = {
       name = "cilium-bgp"
     }
+
     spec = {
       nodeSelector = {
         "kubernetes.io/os" = "linux"
@@ -82,14 +86,16 @@ resource "kubectl_manifest" "cilium_bgp_cluster_config" {
 }
 
 resource "kubectl_manifest" "cilium_bgp_peer_config" {
-  count = local.cilium_bgp ? 1 : 0
+  count = local.cilium_bgp_enabled ? 1 : 0
 
   yaml_body = yamlencode({
     apiVersion = "cilium.io/v2alpha1"
     kind       = "CiliumBGPPeerConfig"
+
     metadata = {
       name = "cilium-peer"
     }
+
     spec = {
       timers = {
         holdTimeSeconds      = 9
@@ -118,17 +124,19 @@ resource "kubectl_manifest" "cilium_bgp_peer_config" {
 }
 
 resource "kubectl_manifest" "cilium_bgp_advertisement" {
-  count = local.cilium_bgp ? 1 : 0
+  count = local.cilium_bgp_enabled ? 1 : 0
 
   yaml_body = yamlencode({
     apiVersion = "cilium.io/v2alpha1"
     kind       = "CiliumBGPAdvertisement"
+
     metadata = {
       name = "bgp-advertisements"
       labels = {
         advertise = "bgp"
       }
     }
+
     spec = {
       advertisements = [
         {
