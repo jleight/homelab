@@ -42,6 +42,11 @@ resource "talos_machine_configuration_apply" "control_plane" {
           nameservers = var.network.nameservers
         }
         certSANs = [local.cluster_dns_name]
+        kubelet = {
+          extraArgs = {
+            "rotate-server-certificates" = try(var.k8s_cluster.kubelet_cert_approver.version, null) != null
+          }
+        }
       }
       cluster = {
         allowSchedulingOnControlPlanes = true

@@ -29,6 +29,9 @@ variable "k8s_cluster" {
       ip_offset         = number
     }))
 
+    kubelet_cert_approver = optional(object({
+      version = string
+    }))
     gateway = optional(object({
       version   = string
       namespace = optional(string, "gateway")
