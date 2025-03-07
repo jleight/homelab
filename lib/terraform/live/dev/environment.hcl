@@ -30,6 +30,7 @@ inputs = {
     }
 
     kubelet_cert_approver = { version = "v0.9.0" }
+    metrics_server        = { version = "v0.7.2" }
     gateway               = { version = "v1.2.1" }
     cilium                = { version = "1.17.1" }
     cert_manager          = { version = "v1.17.1", issuer = "letsencrypt-staging" }

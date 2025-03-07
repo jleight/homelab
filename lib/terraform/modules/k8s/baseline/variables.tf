@@ -32,6 +32,9 @@ variable "k8s_cluster" {
     kubelet_cert_approver = optional(object({
       version = string
     }))
+    metrics_server = optional(object({
+      version = string
+    }))
     gateway = optional(object({
       version   = string
       namespace = optional(string, "gateway")
