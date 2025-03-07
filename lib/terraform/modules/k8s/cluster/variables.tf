@@ -41,6 +41,10 @@ variable "k8s_cluster" {
     metrics_server = optional(object({
       version = string
     }))
+    csi_smb = optional(object({
+      version   = string
+      namespace = optional(string, "kube-system")
+    }))
     gateway = optional(object({
       version   = string
       namespace = optional(string, "gateway")
