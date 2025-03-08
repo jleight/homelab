@@ -18,7 +18,4 @@ locals {
       for i in split(",", data.external.node_ip[k].result.ips) : i
     ][0]
   } : {}
-
-  kubeconfig_file = local.enabled ? "${var.dot_kube_directory}/${module.this.id}" : null
-  kubeconfig      = local.enabled ? talos_cluster_kubeconfig.this[0].kubeconfig_raw : null
 }

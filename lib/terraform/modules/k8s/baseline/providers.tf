@@ -20,16 +20,16 @@ terraform {
 
 provider "helm" {
   kubernetes {
-    config_path = local.cluster_kubeconfig_file
+    config_path = local.kubeconfig_file
   }
 }
 
 provider "kubectl" {
-  config_path = local.cluster_kubeconfig_file
+  config_path = local.kubeconfig_file
 }
 
 provider "kubernetes" {
-  config_path = local.cluster_kubeconfig_file
+  config_path = local.kubeconfig_file
 }
 
 provider "onepassword" {

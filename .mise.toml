@@ -6,3 +6,6 @@
 "aqua:opentofu/opentofu" = "latest"
 "ubi:cilium/cilium-cli" = { version = "latest", exe = "cilium" }
 "ubi:openebs/mayastor-extensions" = { version = "latest", exe = "kubectl-mayastor" }
+
+[env]
+ENV_DIR = "{{ config_root }}/env"

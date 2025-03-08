@@ -1,3 +1,8 @@
+variable "env_directory" {
+  description = "Path to the env directory."
+  type        = string
+}
+
 variable "network" {
   description = "Settings for the home network."
   type = object({
@@ -8,11 +13,6 @@ variable "network" {
     })
     nameservers = set(string)
   })
-}
-
-variable "cluster_kubeconfig_file" {
-  description = "Path to the cluster's kubeconfig file."
-  type        = string
 }
 
 variable "k8s_cluster" {

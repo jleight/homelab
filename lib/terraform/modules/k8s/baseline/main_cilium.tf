@@ -111,7 +111,7 @@ resource "helm_release" "cilium" {
     interpreter = ["bash"]
 
     environment = {
-      KUBECONFIG = local.cluster_kubeconfig_file
+      KUBECONFIG = local.kubeconfig_file
     }
   }
 }

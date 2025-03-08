@@ -1,5 +1,5 @@
 inputs = {
-  dot_kube_directory = "${get_env("HOME")}/.kube"
+  env_directory = get_env("ENV_DIR")
 
   network = {
     interface = "en0"

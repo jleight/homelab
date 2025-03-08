@@ -1,12 +1,12 @@
 locals {
+  kubeconfig_file = "${var.env_directory}/${local.environment}/.kubeconfig"
+
   default_k8s_namespaces = toset([
     "default",
     "kube-node-lease",
     "kube-public",
     "kube-system",
   ])
-
-  cluster_kubeconfig_file = replace(var.cluster_kubeconfig_file, "////", "/")
 
   terraform_vault_uuid = local.enabled ? data.onepassword_vault.terraform[0].uuid : null
 

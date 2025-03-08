@@ -5,7 +5,7 @@ variable "sudo_password" {
 }
 
 variable "env_directory" {
-  description = "Path to the env director."
+  description = "Path to the env directory."
   type        = string
 }
 

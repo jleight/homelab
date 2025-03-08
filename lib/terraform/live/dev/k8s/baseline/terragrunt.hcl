@@ -6,12 +6,10 @@ include {
   path = find_in_parent_folders("root.hcl")
 }
 
-dependency "cluster" {
-  config_path = "../cluster"
+dependencies {
+  paths = ["../cluster"]
 }
 
 inputs = {
   component = "baseline"
-
-  cluster_kubeconfig_file = dependency.cluster.outputs.kubeconfig_file
 }
