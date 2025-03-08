@@ -29,13 +29,11 @@ inputs = {
       }
     }
 
-    kubelet_cert_approver = { version = "v0.9.0" }
-    metrics_server        = { version = "v0.7.2" }
-    csi_smb               = { version = "v1.17.0" }
-    gateway               = { version = "v1.2.1" }
-    cilium                = { version = "1.17.1" }
-    cert_manager          = { version = "v1.17.1", issuer = "letsencrypt-staging" }
-    external_dns          = { version = "1.15.2" }
-    httpbin               = { count = 1 }
+    csi_smb      = { version = "v1.17.0" }
+    gateway      = { version = "v1.2.1" }
+    cilium       = { version = "1.17.1" }
+    cert_manager = { version = "v1.17.1", issuer = "letsencrypt-staging" }
+    external_dns = { version = "1.15.2" }
+    httpbin      = { count = 1 }
   }
 }
