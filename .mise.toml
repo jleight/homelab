@@ -1,7 +1,8 @@
 [tools]
+"aqua:gruntwork-io/terragrunt" = "latest"
 "aqua:helm/helm" = "latest"
 "aqua:jqlang/jq" = "latest"
 "aqua:kubernetes/kubectl" = "latest"
 "aqua:opentofu/opentofu" = "latest"
-"aqua:gruntwork-io/terragrunt" = "latest"
 "ubi:cilium/cilium-cli" = { version = "latest", exe = "cilium" }
+"ubi:openebs/mayastor-extensions" = { version = "latest", exe = "kubectl-mayastor" }

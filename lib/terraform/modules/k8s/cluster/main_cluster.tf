@@ -25,6 +25,9 @@ resource "talos_machine_configuration_apply" "control_plane" {
         install = {
           disk = each.value.disk
         }
+        sysctls = {
+          "vm.nr_hugepages" = "1024"
+        }
         network = {
           hostname = each.value.name
           interfaces = [
@@ -41,11 +44,24 @@ resource "talos_machine_configuration_apply" "control_plane" {
           ]
           nameservers = var.network.nameservers
         }
-        certSANs = [local.cluster_dns_name]
+        certSANs = [
+          local.cluster_dns_name
+        ]
         kubelet = {
           extraArgs = {
             "rotate-server-certificates" = try(var.k8s_cluster.kubelet_cert_approver.version, null) != null
           }
+          extraMounts = [
+            {
+              type        = "bind"
+              source      = "/var/local"
+              destination = "/var/local"
+              options     = ["bind", "rshared", "rw"]
+            }
+          ]
+        }
+        nodeLabels = {
+          "openebs.io/engine" : "mayastor"
         }
       }
       cluster = {
@@ -57,6 +73,22 @@ resource "talos_machine_configuration_apply" "control_plane" {
         }
         proxy = {
           disabled = var.k8s_cluster.cilium != null && var.k8s_cluster.cilium.replace_proxy
+        }
+        apiServer = {
+          admissionControl = [
+            {
+              name = "PodSecurity"
+              configuration = {
+                apiVersion = "pod-security.admission.config.k8s.io/v1beta1"
+                kind       = "PodSecurityConfiguration"
+                exemptions = {
+                  namespaces = [
+                    var.k8s_cluster.openebs.namespace
+                  ]
+                }
+              }
+            }
+          ]
         }
       }
     })
