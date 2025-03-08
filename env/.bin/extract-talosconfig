@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+if [[ "${TRACE-0}" == "1" ]]; then
+	set -o xtrace
+fi
+
+TEMP_DIR="$(mktemp -d)"
+trap 'rm -rf -- "${TEMP_DIR}"' EXIT
+
+extract_ca_crt() {
+	local -r config_file="${1}"
+
+	yq e '.machine.ca.crt' "${config_file}" | base64 -d
+}
+
+extract_ca_key() {
+	local -r config_file="${1}"
+
+	yq e '.machine.ca.key' "${config_file}" | base64 -d
+}
+
+extract_cluster_name() {
+	local -r config_file="${1}"
+
+	yq e '.cluster.clusterName' "${config_file}"
+}
+
+extract_endpoint() {
+	local -r config_file="${1}"
+
+	yq e '.cluster.controlPlane.endpoint' "${config_file}"
+}
+
+extract_machine_ip() {
+	local -r config_file="${1}"
+
+	yq e '.machine.network.interfaces[0].addresses[0]' "${config_file}"
+}
+
+get_node_ips() {
+	local file
+	local -a ips=()
+
+	for file in "${@}"; do
+		ips+=("$(extract_machine_ip "${file}")")
+	done
+
+	echo "${ips[@]}"
+}
+
+main() {
+	local -r config_file="$(realpath "${1}")"
+
+	pushd "${TEMP_DIR}" > /dev/null
+
+	extract_ca_crt "${config_file}" > ca.crt
+	extract_ca_key "${config_file}" > ca.key
+
+	talosctl gen key --name admin
+	talosctl gen csr --key admin.key --ip 127.0.0.1
+	talosctl gen crt --ca ca --csr admin.csr --name admin
+
+	popd  > /dev/null
+
+	export TALOS_CONTEXT="$(extract_cluster_name "${config_file}")"
+	export TALOS_ENDPOINT="$(extract_endpoint "${config_file}")"
+	export TALOS_NODES="$(get_node_ips "$@")"
+	export TALOS_CA="$(base64 < "${TEMP_DIR}/ca.crt")"
+	export TALOS_CRT="$(base64 < "${TEMP_DIR}/admin.crt")"
+	export TALOS_KEY="$(base64 < "${TEMP_DIR}/admin.key")"
+
+	local -a commands=(
+		".context = strenv(TALOS_CONTEXT) |"
+		".contexts[strenv(TALOS_CONTEXT)].endpoints = [strenv(TALOS_ENDPOINT)] |"
+		".contexts[strenv(TALOS_CONTEXT)].nodes = (strenv(TALOS_NODES) | split(\" \")) |"
+		".contexts[strenv(TALOS_CONTEXT)].ca = strenv(TALOS_CA) |"
+		".contexts[strenv(TALOS_CONTEXT)].crt = strenv(TALOS_CRT) |"
+		".contexts[strenv(TALOS_CONTEXT)].key = strenv(TALOS_KEY)"
+	)
+	yq --null-input "${commands[*]}"
+}
+
+main "$@"

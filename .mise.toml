@@ -3,6 +3,7 @@
 "aqua:helm/helm" = "latest"
 "aqua:jqlang/jq" = "latest"
 "aqua:kubernetes/kubectl" = "latest"
+"aqua:mikefarah/yq" = "latest"
 "aqua:opentofu/opentofu" = "latest"
 "ubi:cilium/cilium-cli" = { version = "latest", exe = "cilium" }
 "ubi:openebs/mayastor-extensions" = { version = "latest", exe = "kubectl-mayastor" }
