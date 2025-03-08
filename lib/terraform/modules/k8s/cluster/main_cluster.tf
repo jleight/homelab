@@ -90,6 +90,11 @@ resource "talos_machine_configuration_apply" "control_plane" {
             }
           ]
         }
+        controllerManager = {
+          extraArgs = {
+            "terminated-pod-gc-threshold" = 1
+          }
+        }
       }
     })
   ]
