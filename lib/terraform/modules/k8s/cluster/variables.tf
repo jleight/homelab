@@ -42,29 +42,38 @@ variable "k8s_cluster" {
       }),
       { version = "v3.12.2" }
     )
-    openebs = optional(
+
+    gateway = optional(
       object({
         version   = string
-        namespace = optional(string, "openebs")
+        namespace = optional(string, "gateway")
+        install   = optional(string, "experimental")
+        lb_pool   = optional(string, "10.245.0.0/24")
       }),
-      # { version = "v4.2.0" }
+      { version = "v1.2.1" }
+    )
+    cilium = optional(
+      object({
+        version       = string
+        namespace     = optional(string, "kube-system")
+        replace_proxy = optional(bool, true)
+        bgp           = optional(bool, true)
+      }),
+      { version = "1.17.1" }
     )
 
+    openebs = optional(object({
+      version   = string
+      namespace = optional(string, "openebs")
+    }))
     csi_smb = optional(object({
       version   = string
       namespace = optional(string, "kube-system")
     }))
-    gateway = optional(object({
+
+    external_dns = optional(object({
       version   = string
-      namespace = optional(string, "gateway")
-      install   = optional(string, "experimental")
-      lb_pool   = optional(string, "10.245.0.0/24")
-    }))
-    cilium = optional(object({
-      version       = string
-      namespace     = optional(string, "kube-system")
-      replace_proxy = optional(bool, true)
-      bgp           = optional(bool, true)
+      namespace = optional(string, "external-dns")
     }))
     cert_manager = optional(object({
       version        = string
@@ -72,10 +81,6 @@ variable "k8s_cluster" {
       issuer         = optional(string, "selfsigned-test")
       test           = optional(bool, false)
       test_namespace = optional(string, "cert-manager-test")
-    }))
-    external_dns = optional(object({
-      version   = string
-      namespace = optional(string, "external-dns")
     }))
 
     httpbin = optional(object({

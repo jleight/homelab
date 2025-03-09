@@ -88,7 +88,7 @@ resource "talos_machine_configuration_apply" "control_plane" {
                 exemptions = {
                   namespaces = setunion(
                     [],
-                    var.k8s_cluster.cilium != null ? [
+                    var.k8s_cluster.openebs != null ? [
                       var.k8s_cluster.openebs.namespace
                     ] : []
                   )

@@ -45,5 +45,8 @@ resource "helm_release" "openebs" {
     }
   }
 
-  depends_on = [kubernetes_namespace.openebs]
+  depends_on = [
+    helm_release.cilium,
+    kubernetes_namespace.openebs
+  ]
 }

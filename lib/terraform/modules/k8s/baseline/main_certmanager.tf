@@ -53,7 +53,10 @@ resource "helm_release" "certmanager" {
     }
   }
 
-  depends_on = [kubernetes_namespace.certmanager]
+  depends_on = [
+    helm_release.cilium,
+    kubernetes_namespace.certmanager
+  ]
 }
 
 resource "kubernetes_secret" "certmanager_cloudflare_api_token" {

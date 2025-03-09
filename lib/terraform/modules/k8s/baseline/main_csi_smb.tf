@@ -23,5 +23,8 @@ resource "helm_release" "csi_smb" {
   chart      = "csi-driver-smb"
   version    = local.csi_smb_version
 
-  depends_on = [kubernetes_namespace.csi_smb]
+  depends_on = [
+    helm_release.cilium,
+    kubernetes_namespace.csi_smb
+  ]
 }

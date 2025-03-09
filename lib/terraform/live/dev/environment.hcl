@@ -29,11 +29,10 @@ inputs = {
       }
     }
 
-    # cilium       = { version = "1.17.1" }
-    # gateway      = { version = "v1.2.1" }
-    # csi_smb      = { version = "v1.17.0" }
+    openebs      = { version = "v4.2.0" }
+    csi_smb      = { version = "v1.17.0" }
+    external_dns = { version = "1.15.2" }
     # cert_manager = { version = "v1.17.1", issuer = "letsencrypt-staging" }
-    # external_dns = { version = "1.15.2" }
     # httpbin      = { count = 1 }
   }
 }

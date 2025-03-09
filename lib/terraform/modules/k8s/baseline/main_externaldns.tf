@@ -77,5 +77,8 @@ resource "helm_release" "externaldns" {
     ]
   }
 
-  depends_on = [kubernetes_secret.externaldns_cloudflare_api_token]
+  depends_on = [
+    helm_release.cilium,
+    kubernetes_secret.externaldns_cloudflare_api_token
+  ]
 }
