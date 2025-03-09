@@ -1,6 +1,8 @@
 locals {
   terraform_vault_uuid = local.enabled ? data.onepassword_vault.terraform[0].uuid : null
 
+  sudo_password = local.enabled ? data.onepassword_item.sudo[0].password : null
+
   cloudflare_api_token = local.enabled ? data.onepassword_item.cloudflare_api_token[0].credential : null
   dns_zone_id          = local.enabled ? one(data.cloudflare_zones.cluster[0].result).id : null
 

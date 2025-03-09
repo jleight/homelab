@@ -4,6 +4,13 @@ data "onepassword_vault" "terraform" {
   name = "Terraform"
 }
 
+data "onepassword_item" "sudo" {
+  count = local.enabled ? 1 : 0
+
+  vault = local.terraform_vault_uuid
+  title = "sudo"
+}
+
 data "onepassword_item" "cloudflare_api_token" {
   count = local.enabled ? 1 : 0
 
@@ -23,7 +30,7 @@ data "external" "node_ip" {
   program = ["bash", "${path.module}/lib/get-ip.sh"]
 
   query = {
-    password    = var.sudo_password
+    password    = local.sudo_password
     interface   = var.network.interface
     mac_address = each.value.mac_address
   }

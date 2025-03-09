@@ -1,9 +1,3 @@
-variable "sudo_password" {
-  description = "The sudo password for this machine."
-  type        = string
-  sensitive   = true
-}
-
 variable "env_directory" {
   description = "Path to the env directory."
   type        = string
