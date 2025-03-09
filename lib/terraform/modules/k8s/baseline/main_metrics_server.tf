@@ -23,12 +23,13 @@ resource "helm_release" "metrics_server" {
   chart      = "metrics-server"
   version    = local.metrics_server_version
 
-  dynamic "set" {
-    for_each = local.metrics_server_enabled && !local.kubelet_cert_approver_enabled ? ["0"] : []
-
-    content {
-      name  = "args[0]"
-      value = "--kubelet-insecure-tls"
-    }
+  set_list {
+    name = "args"
+    value = setunion(
+      [],
+      local.kubelet_cert_approver_enabled ? [] : [
+        "--kubelet-insecure-tls"
+      ]
+    )
   }
 }

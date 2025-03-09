@@ -35,6 +35,12 @@ variable "k8s_cluster" {
       ip_offset         = number
     }))
 
+    kubelet_cert_approver = optional(
+      object({
+        version = string
+      }),
+      { version = "v0.9.0" }
+    )
     metrics_server = optional(
       object({
         version   = string
@@ -50,9 +56,6 @@ variable "k8s_cluster" {
       # { version = "v4.2.0" }
     )
 
-    kubelet_cert_approver = optional(object({
-      version = string
-    }))
     csi_smb = optional(object({
       version   = string
       namespace = optional(string, "kube-system")
