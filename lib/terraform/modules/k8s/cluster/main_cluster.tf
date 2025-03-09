@@ -24,7 +24,7 @@ resource "talos_machine_configuration_apply" "control_plane" {
     yamlencode({
       machine = {
         install = {
-          disk = each.value.disk
+          disk = each.value.install_disk
         }
         sysctls = {
           "vm.nr_hugepages" = "1024"

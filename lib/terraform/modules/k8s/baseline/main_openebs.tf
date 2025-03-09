@@ -50,3 +50,22 @@ resource "helm_release" "openebs" {
     kubernetes_namespace.openebs
   ]
 }
+
+resource "kubectl_manifest" "openebs_diskpool" {
+  for_each = local.openebs_enabled ? var.k8s_cluster.nodes : {}
+
+  yaml_body = yamlencode({
+    apiVersion = "openebs.io/v1beta2"
+    kind       = "DiskPool"
+
+    metadata = {
+      namespace = local.openebs_namespace
+      name      = "ephemeral-${each.value.name}"
+    }
+
+    spec = {
+      node  = each.value.name
+      disks = ["uring://${each.value.storage_disk}"]
+    }
+  })
+}

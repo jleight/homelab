@@ -23,7 +23,8 @@ variable "k8s_cluster" {
 
     nodes = map(object({
       name              = string
-      disk              = string
+      install_disk      = string
+      storage_disk      = string
       network_interface = string
       mac_address       = string
       ip_offset         = number
