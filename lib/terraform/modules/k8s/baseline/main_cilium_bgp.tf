@@ -1,5 +1,5 @@
 locals {
-  cilium_bgp_enabled = local.cilium_enabled && var.k8s_cluster.cilium.bgp
+  cilium_bgp_enabled = local.cilium_enabled && try(var.k8s_cluster.cilium.bgp, false)
 
   router_bgp_conf = local.cilium_bgp_enabled ? join(
     "\n",

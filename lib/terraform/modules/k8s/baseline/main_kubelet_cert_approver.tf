@@ -7,8 +7,8 @@ locals {
     local.kubelet_cert_approver_version
   )
 
-  kubelet_cert_approver_manifest  = local.enabled ? data.http.kubelet_cert_approver_manifest[0].response_body : null
-  kubelet_cert_approver_manifests = local.enabled ? data.kubectl_file_documents.kubelet_cert_approver[0].manifests : {}
+  kubelet_cert_approver_manifest  = local.kubelet_cert_approver_enabled ? data.http.kubelet_cert_approver_manifest[0].response_body : null
+  kubelet_cert_approver_manifests = local.kubelet_cert_approver_enabled ? data.kubectl_file_documents.kubelet_cert_approver[0].manifests : {}
 }
 
 data "http" "kubelet_cert_approver_manifest" {

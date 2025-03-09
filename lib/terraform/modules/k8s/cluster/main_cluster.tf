@@ -6,18 +6,19 @@ data "talos_machine_configuration" "control_plane" {
   count = local.enabled ? 1 : 0
 
   cluster_name     = module.this.id
-  cluster_endpoint = local.talos_endpoint
-  machine_secrets  = local.talos_secrets
-  machine_type     = "controlplane"
+  cluster_endpoint = local.cluster_endpoint
+
+  machine_secrets = local.machine_secrets
+  machine_type    = "controlplane"
 }
 
 resource "talos_machine_configuration_apply" "control_plane" {
   for_each = local.enabled ? var.k8s_cluster.nodes : {}
 
-  client_configuration = local.talos_client_config
+  client_configuration = local.client_config
   node                 = local.enabled ? local.node_ips[each.key] : null
 
-  machine_configuration_input = local.talos_cp_config
+  machine_configuration_input = local.cp_config
 
   config_patches = [
     yamlencode({
@@ -45,12 +46,15 @@ resource "talos_machine_configuration_apply" "control_plane" {
           nameservers = var.network.nameservers
         }
         certSANs = [
-          local.cluster_dns_name
+          local.endpoint
         ]
         kubelet = {
-          extraArgs = {
-            "rotate-server-certificates" = try(var.k8s_cluster.kubelet_cert_approver.version, null) != null
-          }
+          extraArgs = merge(
+            {},
+            try(var.k8s_cluster.kubelet_cert_approver.version, null) != null ? {
+              "rotate-server-certificates" = true
+            } : {}
+          )
           extraMounts = [
             {
               type        = "bind"
@@ -66,13 +70,13 @@ resource "talos_machine_configuration_apply" "control_plane" {
       }
       cluster = {
         allowSchedulingOnControlPlanes = true
-        network = {
-          cni = var.k8s_cluster.cilium == null ? {} : {
+        network = var.k8s_cluster.cilium == null ? {} : {
+          cni = {
             name = "none"
           }
         }
         proxy = {
-          disabled = var.k8s_cluster.cilium != null && var.k8s_cluster.cilium.replace_proxy
+          disabled = try(var.k8s_cluster.cilium.replace_proxy, false)
         }
         apiServer = {
           admissionControl = [
@@ -82,9 +86,12 @@ resource "talos_machine_configuration_apply" "control_plane" {
                 apiVersion = "pod-security.admission.config.k8s.io/v1beta1"
                 kind       = "PodSecurityConfiguration"
                 exemptions = {
-                  namespaces = [
-                    var.k8s_cluster.openebs.namespace
-                  ]
+                  namespaces = setunion(
+                    [],
+                    var.k8s_cluster.cilium != null ? [
+                      var.k8s_cluster.openebs.namespace
+                    ] : []
+                  )
                 }
               }
             }
@@ -103,8 +110,8 @@ resource "talos_machine_configuration_apply" "control_plane" {
 resource "talos_machine_bootstrap" "this" {
   count = local.enabled ? 1 : 0
 
-  client_configuration = local.talos_client_config
-  endpoint             = local.enabled ? values(local.node_ips)[0] : null
+  client_configuration = local.client_config
+  endpoint             = local.endpoint
   node                 = local.enabled ? values(local.node_ips)[0] : null
 
   depends_on = [talos_machine_configuration_apply.control_plane]

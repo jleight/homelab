@@ -1,5 +1,5 @@
 locals {
-  certmanager_test_enabled = local.certmanager_enabled && var.k8s_cluster.cert_manager.test
+  certmanager_test_enabled = local.certmanager_enabled && try(var.k8s_cluster.cert_manager.test, false)
 
   certmanager_test_namespace        = local.certmanager_test_enabled ? var.k8s_cluster.cert_manager.test_namespace : ""
   certmanager_test_create_namespace = local.certmanager_test_enabled && !contains(local.default_k8s_namespaces, local.certmanager_test_namespace)

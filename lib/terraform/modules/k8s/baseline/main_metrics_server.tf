@@ -2,29 +2,33 @@ locals {
   metrics_server_version = try(var.k8s_cluster.metrics_server.version, null)
   metrics_server_enabled = local.enabled && local.metrics_server_version != null
 
-  metrics_server_manifest_url = format(
-    "https://github.com/kubernetes-sigs/metrics-server/releases/download/%s/components.yaml",
-    local.metrics_server_version
-  )
-
-  metrics_server_manifest  = local.enabled ? data.http.metrics_server_manifest[0].response_body : null
-  metrics_server_manifests = local.enabled ? data.kubectl_file_documents.metrics_server[0].manifests : {}
+  metrics_server_namespace        = local.metrics_server_enabled ? var.k8s_cluster.metrics_server.namespace : ""
+  metrics_server_create_namespace = local.metrics_server_enabled && !contains(local.default_k8s_namespaces, local.metrics_server_namespace)
 }
 
-data "http" "metrics_server_manifest" {
+resource "kubernetes_namespace" "metrics_server" {
+  count = local.metrics_server_create_namespace ? 1 : 0
+
+  metadata {
+    name = local.metrics_server_namespace
+  }
+}
+
+resource "helm_release" "metrics_server" {
   count = local.metrics_server_enabled ? 1 : 0
 
-  url = local.metrics_server_manifest_url
-}
+  namespace  = local.metrics_server_namespace
+  name       = "metrics-server"
+  repository = "https://kubernetes-sigs.github.io/metrics-server"
+  chart      = "metrics-server"
+  version    = local.metrics_server_version
 
-data "kubectl_file_documents" "metrics_server" {
-  count = local.metrics_server_enabled ? 1 : 0
+  dynamic "set" {
+    for_each = local.metrics_server_enabled && !local.kubelet_cert_approver_enabled ? ["0"] : []
 
-  content = local.metrics_server_manifest
-}
-
-resource "kubectl_manifest" "metrics_server" {
-  for_each = local.metrics_server_manifests
-
-  yaml_body = each.value
+    content {
+      name  = "args[0]"
+      value = "--kubelet-insecure-tls"
+    }
+  }
 }

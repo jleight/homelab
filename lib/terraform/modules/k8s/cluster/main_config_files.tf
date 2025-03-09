@@ -16,16 +16,16 @@ data "talos_client_configuration" "this" {
   count = local.enabled ? 1 : 0
 
   cluster_name         = module.this.id
-  client_configuration = local.talos_client_config
+  client_configuration = local.client_config
 
-  endpoints = [local.talos_endpoint]
+  endpoints = [local.endpoint]
   nodes     = values(local.node_ips)
 }
 
 resource "talos_cluster_kubeconfig" "this" {
   count = local.enabled ? 1 : 0
 
-  client_configuration = local.talos_client_config
+  client_configuration = local.client_config
   node                 = local.enabled ? values(local.node_ips)[0] : null
 
   depends_on = [talos_machine_bootstrap.this]
