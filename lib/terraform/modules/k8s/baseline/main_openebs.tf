@@ -69,3 +69,24 @@ resource "kubectl_manifest" "openebs_diskpool" {
     }
   })
 }
+
+resource "kubernetes_storage_class" "openebs" {
+  count = local.openebs_enabled ? var.k8s_cluster.openebs.max_replicas : 0
+
+  metadata {
+    name = "mayastor-${count.index}"
+  }
+
+  storage_provisioner = "io.openebs.csi-mayastor"
+
+  volume_binding_mode    = "Immediate"
+  reclaim_policy         = "Retain"
+  allow_volume_expansion = true
+
+  parameters = {
+    fsType   = "xfs"
+    protocol = "nvmf"
+    thin     = true
+    repl     = count.index + 1
+  }
+}
