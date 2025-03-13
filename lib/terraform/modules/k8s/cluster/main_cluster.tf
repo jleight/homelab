@@ -27,7 +27,8 @@ resource "talos_machine_configuration_apply" "control_plane" {
           disk = each.value.install_disk
         }
         sysctls = {
-          "vm.nr_hugepages" = "1024"
+          "user.max_user_namespaces" = "11255"
+          "vm.nr_hugepages"          = "1024"
         }
         network = {
           hostname = each.value.name
@@ -55,6 +56,12 @@ resource "talos_machine_configuration_apply" "control_plane" {
               "rotate-server-certificates" = true
             } : {}
           )
+          extraConfig = {
+            featureGates = {
+              "UserNamespacesSupport"              = true
+              "UserNamespacesPodSecurityStandards" = true
+            }
+          }
           extraMounts = [
             {
               type        = "bind"
@@ -79,6 +86,15 @@ resource "talos_machine_configuration_apply" "control_plane" {
           disabled = try(var.k8s_cluster.cilium.replace_proxy, false)
         }
         apiServer = {
+          extraArgs = {
+            "feature-gates" = join(
+              ",",
+              [
+                "UserNamespacesSupport=true",
+                "UserNamespacesPodSecurityStandards=true"
+              ]
+            )
+          }
           admissionControl = [
             {
               name = "PodSecurity"
