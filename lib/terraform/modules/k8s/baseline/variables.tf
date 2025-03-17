@@ -6,12 +6,11 @@ variable "env_directory" {
 variable "network" {
   description = "Settings for the home network."
   type = object({
-    interface = string
-    subnet    = string
-    ip_offsets = object({
-      gateway = number
-    })
-    nameservers = set(string)
+    interface    = string
+    subnet       = string
+    gateway_ipv4 = string
+    gateway_ipv6 = string
+    nameservers  = set(string)
   })
 }
 
@@ -22,12 +21,13 @@ variable "k8s_cluster" {
     subdomain = string
 
     nodes = map(object({
+      enabled           = optional(bool, true)
       name              = string
       install_disk      = string
       storage_disk      = string
       network_interface = string
       mac_address       = string
-      ip_offset         = number
+      ipv4_offset       = number
     }))
 
     kubelet_cert_approver = optional(

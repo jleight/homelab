@@ -15,7 +15,7 @@ locals {
           !
           router bgp 65000
             bgp ebgp-requires-policy
-            bgp router-id ${cidrhost(var.network.subnet, var.network.ip_offsets.gateway)}
+            bgp router-id ${var.network.gateway_ipv4}
             maximum-paths 4
             !
             neighbor ${module.this.id} peer-group
@@ -26,7 +26,7 @@ locals {
       ],
       [
         for k, v in var.k8s_cluster.nodes :
-        "  neighbor ${cidrhost(module.ipam.pool, v.ip_offset)} peer-group ${module.this.id}"
+        "  neighbor ${cidrhost(module.ipam.cidr_v4, v.ipv4_offset)} peer-group ${module.this.id}"
       ],
       [
         <<-EOF
@@ -71,7 +71,7 @@ resource "kubectl_manifest" "cilium_bgp_cluster_config" {
             {
               name        = "gateway"
               peerASN     = 65000
-              peerAddress = cidrhost(var.network.subnet, var.network.ip_offsets.gateway)
+              peerAddress = var.network.gateway_ipv4
               peerConfigRef = {
                 name = "cilium-peer"
               }

@@ -5,7 +5,7 @@ locals {
       ".talosconfig" = data.talos_client_configuration.this[0].talos_config
     },
     {
-      for k, v in var.k8s_cluster.nodes : "${k}.yaml" => (
+      for k, v in local.nodes : "${k}.yaml" => (
         talos_machine_configuration_apply.control_plane[k].machine_configuration
       )
     }
@@ -19,16 +19,14 @@ data "talos_client_configuration" "this" {
   client_configuration = local.client_config
 
   endpoints = [local.endpoint]
-  nodes     = values(local.node_ips)
+  nodes     = values(local.node_ips.v6_pd)
 }
 
 resource "talos_cluster_kubeconfig" "this" {
   count = local.enabled ? 1 : 0
 
   client_configuration = local.client_config
-  node                 = local.enabled ? values(local.node_ips)[0] : null
-
-  depends_on = [talos_machine_bootstrap.this]
+  node                 = values(local.node_ips.v6_pd)[0]
 }
 
 resource "local_sensitive_file" "config" {

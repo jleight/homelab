@@ -36,6 +36,10 @@ resource "helm_release" "openebs" {
       {
         name  = "engines.local.zfs.enabled"
         value = false
+      },
+      {
+        name  = "mayastor.io_engine.envcontext"
+        value = "iova-mode=pa"
       }
     ]
 
@@ -68,6 +72,8 @@ resource "kubectl_manifest" "openebs_diskpool" {
       disks = ["uring://${each.value.storage_disk}"]
     }
   })
+
+  depends_on = [helm_release.openebs]
 }
 
 resource "kubernetes_storage_class" "openebs" {

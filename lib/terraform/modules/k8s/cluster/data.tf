@@ -4,13 +4,6 @@ data "onepassword_vault" "terraform" {
   name = "Terraform"
 }
 
-data "onepassword_item" "sudo" {
-  count = local.enabled ? 1 : 0
-
-  vault = local.terraform_vault_uuid
-  title = "sudo"
-}
-
 data "onepassword_item" "cloudflare_api_token" {
   count = local.enabled ? 1 : 0
 
@@ -24,20 +17,23 @@ data "cloudflare_zones" "cluster" {
   name = var.k8s_cluster.domain
 }
 
-data "external" "node_ip" {
-  for_each = local.enabled ? var.k8s_cluster.nodes : {}
-
-  program = ["bash", "${path.module}/lib/get-ip.sh"]
-
-  query = {
-    password    = local.sudo_password
-    interface   = var.network.interface
-    mac_address = each.value.mac_address
-  }
-}
-
 module "ipam" {
   source = "../../_registry/ipam"
 
   environment = var.environment
+}
+
+module "slaac_ll" {
+  for_each = local.enabled ? var.k8s_cluster.nodes : {}
+  source   = "../../_registry/slaac"
+
+  mac_address = each.value.mac_address
+}
+
+module "slaac_pd" {
+  for_each = local.enabled ? var.k8s_cluster.nodes : {}
+  source   = "../../_registry/slaac"
+
+  prefix      = module.ipam.prefix_v6
+  mac_address = each.value.mac_address
 }

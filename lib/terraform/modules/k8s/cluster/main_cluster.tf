@@ -13,10 +13,10 @@ data "talos_machine_configuration" "control_plane" {
 }
 
 resource "talos_machine_configuration_apply" "control_plane" {
-  for_each = local.enabled ? var.k8s_cluster.nodes : {}
+  for_each = local.nodes
 
   client_configuration = local.client_config
-  node                 = local.enabled ? local.node_ips[each.key] : null
+  node                 = local.node_ips.v6_pd[each.key]
 
   machine_configuration_input = local.cp_config
 
@@ -35,11 +35,19 @@ resource "talos_machine_configuration_apply" "control_plane" {
           interfaces = [
             {
               interface = each.value.network_interface
-              addresses = [cidrhost(module.ipam.pool, each.value.ip_offset)]
+              addresses = [
+                "${local.node_ips.v4[each.key]}/24",
+                "${local.node_ips.v6_pd[each.key]}/64",
+                "${local.node_ips.v6_ll[each.key]}/64"
+              ]
               routes = [
                 {
                   network = "0.0.0.0/0"
-                  gateway = cidrhost(var.network.subnet, var.network.ip_offsets.gateway)
+                  gateway = var.network.gateway_ipv4
+                },
+                {
+                  network = "::/0"
+                  gateway = var.network.gateway_ipv6
                 }
               ]
             }
@@ -128,7 +136,7 @@ resource "talos_machine_bootstrap" "this" {
 
   client_configuration = local.client_config
   endpoint             = local.endpoint
-  node                 = local.enabled ? values(local.node_ips)[0] : null
+  node                 = values(local.node_ips.v6_pd)[0]
 
   depends_on = [talos_machine_configuration_apply.control_plane]
 }
