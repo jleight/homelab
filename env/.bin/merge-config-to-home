@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+if [[ "${TRACE-0}" == "1" ]]; then
+	set -o xtrace
+fi
+
+merge_kubeconfigs() {
+	rm -rf "${HOME}/.kube"
+	mkdir -p "${HOME}/.kube"
+
+	local -r configs="$(find "${ENV_DIR}" -type f -name ".kubeconfig")"
+	local -r joined="$(echo "${configs}" | tr '\n' ':')"
+	export KUBECONFIG="${joined}"
+
+	kubectl config view --flatten > "${HOME}/.kube/config"
+}
+
+merge_talosconfigs() {
+	rm -rf "${HOME}/.talos"
+	mkdir -p "${HOME}/.talos"
+
+	export TALOSCONFIG="${HOME}/.talos/config"
+
+	find "${ENV_DIR}" -type f -name ".talosconfig" -exec talosctl config merge {} \;
+}
+
+main() {
+	merge_kubeconfigs
+	merge_talosconfigs
+}
+
+main "$@"
