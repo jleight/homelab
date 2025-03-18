@@ -32,11 +32,49 @@ inputs = {
       }
     }
 
-    cilium       = { bgp_as = 65020 }
-    openebs      = { version = "v4.2.0" }
-    csi_smb      = { version = "v1.17.0" }
-    external_dns = { version = "1.15.2" }
-    # cert_manager = { version = "v1.17.1", issuer = "letsencrypt-staging" }
-    # httpbin      = { count = 1 }
+    kubelet_cert_approver = {
+      # renovate: source=github-tags package=alex1989hu/kubelet-serving-cert-approver
+      version = "v0.9.0"
+    }
+
+    metrics_server = {
+      # renovate: source=helm package=metrics-server registry=https://kubernetes-sigs.github.io/metrics-server
+      version = "v3.12.2"
+    }
+
+    gateway = {
+      # renovate: source=github-tags package=kubernetes-sigs/gateway-api
+      version = "v1.2.1"
+    }
+
+    cilium = {
+      # renovate: source=helm package=cilium registry=https://helm.cilium.io
+      version = "1.17.1"
+      bgp_as  = 65020
+    }
+
+    openebs = {
+      # renovate: source=helm package=openebs registry=https://openebs.github.io/openebs
+      version = "v4.2.0"
+    }
+
+    csi_smb = {
+      # renovate: source=helm package=csi-driver-smb registry=https://raw.githubusercontent.com/kubernetes-csi/csi-driver-smb/master/charts
+      version = "v1.17.0"
+    }
+
+    external_dns = {
+      # renovate: source=helm package=external-dns registry=https://kubernetes-sigs.github.io/external-dns
+      version = "1.15.2"
+    }
+
+    # cert_manager = {
+    #   version = "v1.17.1"
+    #   issuer  = "letsencrypt-staging"
+    # }
+
+    # httpbin = {
+    #   count = 1
+    # }
   }
 }

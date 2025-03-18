@@ -3,5 +3,14 @@
   "extends": [
     "config:recommended",
     ":dependencyDashboard"
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": [".*\\.hcl$"],
+      "matchStrings": [
+        "(?<depName>\\S+?) = {\\s+?# renovate: source=(?<datasource>[a-z-]+?) package=(?<packageName>\\S+?)(?: registry=(?<registryUrl>\\S+?))?\\s(?<indentation>\\s+?)version\\s+?=\\s\"(?<currentValue>.+?)\"\\s"
+      ]
+    }
   ]
 }

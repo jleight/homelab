@@ -30,38 +30,28 @@ variable "k8s_cluster" {
       ipv4_offset       = number
     }))
 
-    kubelet_cert_approver = optional(
-      object({
-        version = string
-      }),
-      { version = "v0.9.0" }
-    )
-    metrics_server = optional(
-      object({
-        version   = string
-        namespace = optional(string, "kube-system")
-      }),
-      { version = "v3.12.2" }
-    )
+    kubelet_cert_approver = object({
+      version = string
+    })
 
-    gateway = optional(
-      object({
-        version   = string
-        namespace = optional(string, "gateway")
-        install   = optional(string, "experimental")
-        lb_pool   = optional(string, "10.245.0.0/24")
-      }),
-      { version = "v1.2.1" }
-    )
-    cilium = optional(
-      object({
-        version       = optional(string, "1.17.1")
-        namespace     = optional(string, "kube-system")
-        replace_proxy = optional(bool, true)
-        bgp_as        = optional(number)
-      }),
-      {}
-    )
+    metrics_server = object({
+      version   = string
+      namespace = optional(string, "kube-system")
+    })
+
+    gateway = object({
+      version   = string
+      namespace = optional(string, "gateway")
+      install   = optional(string, "experimental")
+      lb_pool   = optional(string, "10.245.0.0/24")
+    })
+
+    cilium = object({
+      version       = string
+      namespace     = optional(string, "kube-system")
+      replace_proxy = optional(bool, true)
+      bgp_as        = optional(number)
+    })
 
     openebs = optional(object({
       version        = string
@@ -70,6 +60,7 @@ variable "k8s_cluster" {
       test           = optional(bool, false)
       test_namespace = optional(string, "openebs-test")
     }))
+
     csi_smb = optional(object({
       version   = string
       namespace = optional(string, "kube-system")
@@ -79,6 +70,7 @@ variable "k8s_cluster" {
       version   = string
       namespace = optional(string, "external-dns")
     }))
+
     cert_manager = optional(object({
       version        = string
       namespace      = optional(string, "cert-manager")
