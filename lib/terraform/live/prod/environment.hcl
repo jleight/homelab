@@ -49,7 +49,7 @@ inputs = {
 
     cilium = {
       # renovate: source=helm package=cilium registry=https://helm.cilium.io
-      version = "1.17.1"
+      version = "1.17.2"
       bgp_as  = 65020
     }
 
