@@ -71,7 +71,7 @@ resource "helm_release" "cilium" {
           value = true
         }
       ] : [],
-      local.cilium_enabled && var.k8s_cluster.cilium.bgp ? [
+      local.cilium_bgp_enabled ? [
         {
           name  = "bgpControlPlane.enabled"
           value = true

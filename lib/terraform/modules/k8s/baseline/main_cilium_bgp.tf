@@ -1,51 +1,6 @@
 locals {
-  cilium_bgp_enabled = local.cilium_enabled && try(var.k8s_cluster.cilium.bgp, false)
-
-  router_bgp_conf = local.cilium_bgp_enabled ? join(
-    "\n",
-    concat(
-      [
-        <<-EOF
-          ! -*- bgp -*-
-          !
-          hostname $UDMP_HOSTNAME
-          password zebra
-          frr defaults traditional
-          log file stdout
-          !
-          router bgp 65000
-            bgp ebgp-requires-policy
-            bgp router-id ${var.network.gateway_ipv4}
-            maximum-paths 4
-            !
-            neighbor ${module.this.id} peer-group
-            neighbor ${module.this.id} remote-as 65010
-            neighbor ${module.this.id} activate
-            neighbor ${module.this.id} soft-reconfiguration inbound
-        EOF
-      ],
-      [
-        for k, v in var.k8s_cluster.nodes :
-        "  neighbor ${cidrhost(module.ipam.cidr_v4, v.ipv4_offset)} peer-group ${module.this.id}"
-      ],
-      [
-        <<-EOF
-          address-family ipv4 unicast
-            redistribute connected
-            neighbor ${module.this.id} activate
-            neighbor ${module.this.id} route-map ALLOW-ALL in
-            neighbor ${module.this.id} route-map ALLOW-ALL out
-            neighbor ${module.this.id} next-hop-self
-          exit-address-family
-          !
-        route-map ALLOW-ALL permit 10
-        !
-        line vty
-        !
-        EOF
-      ]
-    )
-  ) : null
+  cilium_bgp_as      = try(var.k8s_cluster.cilium.bgp_as, 0)
+  cilium_bgp_enabled = local.cilium_enabled && local.cilium_bgp_as != 0
 }
 
 resource "kubectl_manifest" "cilium_bgp_cluster_config" {
@@ -66,11 +21,11 @@ resource "kubectl_manifest" "cilium_bgp_cluster_config" {
       bgpInstances = [
         {
           name     = "cilium"
-          localASN = 65010
+          localASN = local.cilium_bgp_as
           peers = [
             {
               name        = "gateway"
-              peerASN     = 65000
+              peerASN     = var.network.gateway_as
               peerAddress = var.network.gateway_ipv4
               peerConfigRef = {
                 name = "cilium-peer"
@@ -162,8 +117,4 @@ resource "kubectl_manifest" "cilium_bgp_advertisement" {
   })
 
   depends_on = [helm_release.cilium]
-}
-
-output "router_bgp_conf" {
-  value = local.router_bgp_conf
 }

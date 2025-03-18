@@ -23,17 +23,10 @@ module "ipam" {
   environment = var.environment
 }
 
-module "slaac_ll" {
-  for_each = local.enabled ? var.k8s_cluster.nodes : {}
-  source   = "../../_registry/slaac"
-
-  mac_address = each.value.mac_address
-}
-
 module "slaac_pd" {
   for_each = local.enabled ? var.k8s_cluster.nodes : {}
   source   = "../../_registry/slaac"
 
-  prefix      = module.ipam.prefix_v6
+  prefix      = module.ipam.lan.v6_prefix
   mac_address = each.value.mac_address
 }

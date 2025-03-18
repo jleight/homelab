@@ -13,13 +13,10 @@ locals {
 
   node_ips = {
     v4 = local.enabled ? {
-      for k, v in var.k8s_cluster.nodes : k => cidrhost(module.ipam.cidr_v4, v.ipv4_offset)
+      for k, v in var.k8s_cluster.nodes : k => cidrhost(module.ipam.nodes.v4_cidr, v.ipv4_offset)
     } : {}
     v6_pd = local.enabled ? {
       for k, v in var.k8s_cluster.nodes : k => module.slaac_pd[k].ip
-    } : {}
-    v6_ll = local.enabled ? {
-      for k, v in var.k8s_cluster.nodes : k => module.slaac_ll[k].ip
     } : {}
   }
 

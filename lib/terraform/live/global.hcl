@@ -3,10 +3,10 @@ inputs = {
 
   network = {
     interface = "en0"
-    subnet    = "192.168.1.0/24"
 
     gateway_ipv4 = "192.168.1.1"
     gateway_ipv6 = "fe80::74ac:b9ff:fe45:813e"
+    gateway_as   = 65000
 
     nameservers = [
       "45.90.28.53",

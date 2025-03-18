@@ -37,8 +37,7 @@ resource "talos_machine_configuration_apply" "control_plane" {
               interface = each.value.network_interface
               addresses = [
                 "${local.node_ips.v4[each.key]}/24",
-                "${local.node_ips.v6_pd[each.key]}/64",
-                "${local.node_ips.v6_ll[each.key]}/64"
+                "${local.node_ips.v6_pd[each.key]}/64"
               ]
               routes = [
                 {
@@ -85,10 +84,10 @@ resource "talos_machine_configuration_apply" "control_plane" {
       }
       cluster = {
         allowSchedulingOnControlPlanes = true
-        network = var.k8s_cluster.cilium == null ? {} : {
-          cni = {
-            name = "none"
-          }
+        network = {
+          podSubnets     = [module.ipam.resources.pods]
+          serviceSubnets = [module.ipam.resources.services]
+          cni            = { name = "none" }
         }
         proxy = {
           disabled = try(var.k8s_cluster.cilium.replace_proxy, false)

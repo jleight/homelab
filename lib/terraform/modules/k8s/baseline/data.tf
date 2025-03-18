@@ -1,9 +1,3 @@
-module "ipam" {
-  source = "../../_registry/ipam"
-
-  environment = var.environment
-}
-
 data "onepassword_vault" "terraform" {
   count = local.enabled ? 1 : 0
 
@@ -29,4 +23,10 @@ data "onepassword_item" "cloudflare_api_token" {
 
   vault = local.terraform_vault_uuid
   title = "Cloudflare API Token"
+}
+
+module "ipam" {
+  source = "../../_registry/ipam"
+
+  environment = var.environment
 }

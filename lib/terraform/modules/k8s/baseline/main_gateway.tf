@@ -8,8 +8,8 @@ locals {
   gateway_name = local.gateway_enabled ? "gateway" : null
 
   gateway_install       = local.gateway_enabled ? var.k8s_cluster.gateway.install : null
-  gateway_lb_pool_start = local.gateway_enabled ? cidrhost(var.k8s_cluster.gateway.lb_pool, 1) : null
-  gateway_lb_pool_stop  = local.gateway_enabled ? cidrhost(var.k8s_cluster.gateway.lb_pool, -2) : null
+  gateway_lb_pool_start = local.gateway_enabled ? cidrhost(module.ipam.resources.load_balancers, 1) : null
+  gateway_lb_pool_stop  = local.gateway_enabled ? cidrhost(module.ipam.resources.load_balancers, -2) : null
 
   gateway_crds_url = format(
     "https://github.com/kubernetes-sigs/gateway-api/releases/download/%s/%s-install.yaml",

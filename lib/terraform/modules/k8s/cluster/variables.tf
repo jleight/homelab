@@ -7,9 +7,9 @@ variable "network" {
   description = "Settings for the home network."
   type = object({
     interface    = string
-    subnet       = string
     gateway_ipv4 = string
     gateway_ipv6 = string
+    gateway_as   = number
     nameservers  = set(string)
   })
 }
@@ -55,12 +55,12 @@ variable "k8s_cluster" {
     )
     cilium = optional(
       object({
-        version       = string
+        version       = optional(string, "1.17.1")
         namespace     = optional(string, "kube-system")
         replace_proxy = optional(bool, true)
-        bgp           = optional(bool, true)
+        bgp_as        = optional(number)
       }),
-      { version = "1.17.1" }
+      {}
     )
 
     openebs = optional(object({

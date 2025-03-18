@@ -32,6 +32,7 @@ inputs = {
       }
     }
 
+    cilium       = { bgp_as = 65020 }
     openebs      = { version = "v4.2.0" }
     csi_smb      = { version = "v1.17.0" }
     external_dns = { version = "1.15.2" }
