@@ -65,7 +65,7 @@ inputs = {
 
     external_dns = {
       # renovate: source=helm package=external-dns registry=https://kubernetes-sigs.github.io/external-dns
-      version = "1.15.2"
+      version = "1.16.0"
     }
 
     # cert_manager = {
