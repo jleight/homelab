@@ -69,8 +69,10 @@ variable "k8s_cluster" {
     }))
 
     csi_smb = optional(object({
-      version   = string
-      namespace = optional(string, "kube-system")
+      version        = string
+      namespace      = optional(string, "kube-system")
+      test           = optional(bool, false)
+      test_namespace = optional(string, "csi-smb-test")
     }))
 
     external_dns = optional(object({

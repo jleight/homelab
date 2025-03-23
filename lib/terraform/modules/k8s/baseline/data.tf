@@ -4,6 +4,13 @@ data "onepassword_vault" "terraform" {
   name = "Terraform"
 }
 
+data "onepassword_item" "smb_nas02" {
+  count = local.enabled ? 1 : 0
+
+  vault = local.terraform_vault_uuid
+  title = "SMB - nas02"
+}
+
 data "onepassword_item" "lets_encrypt_staging" {
   count = local.enabled ? 1 : 0
 
