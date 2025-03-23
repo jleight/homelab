@@ -25,6 +25,13 @@ resource "talos_machine_configuration_apply" "control_plane" {
       machine = {
         install = {
           disk = each.value.install_disk
+          wipe = true
+          image = format(
+            "factory.talos.dev/installer%s/%s:v%s",
+            each.value.secure_boot ? "-secureboot" : "",
+            each.value.schematic_id,
+            each.value.talos_version
+          )
         }
         sysctls = {
           "user.max_user_namespaces" = "11255"
@@ -36,6 +43,17 @@ resource "talos_machine_configuration_apply" "control_plane" {
             partitions = [{ mountpoint = "/var/mnt/storage" }]
           }
         ]
+        systemDiskEncryption = each.value.secure_boot ? {
+          for k in ["state", "ephemeral"] : k => {
+            provider = "luks2"
+            keys = [
+              {
+                slot = 0
+                tpm  = {}
+              }
+            ]
+          }
+        } : {}
         network = {
           hostname = each.value.name
           interfaces = [
