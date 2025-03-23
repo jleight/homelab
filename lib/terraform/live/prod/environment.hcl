@@ -42,6 +42,11 @@ inputs = {
       version = "v3.12.2"
     }
 
+    prometheus = {
+      # renovate: source=helm package=kube-prometheus-stack registry=https://prometheus-community.github.io/helm-charts
+      version = "70.2.1"
+    }
+
     gateway = {
       # renovate: source=github-tags package=kubernetes-sigs/gateway-api
       version = "v1.2.1"

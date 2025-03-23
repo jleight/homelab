@@ -39,6 +39,11 @@ variable "k8s_cluster" {
       namespace = optional(string, "kube-system")
     })
 
+    prometheus = object({
+      version   = string
+      namespace = optional(string, "monitoring")
+    })
+
     gateway = object({
       version   = string
       namespace = optional(string, "gateway")

@@ -34,6 +34,7 @@ resource "helm_release" "metrics_server" {
   }
 
   depends_on = [
-    kubectl_manifest.kubelet_cert_approver
+    kubectl_manifest.kubelet_cert_approver,
+    kubernetes_namespace.metrics_server
   ]
 }
