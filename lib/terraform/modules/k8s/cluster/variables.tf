@@ -61,7 +61,6 @@ variable "k8s_cluster" {
     openebs = optional(object({
       version        = string
       namespace      = optional(string, "openebs")
-      max_replicas   = optional(number, 3)
       test           = optional(bool, false)
       test_namespace = optional(string, "openebs-test")
     }))

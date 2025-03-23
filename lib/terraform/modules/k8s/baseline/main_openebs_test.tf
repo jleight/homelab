@@ -22,7 +22,7 @@ resource "kubernetes_persistent_volume_claim" "openebs_test_ms" {
   }
 
   spec {
-    storage_class_name = try(one(kubernetes_storage_class.openebs[1].metadata).name, null)
+    storage_class_name = local.openebs_test_enabled ? one(kubernetes_storage_class.openebs[0].metadata).name : null
 
     resources {
       requests = {
@@ -69,7 +69,7 @@ resource "kubernetes_pod" "openebs_test_fio" {
       name = "ms-volume"
 
       persistent_volume_claim {
-        claim_name = try(one(kubernetes_persistent_volume_claim.openebs_test_ms[0].metadata).name, null)
+        claim_name = "ms-volume-claim"
       }
     }
   }

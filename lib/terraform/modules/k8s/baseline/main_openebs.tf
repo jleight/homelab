@@ -38,6 +38,10 @@ resource "helm_release" "openebs" {
         value = false
       },
       {
+        name  = "engines.replicated.mayastor.enabled"
+        value = false
+      },
+      {
         name  = "mayastor.io_engine.envcontext"
         value = "iova-mode=pa"
       }
@@ -55,44 +59,30 @@ resource "helm_release" "openebs" {
   ]
 }
 
-resource "kubectl_manifest" "openebs_diskpool" {
-  for_each = local.openebs_enabled ? var.k8s_cluster.nodes : {}
-
-  yaml_body = yamlencode({
-    apiVersion = "openebs.io/v1beta2"
-    kind       = "DiskPool"
-
-    metadata = {
-      namespace = local.openebs_namespace
-      name      = "ephemeral-${each.value.name}"
-    }
-
-    spec = {
-      node  = each.value.name
-      disks = ["uring://${each.value.storage_disk}"]
-    }
-  })
-
-  depends_on = [helm_release.openebs]
-}
-
 resource "kubernetes_storage_class" "openebs" {
-  count = local.openebs_enabled ? var.k8s_cluster.openebs.max_replicas : 0
+  count = local.openebs_enabled ? 1 : 0
 
   metadata {
-    name = "mayastor-${count.index}"
+    name = "openebs-storage"
+
+    annotations = {
+      "openebs.io/cas-type" = "local"
+      "cas.openebs.io/config" = yamlencode([
+        {
+          name  = "StorageType"
+          value = "hostpath"
+        },
+        {
+          name  = "BasePath"
+          value = "/var/mnt/storage"
+        }
+      ])
+    }
   }
 
-  storage_provisioner = "io.openebs.csi-mayastor"
+  storage_provisioner = "openebs.io/local"
 
-  volume_binding_mode    = "Immediate"
+  volume_binding_mode    = "WaitForFirstConsumer"
   reclaim_policy         = "Retain"
   allow_volume_expansion = true
-
-  parameters = {
-    fsType   = "xfs"
-    protocol = "nvmf"
-    thin     = true
-    repl     = count.index + 1
-  }
 }

@@ -22,9 +22,4 @@ locals {
   }
 
   cloudflare_api_token = local.enabled ? data.onepassword_item.cloudflare_api_token[0].credential : null
-
-  replicated_storage_class_names = local.openebs_enabled ? [
-    for i in range(var.k8s_cluster.openebs.max_replicas) :
-    one(kubernetes_storage_class.openebs[i].metadata).name
-  ] : []
 }

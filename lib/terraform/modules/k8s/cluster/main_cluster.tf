@@ -30,6 +30,12 @@ resource "talos_machine_configuration_apply" "control_plane" {
           "user.max_user_namespaces" = "11255"
           "vm.nr_hugepages"          = "1024"
         }
+        disks = [
+          {
+            device     = each.value.storage_disk
+            partitions = [{ mountpoint = "/var/mnt/storage" }]
+          }
+        ]
         network = {
           hostname = each.value.name
           interfaces = [
@@ -74,6 +80,12 @@ resource "talos_machine_configuration_apply" "control_plane" {
               type        = "bind"
               source      = "/var/local"
               destination = "/var/local"
+              options     = ["bind", "rshared", "rw"]
+            },
+            {
+              type        = "bind"
+              source      = "/var/mnt/storage"
+              destination = "/var/mnt/storage"
               options     = ["bind", "rshared", "rw"]
             }
           ]
