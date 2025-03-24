@@ -44,7 +44,7 @@ inputs = {
 
     prometheus = {
       # renovate: source=helm package=kube-prometheus-stack registry=https://prometheus-community.github.io/helm-charts
-      version = "70.2.1"
+      version = "70.3.0"
     }
 
     gateway = {
