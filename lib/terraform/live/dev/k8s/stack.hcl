@@ -90,7 +90,7 @@ inputs = {
     csi_smb_test = {
       renovate = "docker"
       image    = "nginx"
-      version  = "1.27.3-alpine"
+      version  = "1.27.4-alpine"
     }
   }
 
