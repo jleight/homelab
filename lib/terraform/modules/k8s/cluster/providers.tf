@@ -9,19 +9,12 @@ terraform {
     local = {
       source = "hashicorp/local"
     }
-    onepassword = {
-      source = "1Password/onepassword"
-    }
     talos = {
       source = "siderolabs/talos"
     }
   }
 }
 
-provider "onepassword" {
-  account = "my.1password.com"
-}
-
 provider "cloudflare" {
-  api_token = local.cloudflare_api_token
+  api_token = var.cloudflare_api_token
 }

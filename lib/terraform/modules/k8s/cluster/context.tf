@@ -1,12 +1,6 @@
 variable "enabled" {
-  description = "Set to false to prevent this module from creating any resources."
+  description = "Whether or not any resources should be created."
   type        = bool
-  default     = null
-}
-
-variable "repository" {
-  description = "The name of the repository."
-  type        = string
   default     = null
 }
 
@@ -28,51 +22,42 @@ variable "environment" {
   default     = null
 }
 
-variable "subcomponents" {
-  description = "Additional values to add to the generated ID. New subcomponents are appended to the end of the list."
-  type        = list(string)
-  default     = []
-}
-
 variable "context" {
   description = "A single object for setting the entire context at once."
 
   type = object({
-    enabled       = bool
-    repository    = string
-    stack         = string
-    component     = string
-    environment   = string
-    subcomponents = list(string)
+    enabled     = bool
+    stack       = string
+    component   = string
+    environment = string
   })
 
   default = {
-    enabled       = true
-    repository    = null
-    stack         = null
-    environment   = null
-    component     = null
-    subcomponents = []
+    enabled     = true
+    stack       = null
+    component   = null
+    environment = null
+  }
+
+  validation {
+    condition     = coalesce(var.stack, var.context.stack) != null
+    error_message = "Either stack or context.stack must be set."
+  }
+
+  validation {
+    condition     = coalesce(var.component, var.context.component) != null
+    error_message = "Either component or context.component must be set."
+  }
+
+  validation {
+    condition     = coalesce(var.environment, var.context.environment) != null
+    error_message = "Either environment or context.environment must be set."
   }
 }
 
-module "this" {
-  source = "../../_registry/label"
-
-  enabled       = var.enabled
-  repository    = var.repository
-  stack         = var.stack
-  component     = var.component
-  environment   = var.environment
-  subcomponents = var.subcomponents
-
-  context = var.context
-}
-
 locals {
-  enabled     = module.this.enabled
-  repository  = module.this.context.repository
-  stack       = module.this.context.stack
-  component   = module.this.context.component
-  environment = module.this.context.environment
+  enabled     = coalesce(var.enabled, var.context.enabled)
+  stack       = coalesce(var.stack, var.context.stack)
+  component   = coalesce(var.component, var.context.component)
+  environment = coalesce(var.environment, var.context.environment)
 }

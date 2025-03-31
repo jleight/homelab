@@ -18,7 +18,7 @@ locals {
     for g in var.peer_groups : concat(
       [
         "neighbor ${g.name} peer-group",
-        "neighbor ${g.name} remote-as ${g.as}",
+        "neighbor ${g.name} remote-as ${g.asn}",
         "neighbor ${g.name} activate",
         "neighbor ${g.name} soft-reconfiguration inbound"
       ],

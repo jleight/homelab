@@ -6,6 +6,12 @@ include {
   path = find_in_parent_folders("root.hcl")
 }
 
+dependency "secrets" {
+  config_path = "../../../shared/onepassword/secrets"
+}
+
 inputs = {
   component = "cluster"
+
+  cloudflare_api_token = dependency.secrets.outputs.cloudflare_api_token
 }

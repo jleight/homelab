@@ -44,7 +44,6 @@ terraform {
   }
 }
 
-
 inputs = merge(
   local.readme_inputs,
   local.global_hcl.inputs,

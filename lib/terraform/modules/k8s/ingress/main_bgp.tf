@@ -1,17 +1,16 @@
 locals {
-  cilium_bgp_as      = try(var.k8s_cluster.cilium.bgp_as, 0)
-  cilium_bgp_enabled = local.cilium_enabled && local.cilium_bgp_as != 0
+  bgp_enabled = local.enabled && var.k8s_ingress.load_balancer.bgp_asn > 0
 }
 
-resource "kubectl_manifest" "cilium_bgp_cluster_config" {
-  count = local.cilium_bgp_enabled ? 1 : 0
+resource "kubectl_manifest" "bgp_cluster_config" {
+  count = local.bgp_enabled ? 1 : 0
 
   yaml_body = yamlencode({
     apiVersion = "cilium.io/v2alpha1"
     kind       = "CiliumBGPClusterConfig"
 
     metadata = {
-      name = "cilium-bgp"
+      name = "bgp"
     }
 
     spec = {
@@ -21,7 +20,7 @@ resource "kubectl_manifest" "cilium_bgp_cluster_config" {
       bgpInstances = [
         {
           name     = "cilium"
-          localASN = local.cilium_bgp_as
+          localASN = var.k8s_ingress.load_balancer.bgp_asn
           peers = [
             {
               name        = "gateway"
@@ -36,12 +35,10 @@ resource "kubectl_manifest" "cilium_bgp_cluster_config" {
       ]
     }
   })
-
-  depends_on = [helm_release.cilium]
 }
 
-resource "kubectl_manifest" "cilium_bgp_peer_config" {
-  count = local.cilium_bgp_enabled ? 1 : 0
+resource "kubectl_manifest" "bgp_peer_config" {
+  count = local.bgp_enabled ? 1 : 0
 
   yaml_body = yamlencode({
     apiVersion = "cilium.io/v2alpha1"
@@ -74,12 +71,10 @@ resource "kubectl_manifest" "cilium_bgp_peer_config" {
       ]
     }
   })
-
-  depends_on = [helm_release.cilium]
 }
 
-resource "kubectl_manifest" "cilium_bgp_advertisement" {
-  count = local.cilium_bgp_enabled ? 1 : 0
+resource "kubectl_manifest" "bgp_advertisement" {
+  count = local.bgp_enabled ? 1 : 0
 
   yaml_body = yamlencode({
     apiVersion = "cilium.io/v2alpha1"
@@ -87,6 +82,7 @@ resource "kubectl_manifest" "cilium_bgp_advertisement" {
 
     metadata = {
       name = "bgp-advertisements"
+
       labels = {
         advertise = "bgp"
       }
@@ -115,6 +111,4 @@ resource "kubectl_manifest" "cilium_bgp_advertisement" {
       ]
     }
   })
-
-  depends_on = [helm_release.cilium]
 }

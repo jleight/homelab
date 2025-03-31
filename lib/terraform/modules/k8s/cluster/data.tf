@@ -1,16 +1,3 @@
-data "onepassword_vault" "terraform" {
-  count = local.enabled ? 1 : 0
-
-  name = "Terraform"
-}
-
-data "onepassword_item" "cloudflare_api_token" {
-  count = local.enabled ? 1 : 0
-
-  vault = local.terraform_vault_uuid
-  title = "Cloudflare API Token"
-}
-
 data "cloudflare_zones" "cluster" {
   count = local.enabled ? 1 : 0
 
@@ -24,7 +11,7 @@ module "ipam" {
 }
 
 module "slaac_pd" {
-  for_each = local.enabled ? var.k8s_cluster.nodes : {}
+  for_each = var.k8s_cluster.nodes
   source   = "../../_registry/slaac"
 
   prefix      = module.ipam.lan.v6_prefix

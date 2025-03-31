@@ -10,17 +10,31 @@ dependency "k8s_cluster_dev" {
   config_path = "../../../dev/k8s/cluster"
 }
 
+dependency "k8s_ingress_dev" {
+  config_path = "../../../dev/k8s/ingress"
+}
+
 dependency "k8s_cluster_prod" {
-  config_path = "../../../dev/k8s/cluster"
+  config_path = "../../../prod/k8s/cluster"
+}
+
+dependency "k8s_ingress_prod" {
+  config_path = "../../../prod/k8s/ingress"
 }
 
 inputs = {
   component = "bgp_config"
 
   peer_groups = [
-    for g in [
-      dependency.k8s_cluster_dev.outputs.peer_group,
-      dependency.k8s_cluster_prod.outputs.peer_group
-    ] : g if g != null
+    {
+      name  = "k8s-cluster-dev"
+      asn   = dependency.k8s_ingress_dev.outputs.bgp_asn
+      peers = dependency.k8s_cluster_dev.outputs.node_ipv4s
+    },
+    {
+      name  = "k8s-cluster-prod"
+      asn   = dependency.k8s_ingress_prod.outputs.bgp_asn
+      peers = dependency.k8s_cluster_prod.outputs.node_ipv4s
+    }
   ]
 }

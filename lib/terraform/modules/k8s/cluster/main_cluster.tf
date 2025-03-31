@@ -5,20 +5,20 @@ resource "talos_machine_secrets" "this" {
 data "talos_machine_configuration" "control_plane" {
   count = local.enabled ? 1 : 0
 
-  cluster_name     = module.this.id
+  cluster_name     = "${local.stack}-${local.component}-${local.environment}"
   cluster_endpoint = local.cluster_endpoint
 
-  machine_secrets = local.machine_secrets
+  machine_secrets = try(talos_machine_secrets.this[0].machine_secrets, null)
   machine_type    = "controlplane"
 }
 
 resource "talos_machine_configuration_apply" "control_plane" {
   for_each = local.nodes
 
-  client_configuration = local.client_config
+  client_configuration = try(talos_machine_secrets.this[0].client_configuration, null)
   node                 = local.node_ips.v6_pd[each.key]
 
-  machine_configuration_input = local.cp_config
+  machine_configuration_input = try(data.talos_machine_configuration.control_plane[0].machine_configuration, null)
 
   config_patches = [
     yamlencode({
@@ -35,7 +35,6 @@ resource "talos_machine_configuration_apply" "control_plane" {
         }
         sysctls = {
           "user.max_user_namespaces" = "11255"
-          "vm.nr_hugepages"          = "1024"
         }
         disks = [
           {
@@ -81,12 +80,9 @@ resource "talos_machine_configuration_apply" "control_plane" {
           local.endpoint
         ]
         kubelet = {
-          extraArgs = merge(
-            {},
-            try(var.k8s_cluster.kubelet_cert_approver.version, null) != null ? {
-              "rotate-server-certificates" = true
-            } : {}
-          )
+          extraArgs = {
+            "rotate-server-certificates" = true
+          }
           extraConfig = {
             featureGates = {
               "UserNamespacesSupport"              = true
@@ -108,9 +104,6 @@ resource "talos_machine_configuration_apply" "control_plane" {
             }
           ]
         }
-        nodeLabels = {
-          "openebs.io/engine" : "mayastor"
-        }
       }
       cluster = {
         allowSchedulingOnControlPlanes = true
@@ -120,7 +113,7 @@ resource "talos_machine_configuration_apply" "control_plane" {
           cni            = { name = "none" }
         }
         proxy = {
-          disabled = try(var.k8s_cluster.cilium.replace_proxy, false)
+          disabled = true
         }
         apiServer = {
           extraArgs = {
@@ -132,23 +125,6 @@ resource "talos_machine_configuration_apply" "control_plane" {
               ]
             )
           }
-          admissionControl = [
-            {
-              name = "PodSecurity"
-              configuration = {
-                apiVersion = "pod-security.admission.config.k8s.io/v1beta1"
-                kind       = "PodSecurityConfiguration"
-                exemptions = {
-                  namespaces = setunion(
-                    [],
-                    var.k8s_cluster.openebs != null ? [
-                      var.k8s_cluster.openebs.namespace
-                    ] : []
-                  )
-                }
-              }
-            }
-          ]
         }
         controllerManager = {
           extraArgs = {
@@ -163,7 +139,7 @@ resource "talos_machine_configuration_apply" "control_plane" {
 resource "talos_machine_bootstrap" "this" {
   count = local.enabled ? 1 : 0
 
-  client_configuration = local.client_config
+  client_configuration = try(talos_machine_secrets.this[0].client_configuration, null)
   endpoint             = local.endpoint
   node                 = values(local.node_ips.v6_pd)[0]
 

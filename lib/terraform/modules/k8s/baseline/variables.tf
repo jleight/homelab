@@ -3,94 +3,25 @@ variable "env_directory" {
   type        = string
 }
 
-variable "network" {
-  description = "Settings for the home network."
+variable "k8s_baseline" {
+  description = "Settings for a baseline Kubernetes cluster."
   type = object({
-    interface    = string
-    gateway_ipv4 = string
-    gateway_ipv6 = string
-    gateway_as   = number
-    nameservers  = set(string)
-  })
-}
-
-variable "k8s_cluster" {
-  description = "Settings for the Kubernetes cluster."
-  type = object({
-    domain    = string
-    subdomain = string
-
-    nodes = map(object({
-      enabled           = optional(bool, true)
-      name              = string
-      schematic_id      = optional(string, "376567988ad370138ad8b2698212367b8edcb69b5fd68c80be1f2ec7d603b4ba")
-      talos_version     = optional(string, "1.9.5")
-      secure_boot       = optional(bool, false)
-      install_disk      = string
-      storage_disk      = string
-      network_interface = string
-      mac_address       = string
-      ipv4_offset       = number
-    }))
-
     kubelet_cert_approver = object({
-      version = string
+      repository = string
+      version    = string
+      url_format = string
     })
 
-    metrics_server = object({
-      version   = string
-      namespace = optional(string, "kube-system")
-    })
-
-    prometheus = object({
-      version   = string
-      namespace = optional(string, "monitoring")
-    })
-
-    gateway = object({
-      version   = string
-      namespace = optional(string, "gateway")
-      install   = optional(string, "experimental")
-      lb_pool   = optional(string, "10.245.0.0/24")
+    gateway_crds = object({
+      repository = string
+      version    = string
+      url_format = string
     })
 
     cilium = object({
-      version       = string
-      namespace     = optional(string, "kube-system")
-      replace_proxy = optional(bool, true)
-      bgp_as        = optional(number)
+      repository = string
+      chart      = string
+      version    = string
     })
-
-    openebs = optional(object({
-      version        = string
-      namespace      = optional(string, "openebs")
-      test           = optional(bool, false)
-      test_namespace = optional(string, "openebs-test")
-    }))
-
-    csi_smb = optional(object({
-      version        = string
-      namespace      = optional(string, "kube-system")
-      test           = optional(bool, false)
-      test_namespace = optional(string, "csi-smb-test")
-    }))
-
-    external_dns = optional(object({
-      version   = string
-      namespace = optional(string, "external-dns")
-    }))
-
-    cert_manager = optional(object({
-      version        = string
-      namespace      = optional(string, "cert-manager")
-      issuer         = optional(string, "selfsigned-test")
-      test           = optional(bool, false)
-      test_namespace = optional(string, "cert-manager-test")
-    }))
-
-    httpbin = optional(object({
-      namespace = optional(string, "httpbin")
-      count     = optional(number, 2)
-    }))
   })
 }

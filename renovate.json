@@ -9,7 +9,9 @@
       "customType": "regex",
       "fileMatch": [".*\\.hcl$"],
       "matchStrings": [
-        "(?<depName>\\S+?) = {\\s+?# renovate: source=(?<datasource>[a-z-]+?) package=(?<packageName>\\S+?)(?: registry=(?<registryUrl>\\S+?))?\\s(?<indentation>\\s+?)version\\s+?=\\s\"(?<currentValue>.+?)\"\\s"
+        "(?<depName>\\S+?) = {\\s+?renovate\\s+?=\\s\"(?<datasource>[^\"]+?)\"\\s+?repository\\s+?=\\s\"(?<packageName>[^\"]+?)\"\\s+?version\\s+?=\\s\"(?<currentValue>[^\"]+?)\"",
+        "(?<depName>\\S+?) = {\\s+?renovate\\s+?=\\s\"(?<datasource>[^\"]+?)\"\\s+?repository\\s+?=\\s\"(?<registryUrl>[^\"]+?)\"\\s+?chart\\s+?=\\s\"(?<packageName>[^\"]+?)\"\\s+?version\\s+?=\\s\"(?<currentValue>[^\"]+?)\"",
+        "(?<depName>\\S+?) = {\\s+?renovate\\s+?=\\s\"(?<datasource>[^\"]+?)\"\\s+?image\\s+?=\\s\"(?<packageName>[^\"]+?)\"\\s+?version\\s+?=\\s\"(?<currentValue>[^\"]+?)\""
       ]
     }
   ]

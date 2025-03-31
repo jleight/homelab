@@ -15,8 +15,8 @@ locals {
 data "talos_client_configuration" "this" {
   count = local.enabled ? 1 : 0
 
-  cluster_name         = module.this.id
-  client_configuration = local.client_config
+  cluster_name         = try(data.talos_machine_configuration.control_plane[0].cluster_name, null)
+  client_configuration = try(talos_machine_secrets.this[0].client_configuration, null)
 
   endpoints = [local.endpoint]
   nodes     = values(local.node_ips.v6_pd)
@@ -25,7 +25,7 @@ data "talos_client_configuration" "this" {
 resource "talos_cluster_kubeconfig" "this" {
   count = local.enabled ? 1 : 0
 
-  client_configuration = local.client_config
+  client_configuration = try(talos_machine_secrets.this[0].client_configuration, null)
   node                 = values(local.node_ips.v6_pd)[0]
 }
 
