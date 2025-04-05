@@ -2,12 +2,6 @@ locals {
   load_balancer_enabled = local.enabled && var.k8s_ingress.load_balancer.enabled
 }
 
-module "ipam" {
-  source = "../../_registry/ipam"
-
-  environment = local.environment
-}
-
 resource "kubernetes_namespace" "load_balancer" {
   count = local.load_balancer_enabled ? 1 : 0
 
