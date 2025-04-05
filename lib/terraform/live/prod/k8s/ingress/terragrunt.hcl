@@ -21,10 +21,12 @@ dependencies {
 inputs = {
   component = "ingress"
 
-  cloudflare_api_token     = dependency.secrets.outputs.cloudflare_api_token
-  lets_encrypt_url         = dependency.secrets.outputs.lets_encrypt_production_url
-  lets_encrypt_email       = dependency.secrets.outputs.lets_encrypt_production_email
-  lets_encrypt_private_key = dependency.secrets.outputs.lets_encrypt_production_private_key
+  tailscale_operator_client_id     = dependency.secrets.outputs.tailscale_k8s_operator_client_id
+  tailscale_operator_client_secret = dependency.secrets.outputs.tailscale_k8s_operator_client_secret
+  cloudflare_api_token             = dependency.secrets.outputs.cloudflare_api_token
+  lets_encrypt_url                 = dependency.secrets.outputs.lets_encrypt_production_url
+  lets_encrypt_email               = dependency.secrets.outputs.lets_encrypt_production_email
+  lets_encrypt_private_key         = dependency.secrets.outputs.lets_encrypt_production_private_key
 
   k8s_cluster_domain = dependency.cluster.outputs.domain
 }

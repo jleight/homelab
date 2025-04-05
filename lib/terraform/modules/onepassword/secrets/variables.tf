@@ -4,6 +4,12 @@ variable "vault" {
   default     = "Terraform"
 }
 
+variable "tailscale_k8s_operator_item" {
+  description = "The title of the item containing the OAuth client details for the Tailscale Operator."
+  type        = string
+  default     = "Tailscale - K8s Operator"
+}
+
 variable "cloudflare_api_token_item" {
   description = "The title of the item containing the Cloudflare API Token."
   type        = string

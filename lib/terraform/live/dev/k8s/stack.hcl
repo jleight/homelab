@@ -95,6 +95,13 @@ inputs = {
   }
 
   k8s_ingress = {
+    tailscale = {
+      renovate   = "helm"
+      repository = "https://pkgs.tailscale.com/helmcharts"
+      chart      = "tailscale-operator"
+      version    = "v1.82.0"
+    }
+
     external_dns = {
       renovate   = "helm"
       repository = "https://kubernetes-sigs.github.io/external-dns"

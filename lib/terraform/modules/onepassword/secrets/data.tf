@@ -4,6 +4,13 @@ data "onepassword_vault" "terraform" {
   name = var.vault
 }
 
+data "onepassword_item" "tailscale_k8s_operator" {
+  count = local.enabled ? 1 : 0
+
+  vault = try(data.onepassword_vault.terraform[0].uuid, null)
+  title = var.tailscale_k8s_operator_item
+}
+
 data "onepassword_item" "cloudflare_api_token" {
   count = local.enabled ? 1 : 0
 

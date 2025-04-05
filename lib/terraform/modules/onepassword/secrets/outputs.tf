@@ -1,3 +1,12 @@
+output "tailscale_k8s_operator_client_id" {
+  value = try(data.onepassword_item.tailscale_k8s_operator[0].username, null)
+}
+
+output "tailscale_k8s_operator_client_secret" {
+  value     = try(data.onepassword_item.tailscale_k8s_operator[0].credential, null)
+  sensitive = true
+}
+
 output "cloudflare_api_token" {
   value     = try(data.onepassword_item.cloudflare_api_token[0].credential, null)
   sensitive = true

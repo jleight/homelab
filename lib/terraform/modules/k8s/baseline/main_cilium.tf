@@ -52,6 +52,10 @@ resource "helm_release" "cilium" {
       {
         name  = "bgpControlPlane.enabled"
         value = true
+      },
+      {
+        name  = "socketLB.hostNamespaceOnly"
+        value = true
       }
     ]
 

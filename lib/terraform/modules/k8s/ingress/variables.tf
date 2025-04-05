@@ -14,6 +14,17 @@ variable "network" {
   })
 }
 
+variable "tailscale_operator_client_id" {
+  description = "Client ID for the Tailscale Operator."
+  type        = string
+}
+
+variable "tailscale_operator_client_secret" {
+  description = "Client secret for the Tailscale Operator."
+  type        = string
+  sensitive   = true
+}
+
 variable "cloudflare_api_token" {
   description = "Token for managing DNS in Cloudflare."
   type        = string
@@ -45,6 +56,13 @@ variable "k8s_cluster_domain" {
 variable "k8s_ingress" {
   description = "Settings for Kubernetes cluster ingress."
   type = object({
+    tailscale = object({
+      repository = string
+      chart      = string
+      version    = string
+      enabled    = optional(bool, true)
+    })
+
     external_dns = object({
       repository = string
       chart      = string
