@@ -18,23 +18,16 @@ data "onepassword_item" "cloudflare_api_token" {
   title = var.cloudflare_api_token_item
 }
 
+data "onepassword_item" "lets_encrypt" {
+  count = local.enabled ? 1 : 0
+
+  vault = try(data.onepassword_vault.terraform[0].uuid, null)
+  title = var.lets_encrypt_item
+}
+
 data "onepassword_item" "smb_nas02" {
   count = local.enabled ? 1 : 0
 
   vault = try(data.onepassword_vault.terraform[0].uuid, null)
   title = var.smb_nas02_item
-}
-
-data "onepassword_item" "lets_encrypt_staging" {
-  count = local.enabled ? 1 : 0
-
-  vault = try(data.onepassword_vault.terraform[0].uuid, null)
-  title = var.lets_encrypt_staging_item
-}
-
-data "onepassword_item" "lets_encrypt_production" {
-  count = local.enabled ? 1 : 0
-
-  vault = try(data.onepassword_vault.terraform[0].uuid, null)
-  title = var.lets_encrypt_production_item
 }

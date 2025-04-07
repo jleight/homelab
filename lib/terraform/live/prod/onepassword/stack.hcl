@@ -1,0 +1,3 @@
+inputs = {
+  stack = "onepassword"
+}

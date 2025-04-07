@@ -7,7 +7,7 @@ include {
 }
 
 dependency "secrets" {
-  config_path = "../../../shared/onepassword/secrets"
+  config_path = "../../onepassword/secrets"
 }
 
 inputs = {
