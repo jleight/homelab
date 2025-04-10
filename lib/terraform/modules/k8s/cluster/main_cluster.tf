@@ -35,11 +35,18 @@ resource "talos_machine_configuration_apply" "control_plane" {
         }
         sysctls = {
           "user.max_user_namespaces" = "11255"
+          "vm.nr_hugepages"          = "1024"
+        }
+        kernel = {
+          modules = [
+            { name = "nvme_tcp" },
+            { name = "vfio_pci" }
+          ]
         }
         disks = [
           {
             device     = each.value.storage_disk
-            partitions = [{ mountpoint = "/var/mnt/storage" }]
+            partitions = [{ mountpoint = "/var/lib/longhorn" }]
           }
         ]
         systemDiskEncryption = each.value.secure_boot ? {
@@ -98,8 +105,8 @@ resource "talos_machine_configuration_apply" "control_plane" {
             },
             {
               type        = "bind"
-              source      = "/var/mnt/storage"
-              destination = "/var/mnt/storage"
+              source      = "/var/lib/longhorn"
+              destination = "/var/lib/longhorn"
               options     = ["bind", "rshared", "rw"]
             }
           ]

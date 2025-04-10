@@ -22,6 +22,18 @@ variable "smb_nas02_password" {
 variable "k8s_storage" {
   description = "Settings for Kubernetes cluster storage."
   type = object({
+    longhorn = object({
+      repository = string
+      chart      = string
+      version    = string
+      enabled    = optional(bool, true)
+    })
+
+    longhorn_test = optional(object({
+      image   = string
+      version = string
+    }), null)
+
     openebs = object({
       repository = string
       chart      = string

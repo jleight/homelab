@@ -8,6 +8,7 @@ inputs = {
     nodes = {
       eq14_1 = {
         name              = "prod-01"
+        schematic_id      = "613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245"
         install_disk      = "/dev/nvme1n1"
         storage_disk      = "/dev/nvme0n1"
         network_interface = "enp1s0"
@@ -16,6 +17,7 @@ inputs = {
       }
       eq14_2 = {
         name              = "prod-02"
+        schematic_id      = "613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245"
         install_disk      = "/dev/nvme1n1"
         storage_disk      = "/dev/nvme0n1"
         network_interface = "enp1s0"
@@ -24,6 +26,7 @@ inputs = {
       }
       eq14_3 = {
         name              = "prod-03"
+        schematic_id      = "613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245"
         install_disk      = "/dev/nvme1n1"
         storage_disk      = "/dev/nvme0n1"
         network_interface = "enp1s0"
@@ -73,11 +76,19 @@ inputs = {
   }
 
   k8s_storage = {
+    longhorn = {
+      renovate   = "helm"
+      repository = "https://charts.longhorn.io"
+      chart      = "longhorn"
+      version    = "1.8.1"
+    }
+
     openebs = {
       renovate   = "helm"
       repository = "https://openebs.github.io/openebs"
       chart      = "openebs"
       version    = "v4.2.0"
+      enabled    = false
     }
 
     csi_smb = {
@@ -85,12 +96,6 @@ inputs = {
       repository = "https://raw.githubusercontent.com/kubernetes-csi/csi-driver-smb/master/charts"
       chart      = "csi-driver-smb"
       version    = "v1.17.0"
-    }
-
-    csi_smb_test = {
-      renovate = "docker"
-      image    = "nginx"
-      version  = "1.27.4-alpine"
     }
   }
 

@@ -8,6 +8,7 @@ inputs = {
     nodes = {
       vm_1 = {
         name              = "dev-01"
+        schematic_id      = "613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245"
         install_disk      = "/dev/vda"
         storage_disk      = "/dev/disk/by-id/virtio-vdisk2"
         network_interface = "ens2"
@@ -16,6 +17,7 @@ inputs = {
       }
       vm_2 = {
         name              = "dev-02"
+        schematic_id      = "613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245"
         install_disk      = "/dev/vda"
         storage_disk      = "/dev/disk/by-id/virtio-vdisk2"
         network_interface = "ens2"
@@ -24,6 +26,7 @@ inputs = {
       }
       vm_3 = {
         name              = "dev-03"
+        schematic_id      = "613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245"
         install_disk      = "/dev/vda"
         storage_disk      = "/dev/disk/by-id/virtio-vdisk2"
         network_interface = "ens2"
@@ -73,11 +76,25 @@ inputs = {
   }
 
   k8s_storage = {
+    longhorn = {
+      renovate   = "helm"
+      repository = "https://charts.longhorn.io"
+      chart      = "longhorn"
+      version    = "1.8.1"
+    }
+
+    longhorn_test = {
+      renovate = "docker"
+      image    = "nginx"
+      version  = "1.27.4"
+    }
+
     openebs = {
       renovate   = "helm"
       repository = "https://openebs.github.io/openebs"
       chart      = "openebs"
       version    = "v4.2.0"
+      enabled    = false
     }
 
     csi_smb = {
@@ -85,12 +102,6 @@ inputs = {
       repository = "https://raw.githubusercontent.com/kubernetes-csi/csi-driver-smb/master/charts"
       chart      = "csi-driver-smb"
       version    = "v1.17.0"
-    }
-
-    csi_smb_test = {
-      renovate = "docker"
-      image    = "nginx"
-      version  = "1.27.4-alpine"
     }
   }
 
