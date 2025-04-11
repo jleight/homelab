@@ -1,13 +1,13 @@
 [tools]
 "aqua:gruntwork-io/terragrunt" = "latest"
 "aqua:helm/helm" = "latest"
-"aqua:jqlang/jq" = "latest"
 "aqua:kubernetes/kubectl" = "latest"
 "aqua:mikefarah/yq" = "latest"
-"aqua:opentofu/opentofu" = "latest"
 "ubi:cilium/cilium-cli" = { version = "latest", exe = "cilium" }
-"ubi:openebs/mayastor-extensions" = { version = "latest", exe = "kubectl-mayastor" }
 "ubi:siderolabs/talos" = { version = "latest", exe = "talosctl" }
+"ubi:opentofu/opentofu" = { version = "v1.10.0-alpha1", exe = "tofu" }
 
 [env]
+AWS_ACCESS_KEY_ID = "{{ env.B2_TF_APPLICATION_KEY_ID }}"
+AWS_SECRET_ACCESS_KEY = "{{ env.B2_TF_APPLICATION_KEY }}"
 ENV_DIR = "{{ config_root }}/env"

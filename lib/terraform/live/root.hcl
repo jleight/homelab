@@ -4,9 +4,8 @@ locals {
   environment_hcl = read_terragrunt_config(find_in_parent_folders("environment.hcl"))
   stack_hcl       = read_terragrunt_config(find_in_parent_folders("stack.hcl"))
 
-  state_path = format(
-    "%s/%s/%s/%s",
-    get_env("TF_STATE_ROOT", "/Volumes/Terraform"),
+  state_key = format(
+    "%s/%s/%s",
     lower(local.readme_inputs.repository),
     path_relative_to_include(),
     "terraform.tfstate"
@@ -14,33 +13,24 @@ locals {
 }
 
 remote_state {
-  backend = "local"
+  backend = "s3"
 
   generate = {
-    path      = "backend.tf"
+    path      = "backend.g.tf"
     if_exists = "overwrite_terragrunt"
   }
 
   config = {
-    path = local.state_path
-  }
-}
+    region   = "us-east-1"
+    endpoint = "https://${get_env("B2_TF_BUCKET_ENDPOINT")}"
+    bucket   = get_env("B2_TF_BUCKET_NAME")
+    key      = local.state_key
+    #use_lockfile = true
 
-terraform {
-  extra_arguments "skip_lock" {
-    commands = [
-      "init",
-      "apply",
-      "refresh",
-      "import",
-      "plan",
-      "taint",
-      "untaint"
-    ]
-
-    arguments = [
-      "-lock=false"
-    ]
+    skip_credentials_validation = true
+    skip_metadata_api_check     = true
+    skip_requesting_account_id  = true
+    skip_s3_checksum            = true
   }
 }
 
