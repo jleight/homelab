@@ -117,7 +117,7 @@ inputs = {
       renovate   = "helm"
       repository = "https://kubernetes-sigs.github.io/external-dns"
       chart      = "external-dns"
-      version    = "1.16.0"
+      version    = "1.16.1"
     }
 
     cert_manager = {
