@@ -3,7 +3,7 @@ resource "cloudflare_dns_record" "a" {
 
   zone_id = try(one(data.cloudflare_zones.cluster[0].result).id, null)
 
-  name    = var.k8s_cluster.subdomain
+  name    = local.endpoint
   comment = "Kubernetes cluster node (${local.environment}, ${each.key}). Managed by Terraform."
 
   type    = "A"
@@ -17,7 +17,7 @@ resource "cloudflare_dns_record" "aaaa" {
 
   zone_id = try(one(data.cloudflare_zones.cluster[0].result).id, null)
 
-  name    = var.k8s_cluster.subdomain
+  name    = local.endpoint
   comment = "Kubernetes cluster node (${local.environment}, ${each.key}). Managed by Terraform."
 
   type    = "AAAA"
