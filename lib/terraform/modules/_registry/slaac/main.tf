@@ -41,8 +41,11 @@ locals {
     local.segment_3,
     local.segment_4
   )
+
+  trimmed    = replace(local.slaac, "/:0{1,3}/", ":")
+  compressed = replace(local.trimmed, "/^(.*?)(?::0)+(.*)$/", "$1::$2")
 }
 
 output "ip" {
-  value = local.slaac
+  value = local.compressed
 }
