@@ -1,5 +1,9 @@
 locals {
   load_balancer_enabled = local.enabled && var.k8s_ingress.load_balancer.enabled
+
+  load_balancer_namespace = local.enabled ? kubernetes_namespace.load_balancer[0].metadata[0].name : ""
+  load_balancer_name      = local.enabled ? "load-balancer" : ""
+  load_balancer_domain    = local.enabled ? var.k8s_cluster_domain : ""
 }
 
 resource "kubernetes_namespace" "load_balancer" {
@@ -40,8 +44,8 @@ resource "kubectl_manifest" "load_balancer" {
     kind       = "Gateway"
 
     metadata = {
-      namespace = try(one(kubernetes_namespace.load_balancer[0].metadata).name, null)
-      name      = "load-balancer"
+      namespace = local.load_balancer_namespace
+      name      = local.load_balancer_name
 
       annotations = local.cert_manager_enabled ? {
         "cert-manager.io/cluster-issuer" = "lets-encrypt"
@@ -56,7 +60,7 @@ resource "kubectl_manifest" "load_balancer" {
             name     = "http"
             protocol = "HTTP"
             port     = 80
-            hostname = "*.${var.k8s_cluster_domain}"
+            hostname = "*.${local.load_balancer_domain}"
             allowedRoutes = {
               namespaces = {
                 from = "All"
@@ -69,7 +73,7 @@ resource "kubectl_manifest" "load_balancer" {
             name     = "https"
             protocol = "HTTPS"
             port     = 443
-            hostname = "*.${var.k8s_cluster_domain}"
+            hostname = "*.${local.load_balancer_domain}"
             allowedRoutes = {
               namespaces = {
                 from = "All"
@@ -80,7 +84,7 @@ resource "kubectl_manifest" "load_balancer" {
               certificateRefs = [
                 {
                   kind = "Secret"
-                  name = "wildcard-${replace(var.k8s_cluster_domain, ".", "-")}"
+                  name = "wildcard-${replace(local.load_balancer_domain, ".", "-")}"
                 }
               ]
             }

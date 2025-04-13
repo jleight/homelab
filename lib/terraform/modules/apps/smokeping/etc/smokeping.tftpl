@@ -1,0 +1,173 @@
+*** General ***
+
+owner     = ${owner}
+contact   = ${contact_email}
+mailhost  = ${smtp_server}
+sendmail  = /usr/sbin/ssmtp
+imgcache  = /var/cache/smokeping
+imgurl    = cache
+datadir   = /data
+piddir    = /var/run/smokeping
+cgiurl    = http://localhost/smokeping/smokeping.cgi
+smokemail = /etc/smokeping/smokemail
+tmail     = /etc/smokeping/tmail
+
+syslogfacility = local0
+
+*** Alerts ***
+
+to   = ${alert_to_email}
+from = ${alert_from_email}
+
++someloss
+type    = loss
+pattern = >0%,*12*,>0%,*12*,>0%
+comment = loss 3 times  in a row
+
+*** Database ***
+
+step  = 30
+pings = 5
+
+# consfn mrhb steps total
+
+AVERAGE  0.5   1  1008
+AVERAGE  0.5  12  4320
+    MIN  0.5  12  4320
+    MAX  0.5  12  4320
+AVERAGE  0.5 144   720
+    MAX  0.5 144   720
+    MIN  0.5 144   720
+
+*** Presentation ***
+
+template = /etc/smokeping/basepage.html
+charset  = utf-8
+
++ charts
+
+menu  = Charts
+title = The most interesting destinations
+
+++ stddev
+sorter = StdDev(entries=>4)
+title  = Top Standard Deviation
+menu   = Std Deviation
+format = Standard Deviation %f
+
+++ max
+sorter = Max(entries=>5)
+title  = Top Max Roundtrip Time
+menu   = by Max
+format = Max Roundtrip Time %f seconds
+
+++ loss
+sorter = Loss(entries=>5)
+title  = Top Packet Loss
+menu   = Loss
+format = Packets Lost %f
+
+++ median
+sorter = Median(entries=>5)
+title  = Top Median Roundtrip Time
+menu   = by Median
+format = Median RTT %f seconds
+
++ overview
+
+width  = 600
+height = 50
+range  = 10h
+
++ detail
+
+width  = 600
+height = 200
+
+unison_tolerance = 2
+nodata_color     = ffb0b0
+loss_background  = yes
+
+"Last 3 Hours"    3h
+"Last 30 Hours"   30h
+"Last 10 Days"    10d
+"Last 400 Days"   400d
+
+*** Probes ***
+
++ FPing
+binary = /usr/sbin/fping
+
++ FPing6
+binary   = /usr/sbin/fping
+protocol = 6
+
++ DNS
+binary = /usr/bin/dig
+lookup = google.com
+pings  = 5
+step   = 300
+
++ TCPPing
+binary = /usr/bin/tcpping
+forks  = 10
+offset = random
+pings  = 5
+port  = 80
+
+*** Targets ***
+
+probe = FPing
+
+menu   = Top
+title  = ${site_title}
+remark = ${site_remark}
+
++ dns
+menu  = DNS
+title = DNS
+
+%{~ for k, v in targets_dns }
+++ ${k}
+menu  = ${v.name}
+title = ${v.name} DNS
+%{~ if length(v.hosts) == 1 }
+host  = ${v.hosts[0]}
+
+%{~ else }
+
++++ combined
+menu  = Combined
+title = ${v.name} DNS (Combined)
+host  = %{ for i, h in v.hosts }/dns/${k}/${k}${i + 1} %{ endfor }
+
+%{~ for i, h in v.hosts }
++++ ${k}${i + 1}
+menu  = ${h}
+title = ${v.name} DNS (${h})
+host  = ${h}
+%{ endfor ~}
+%{ endif ~}
+%{ endfor ~}
+
++ external
+menu  = External
+title = External Sites
+
+%{~ for k, v in targets_external }
+++ ${k}
+menu  = ${v.name}
+title = ${v.name}
+host  = ${v.host}
+%{ endfor ~}
+
++ internal
+menu  = Internal
+title = Internal Servers
+
+%{~ for k, v in targets_internal }
+++ ${k}
+menu  = ${v.name}
+title = ${v.name}
+host  = ${v.host}
+%{ endfor ~}

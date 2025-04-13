@@ -1,6 +1,6 @@
 locals {
   namespace = local.enabled ? kubernetes_namespace.this[0].metadata[0].name : null
-  name      = "isponsorblocktv"
+  name      = local.component
 
   config_map_name = local.enabled ? kubernetes_config_map.this[0].metadata[0].name : null
 
@@ -33,7 +33,7 @@ resource "kubernetes_config_map" "this" {
 
   metadata {
     namespace = local.namespace
-    name      = "isponsorblocktv-config"
+    name      = "${local.name}-config"
 
     labels = local.labels
   }
@@ -62,7 +62,7 @@ resource "kubernetes_deployment" "this" {
 
   metadata {
     namespace = local.namespace
-    name      = "isponsorblocktv"
+    name      = local.name
 
     labels = local.labels
   }

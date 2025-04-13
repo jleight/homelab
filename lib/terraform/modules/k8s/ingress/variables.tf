@@ -75,7 +75,6 @@ variable "k8s_ingress" {
       chart      = string
       version    = string
       enabled    = optional(bool, true)
-      issuer     = optional(string, "letsencrypt-staging")
     })
 
     cert_manager_test = optional(object({

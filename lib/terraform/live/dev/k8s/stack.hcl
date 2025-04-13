@@ -125,7 +125,6 @@ inputs = {
       repository = "https://charts.jetstack.io"
       chart      = "cert-manager"
       version    = "v1.17.1"
-      issuer     = "letsencrypt-staging"
     }
 
     cert_manager_test = {
