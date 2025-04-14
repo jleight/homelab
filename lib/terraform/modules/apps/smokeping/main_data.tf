@@ -13,7 +13,7 @@ resource "kubernetes_persistent_volume_claim" "data" {
 
     resources {
       requests = {
-        storage = var.smokeping.storage_size
+        storage = "100Mi"
       }
     }
 

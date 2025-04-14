@@ -23,4 +23,7 @@ locals {
   service_name         = local.enabled ? kubernetes_service.this[0].metadata[0].name : null
   config_cm_name       = local.enabled ? kubernetes_config_map.config[0].metadata[0].name : null
   data_pvc_name        = local.enabled ? kubernetes_persistent_volume_claim.data[0].metadata[0].name : null
+
+  ingress_public_enabled  = local.enabled && var.smokeping.ingress == "public"
+  ingress_private_enabled = local.enabled && var.smokeping.ingress == "private"
 }

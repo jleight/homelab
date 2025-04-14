@@ -1,3 +1,8 @@
+locals {
+  cloudflare_tunnel_kind = local.cloudflare_enabled ? "ClusterTunnel" : ""
+  cloudflare_tunnel_name = local.cloudflare_enabled ? "tunnel-${local.stack}-${local.environment}" : ""
+}
+
 resource "kubernetes_secret" "cloudflare_credentials" {
   count = local.cloudflare_enabled ? 1 : 0
 
@@ -18,17 +23,17 @@ resource "kubectl_manifest" "cloudflare_tunnel" {
 
   yaml_body = yamlencode({
     apiVersion = "networking.cfargotunnel.com/v1alpha1"
-    kind       = "ClusterTunnel"
+    kind       = local.cloudflare_tunnel_kind
 
     metadata = {
-      name = "tunnel-${local.stack}-${local.environment}"
+      name = local.cloudflare_tunnel_name
     }
 
     spec = {
       size = 2
 
       newTunnel = {
-        name = "tunnel-${local.stack}-${local.environment}"
+        name = local.cloudflare_tunnel_name
       }
 
       cloudflare = {
