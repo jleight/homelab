@@ -113,6 +113,13 @@ inputs = {
       version    = "v1.82.0"
     }
 
+    cloudflare = {
+      renovate   = "github-tags"
+      repository = "adyanth/cloudflare-operator"
+      version    = "v0.11.1"
+      url_format = "https://github.com/%s/config/default?ref=%s"
+    }
+
     external_dns = {
       renovate   = "helm"
       repository = "https://kubernetes-sigs.github.io/external-dns"

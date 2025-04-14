@@ -25,6 +25,11 @@ variable "tailscale_operator_client_secret" {
   sensitive   = true
 }
 
+variable "cloudflare_account_id" {
+  description = "Account ID for Cloudflare."
+  type        = string
+}
+
 variable "cloudflare_api_token" {
   description = "Token for managing DNS in Cloudflare."
   type        = string
@@ -60,6 +65,13 @@ variable "k8s_ingress" {
       repository = string
       chart      = string
       version    = string
+      enabled    = optional(bool, true)
+    })
+
+    cloudflare = object({
+      repository = string
+      version    = string
+      url_format = string
       enabled    = optional(bool, true)
     })
 

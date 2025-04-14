@@ -7,6 +7,10 @@ output "tailscale_k8s_operator_client_secret" {
   sensitive = true
 }
 
+output "cloudflare_account_id" {
+  value = try(nonsensitive(one(one([for s in data.onepassword_item.cloudflare_api_token[0].section : s if s.label == "Account"]).field).value), null)
+}
+
 output "cloudflare_api_token" {
   value     = try(data.onepassword_item.cloudflare_api_token[0].credential, null)
   sensitive = true
