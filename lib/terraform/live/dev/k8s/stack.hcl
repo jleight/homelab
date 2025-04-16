@@ -86,7 +86,7 @@ inputs = {
     longhorn_test = {
       renovate = "docker"
       image    = "nginx"
-      version  = "1.27.4"
+      version  = "1.27.5"
     }
 
     openebs = {
