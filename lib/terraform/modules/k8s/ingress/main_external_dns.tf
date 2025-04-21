@@ -33,28 +33,16 @@ resource "helm_release" "external_dns" {
   version    = var.k8s_ingress.external_dns.version
 
   dynamic "set" {
-    for_each = [
-      {
-        name  = "provider.name"
-        value = "cloudflare"
-      },
-      {
-        name  = "env[0].name"
-        value = "CF_API_TOKEN"
-      },
-      {
-        name  = "env[0].valueFrom.secretKeyRef.name"
-        value = "cloudflare-api-token"
-      },
-      {
-        name  = "env[0].valueFrom.secretKeyRef.key"
-        value = "api_token"
-      }
-    ]
+    for_each = {
+      "provider.name"                      = "cloudflare"
+      "env[0].name"                        = "CF_API_TOKEN"
+      "env[0].valueFrom.secretKeyRef.name" = "cloudflare-api-token"
+      "env[0].valueFrom.secretKeyRef.key"  = "api_token"
+    }
 
     content {
-      name  = set.value.name
-      value = set.value.value
+      name  = set.key
+      value = set.value
     }
   }
 

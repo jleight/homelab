@@ -46,28 +46,16 @@ resource "helm_release" "cert_manager" {
   version    = var.k8s_ingress.cert_manager.version
 
   dynamic "set" {
-    for_each = [
-      {
-        name  = "crds.enabled"
-        value = true
-      },
-      {
-        name  = "config.apiVersion"
-        value = "controller.config.cert-manager.io/v1alpha1"
-      },
-      {
-        name  = "config.kind"
-        value = "ControllerConfiguration"
-      },
-      {
-        name  = "config.enableGatewayAPI"
-        value = true
-      }
-    ]
+    for_each = {
+      "crds.enabled"            = true
+      "config.apiVersion"       = "controller.config.cert-manager.io/v1alpha1"
+      "config.kind"             = "ControllerConfiguration"
+      "config.enableGatewayAPI" = true
+    }
 
     content {
-      name  = set.value.name
-      value = set.value.value
+      name  = set.key
+      value = set.value
     }
   }
 

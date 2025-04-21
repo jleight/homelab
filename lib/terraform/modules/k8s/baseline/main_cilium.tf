@@ -8,78 +8,36 @@ resource "helm_release" "cilium" {
   version    = var.k8s_baseline.cilium.version
 
   dynamic "set" {
-    for_each = [
-      {
-        name  = "ipam.mode"
-        value = "kubernetes"
-      },
-      {
-        name  = "cgroup.autoMount.enabled"
-        value = false
-      },
-      {
-        name  = "cgroup.hostRoot"
-        value = "/sys/fs/cgroup"
-      },
-      {
-        name  = "bpf.hostLegacyRouting"
-        value = true
-      },
-      {
-        name  = "kubeProxyReplacement"
-        value = true
-      },
-      {
-        name  = "k8sServiceHost"
-        value = "localhost"
-      },
-      {
-        name  = "k8sServicePort"
-        value = 7445
-      },
-      {
-        name  = "gatewayAPI.enabled"
-        value = true
-      },
-      {
-        name  = "gatewayAPI.enableAlpn"
-        value = true
-      },
-      {
-        name  = "gatewayAPI.enableAppProtocol"
-        value = true
-      },
-      {
-        name  = "bgpControlPlane.enabled"
-        value = true
-      },
-      {
-        name  = "socketLB.hostNamespaceOnly"
-        value = true
-      }
-    ]
+    for_each = {
+      "ipam.mode"                    = "kubernetes"
+      "cgroup.autoMount.enabled"     = false
+      "cgroup.hostRoot"              = "/sys/fs/cgroup"
+      "bpf.hostLegacyRouting"        = true
+      "kubeProxyReplacement"         = true
+      "k8sServiceHost"               = "localhost"
+      "k8sServicePort"               = 7445
+      "gatewayAPI.enabled"           = true
+      "gatewayAPI.enableAlpn"        = true
+      "gatewayAPI.enableAppProtocol" = true
+      "bgpControlPlane.enabled"      = true
+      "socketLB.hostNamespaceOnly"   = true
+    }
 
     content {
-      name  = set.value.name
-      value = set.value.value
+      name  = set.key
+      value = set.value
     }
   }
 
   dynamic "set_list" {
-    for_each = [
-      {
-        name  = "securityContext.capabilities.ciliumAgent"
-        value = ["CHOWN", "KILL", "NET_ADMIN", "NET_RAW", "IPC_LOCK", "SYS_ADMIN", "SYS_RESOURCE", "DAC_OVERRIDE", "FOWNER", "SETGID", "SETUID"]
-      },
-      {
-        name  = "securityContext.capabilities.cleanCiliumState"
-        value = ["NET_ADMIN", "SYS_ADMIN", "SYS_RESOURCE"]
-      }
-    ]
+    for_each = {
+      "securityContext.capabilities.ciliumAgent"      = ["CHOWN", "KILL", "NET_ADMIN", "NET_RAW", "IPC_LOCK", "SYS_ADMIN", "SYS_RESOURCE", "DAC_OVERRIDE", "FOWNER", "SETGID", "SETUID"]
+      "securityContext.capabilities.cleanCiliumState" = ["NET_ADMIN", "SYS_ADMIN", "SYS_RESOURCE"]
+    }
 
     content {
-      name  = set_list.value.name
-      value = set_list.value.value
+      name  = set_list.key
+      value = set_list.value
     }
   }
 

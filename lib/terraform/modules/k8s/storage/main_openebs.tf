@@ -13,32 +13,17 @@ resource "helm_release" "openebs" {
   version          = var.k8s_storage.openebs.version
 
   dynamic "set" {
-    for_each = [
-      {
-        name  = "mayastor.csi.node.initContainers.enabled"
-        value = false
-      },
-      {
-        name  = "engines.local.lvm.enabled"
-        value = false
-      },
-      {
-        name  = "engines.local.zfs.enabled"
-        value = false
-      },
-      {
-        name  = "engines.replicated.mayastor.enabled"
-        value = false
-      },
-      {
-        name  = "mayastor.io_engine.envcontext"
-        value = "iova-mode=pa"
-      }
-    ]
+    for_each = {
+      "mayastor.csi.node.initContainers.enabled" = false
+      "engines.local.lvm.enabled"                = false
+      "engines.local.zfs.enabled"                = false
+      "engines.replicated.mayastor.enabled"      = false
+      "mayastor.io_engine.envcontext"            = "iova-mode=pa"
+    }
 
     content {
-      name  = set.value.name
-      value = set.value.value
+      name  = set.key
+      value = set.value
     }
   }
 }
