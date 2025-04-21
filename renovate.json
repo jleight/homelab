@@ -11,7 +11,7 @@
       "matchStrings": [
         "(?<depName>\\S+?) = {\\s+?renovate\\s+?=\\s\"(?<datasource>[^\"]+?)\"\\s+?repository\\s+?=\\s\"(?<packageName>[^\"]+?)\"\\s+?version\\s+?=\\s\"(?<currentValue>[^\"]+?)\"",
         "(?<depName>\\S+?) = {\\s+?renovate\\s+?=\\s\"(?<datasource>[^\"]+?)\"\\s+?repository\\s+?=\\s\"(?<registryUrl>[^\"]+?)\"\\s+?chart\\s+?=\\s\"(?<packageName>[^\"]+?)\"\\s+?version\\s+?=\\s\"(?<currentValue>[^\"]+?)\"",
-        "(?<depName>\\S+?) = {\\s+?renovate\\s+?=\\s\"(?<datasource>[^\"]+?)\"\\s+?image\\s+?=\\s\"(?<packageName>[^\"]+?)\"\\s+?version\\s+?=\\s\"(?<currentValue>[^\"]+?)\""
+        "(?:\\S+?) = {\\s+?renovate\\s+?=\\s\"(?<datasource>[^\"]+?)\"\\s+?image\\s+?=\\s\"(?<packageName>(?:.+/)?(?<depName>[^\"]+))\"\\s+?version\\s+?=\\s\"(?<currentValue>[^\"]+?)\""
       ]
     }
   ]
