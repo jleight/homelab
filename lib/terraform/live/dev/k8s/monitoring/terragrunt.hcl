@@ -7,7 +7,7 @@ include {
 }
 
 dependencies {
-  paths = ["../cluster", "../baseline"]
+  paths = ["../baseline"]
 }
 
 inputs = {
