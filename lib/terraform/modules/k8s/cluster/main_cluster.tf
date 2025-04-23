@@ -72,11 +72,11 @@ resource "talos_machine_configuration_apply" "control_plane" {
               routes = [
                 {
                   network = "0.0.0.0/0"
-                  gateway = var.network.gateway_ipv4
+                  gateway = module.ipam.nodes.v4_gateway
                 },
                 {
                   network = "::/0"
-                  gateway = var.network.gateway_ipv6
+                  gateway = module.ipam.nodes.v6_gateway
                 }
               ]
             }

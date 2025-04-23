@@ -13,7 +13,7 @@ inputs = {
         storage_disk      = "/dev/nvme0n1"
         network_interface = "enp1s0"
         mac_address       = "e8:ff:1e:d9:6f:a3"
-        ipv4_offset       = 0
+        ipv4_offset       = 20
       }
       eq14_2 = {
         name              = "prod-02"
@@ -22,7 +22,7 @@ inputs = {
         storage_disk      = "/dev/nvme0n1"
         network_interface = "enp1s0"
         mac_address       = "e8:ff:1e:d9:72:e7"
-        ipv4_offset       = 1
+        ipv4_offset       = 21
       }
       eq14_3 = {
         name              = "prod-03"
@@ -31,7 +31,7 @@ inputs = {
         storage_disk      = "/dev/nvme0n1"
         network_interface = "enp1s0"
         mac_address       = "e8:ff:1e:d9:65:f3"
-        ipv4_offset       = 2
+        ipv4_offset       = 22
       }
     }
   }

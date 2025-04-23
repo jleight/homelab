@@ -25,7 +25,7 @@ resource "kubectl_manifest" "bgp_cluster_config" {
             {
               name        = "gateway"
               peerASN     = var.network.gateway_as
-              peerAddress = var.network.gateway_ipv4
+              peerAddress = module.ipam.nodes.v4_gateway
               peerConfigRef = {
                 name = "cilium-peer"
               }

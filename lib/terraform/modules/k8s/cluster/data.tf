@@ -7,13 +7,13 @@ data "cloudflare_zones" "cluster" {
 module "ipam" {
   source = "../../_registry/ipam"
 
-  environment = var.environment
+  environment = local.environment
 }
 
 module "slaac_pd" {
   for_each = var.k8s_cluster.nodes
   source   = "../../_registry/slaac"
 
-  prefix      = module.ipam.lan.v6_prefix
+  prefix      = module.ipam.nodes.v6_prefix
   mac_address = each.value.mac_address
 }

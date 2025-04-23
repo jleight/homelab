@@ -9,7 +9,7 @@ locals {
     "!",
     "router bgp ${var.network.gateway_as}",
     "  bgp ebgp-requires-policy",
-    "  bgp router-id ${var.network.gateway_ipv4}",
+    "  bgp router-id ${module.ipam.lan.v4_gateway}",
     "  maximum-paths 4",
     "  !"
   ]

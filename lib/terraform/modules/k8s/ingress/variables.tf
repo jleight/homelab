@@ -6,11 +6,9 @@ variable "env_directory" {
 variable "network" {
   description = "Settings for the home network."
   type = object({
-    interface    = string
-    gateway_ipv4 = string
-    gateway_ipv6 = string
-    gateway_as   = number
-    nameservers  = set(string)
+    interface   = string
+    nameservers = set(string)
+    gateway_as  = number
   })
 }
 
