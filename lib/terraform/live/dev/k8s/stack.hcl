@@ -83,12 +83,6 @@ inputs = {
       version    = "1.8.1"
     }
 
-    longhorn_test = {
-      renovate = "docker"
-      image    = "nginx"
-      version  = "1.28.0"
-    }
-
     openebs = {
       renovate   = "helm"
       repository = "https://openebs.github.io/openebs"
