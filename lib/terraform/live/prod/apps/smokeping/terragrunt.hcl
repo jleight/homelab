@@ -6,10 +6,6 @@ include {
   path = find_in_parent_folders("root.hcl")
 }
 
-dependencies {
-  paths = ["../../k8s/cluster"]
-}
-
 dependency "k8s_storage" {
   config_path = "../../k8s/storage"
 }

@@ -1,5 +1,5 @@
 terraform {
-  source = "${get_parent_terragrunt_dir()}/../modules//apps/smokeping"
+  source = "${get_parent_terragrunt_dir()}/../modules//servarr/sabnzbd"
 }
 
 include {
@@ -14,13 +14,17 @@ dependency "k8s_ingress" {
   config_path = "../../k8s/ingress"
 }
 
+dependency "namespace" {
+  config_path = "../namespace"
+}
+
 inputs = {
-  component = "smokeping"
+  component = "sabnzbd"
 
-  data_storage_class = dependency.k8s_storage.outputs.app_data_storage_class_name
+  namespace = dependency.namespace.outputs.name
 
-  tunnel_kind = dependency.k8s_ingress.outputs.tunnel_kind
-  tunnel_name = dependency.k8s_ingress.outputs.tunnel_name
+  data_storage_class  = dependency.k8s_storage.outputs.app_data_storage_class_name
+  media_storage_class = dependency.k8s_storage.outputs.media_storage_class_name
 
   gateway_namespace = dependency.k8s_ingress.outputs.load_balancer_namespace
   gateway_name      = dependency.k8s_ingress.outputs.load_balancer_name

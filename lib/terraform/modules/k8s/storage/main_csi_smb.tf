@@ -54,3 +54,29 @@ resource "kubernetes_storage_class" "csi_smb_nas02_kubernetes" {
     "file_mode=0777"
   ]
 }
+
+resource "kubernetes_storage_class" "csi_smb_nas02_media" {
+  count = local.csi_smb_enabled ? 1 : 0
+
+  metadata {
+    name = "smb-nas02-media"
+  }
+
+  storage_provisioner = "smb.csi.k8s.io"
+
+  volume_binding_mode    = "Immediate"
+  reclaim_policy         = "Retain"
+  allow_volume_expansion = true
+
+  parameters = {
+    "source"                                         = "${var.smb_nas02_url}/Media"
+    "onDelete"                                       = "retain"
+    "csi.storage.k8s.io/node-stage-secret-namespace" = try(one(kubernetes_secret.csi_smb_nas02_credentials[0].metadata).namespace, null)
+    "csi.storage.k8s.io/node-stage-secret-name"      = try(one(kubernetes_secret.csi_smb_nas02_credentials[0].metadata).name, null)
+  }
+
+  mount_options = [
+    "dir_mode=0777",
+    "file_mode=0777"
+  ]
+}
