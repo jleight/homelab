@@ -28,5 +28,6 @@ locals {
   config_cm_name       = local.enabled ? kubernetes_config_map.config[0].metadata[0].name : null
   flood_env_cm_name    = local.enabled ? kubernetes_config_map.flood_env[0].metadata[0].name : null
   flood_secret_name    = local.enabled ? kubernetes_secret.flood[0].metadata[0].name : null
+  data_pvc_name        = local.enabled ? kubernetes_persistent_volume_claim.data[0].metadata[0].name : null
   media_pvc_name       = local.enabled ? kubernetes_persistent_volume_claim.media[0].metadata[0].name : null
 }

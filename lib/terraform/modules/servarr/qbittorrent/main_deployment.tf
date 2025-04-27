@@ -41,6 +41,11 @@ resource "kubernetes_deployment" "this" {
           }
 
           volume_mount {
+            name       = "data"
+            mount_path = "/config/qBittorrent"
+          }
+
+          volume_mount {
             name       = "media"
             mount_path = "/media"
           }
@@ -74,6 +79,14 @@ resource "kubernetes_deployment" "this" {
 
           config_map {
             name = local.config_cm_name
+          }
+        }
+
+        volume {
+          name = "data"
+
+          persistent_volume_claim {
+            claim_name = local.data_pvc_name
           }
         }
 

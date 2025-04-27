@@ -8,6 +8,11 @@ variable "namespace" {
   type        = string
 }
 
+variable "data_storage_class" {
+  description = "StorageClass for the data volumes."
+  type        = string
+}
+
 variable "media_storage_class" {
   description = "StorageClass for the media volume."
   type        = string
