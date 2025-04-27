@@ -32,4 +32,19 @@ inputs = {
       }
     }
   }
+
+  qbittorrent = {
+    renovate = "docker"
+    image    = "lscr.io/linuxserver/qbittorrent"
+    version  = "5.0.4"
+  }
+
+  flood = {
+    renovate = "docker"
+    image    = "jesec/flood"
+    version  = "4.9.3"
+
+    subdomain = "media"
+    path      = "/qbittorrent"
+  }
 }

@@ -24,7 +24,7 @@ resource "kubernetes_deployment" "this" {
         service_account_name = local.service_account_name
 
         init_container {
-          name = "config-file"
+          name = "sabnzbd-config"
 
           image             = "${var.sabnzbd.image}:${var.sabnzbd.version}"
           image_pull_policy = "IfNotPresent"
@@ -49,7 +49,7 @@ resource "kubernetes_deployment" "this" {
         }
 
         container {
-          name = local.name
+          name = "sabnzbd"
 
           image             = "${var.sabnzbd.image}:${var.sabnzbd.version}"
           image_pull_policy = "IfNotPresent"

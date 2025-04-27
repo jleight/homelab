@@ -5,7 +5,7 @@
 "aqua:mikefarah/yq" = "latest"
 "ubi:cilium/cilium-cli" = { version = "latest", exe = "cilium" }
 "ubi:siderolabs/talos" = { version = "latest", exe = "talosctl" }
-"ubi:opentofu/opentofu" = { version = "v1.10.0-alpha1", exe = "tofu" }
+"ubi:opentofu/opentofu" = { version = "latest", exe = "tofu" }
 
 [env]
 AWS_ACCESS_KEY_ID = "{{ env.B2_TF_APPLICATION_KEY_ID }}"
