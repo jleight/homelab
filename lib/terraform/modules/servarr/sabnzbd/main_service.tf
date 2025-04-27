@@ -21,7 +21,7 @@ resource "kubernetes_service" "this" {
     port {
       name        = "http"
       port        = 80
-      target_port = 8080
+      target_port = local.port
     }
 
     selector = local.match_labels

@@ -22,6 +22,7 @@ locals {
   vault_uuid          = local.enabled ? data.onepassword_vault.terraform[0].uuid : null
   server_secret_names = local.enabled ? toset([for k, v in var.sabnzbd.servers : v.secret_name]) : toset([])
 
+  port     = 8080
   hostname = "${var.sabnzbd.subdomain}.${var.gateway_domain}"
   path     = var.sabnzbd.path
 

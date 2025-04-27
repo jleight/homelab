@@ -30,7 +30,7 @@ resource "kubernetes_deployment" "this" {
           image_pull_policy = "IfNotPresent"
 
           port {
-            container_port = 8080
+            container_port = local.qbittorrent_port
           }
 
           volume_mount {
@@ -70,7 +70,7 @@ resource "kubernetes_deployment" "this" {
           }
 
           port {
-            container_port = local.port
+            container_port = local.flood_port
           }
         }
 

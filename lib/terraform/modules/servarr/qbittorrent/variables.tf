@@ -39,9 +39,8 @@ variable "flood" {
     image   = string
     version = string
 
-    subdomain = string
-    port      = optional(number, 3000)
-    path      = string
+    subdomain = optional(string, "media")
+    path      = optional(string, "/qbittorrent")
   })
 }
 

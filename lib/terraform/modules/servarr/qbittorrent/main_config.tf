@@ -15,7 +15,7 @@ locals {
 
   flood_options = {
     baseuri = local.path
-    port    = local.port
+    port    = local.flood_port
     auth    = "none"
     qburl   = "http://127.0.0.1:8080"
     qbuser  = local.qbittorrent_username

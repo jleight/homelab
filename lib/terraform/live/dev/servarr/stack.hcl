@@ -6,9 +6,6 @@ inputs = {
     image    = "lscr.io/linuxserver/sabnzbd"
     version  = "4.5.1"
 
-    subdomain = "media"
-    path      = "/sabnzbd"
-
     servers = {
       frugal_main = {
         secret_name = "Frugal Main"
@@ -43,8 +40,5 @@ inputs = {
     renovate = "docker"
     image    = "jesec/flood"
     version  = "4.9.3"
-
-    subdomain = "media"
-    path      = "/qbittorrent"
   }
 }

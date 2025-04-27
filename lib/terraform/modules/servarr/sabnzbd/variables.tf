@@ -45,8 +45,8 @@ variable "sabnzbd" {
     image   = string
     version = string
 
-    subdomain = string
-    path      = string
+    subdomain = optional(string, "media")
+    path      = optional(string, "/sabnzbd")
 
     servers = optional(map(object({
       secret_name = string

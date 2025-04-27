@@ -19,9 +19,10 @@ locals {
     }
   )
 
-  hostname = "${var.flood.subdomain}.${var.gateway_domain}"
-  port     = var.flood.port
-  path     = var.flood.path
+  flood_port       = 3000
+  qbittorrent_port = 8080
+  hostname         = "${var.flood.subdomain}.${var.gateway_domain}"
+  path             = var.flood.path
 
   service_account_name = local.enabled ? kubernetes_service_account.this[0].metadata[0].name : null
   service_name         = local.enabled ? kubernetes_service.this[0].metadata[0].name : null
