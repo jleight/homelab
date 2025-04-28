@@ -41,4 +41,10 @@ inputs = {
     image    = "jesec/flood"
     version  = "4.9.3"
   }
+
+  audiobookshelf = {
+    renovate = "docker"
+    image    = "ghcr.io/advplyr/audiobookshelf"
+    version  = "2.21.0"
+  }
 }
