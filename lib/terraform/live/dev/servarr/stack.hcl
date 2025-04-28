@@ -33,7 +33,7 @@ inputs = {
   qbittorrent = {
     renovate = "docker"
     image    = "lscr.io/linuxserver/qbittorrent"
-    version  = "5.0.5-libtorrentv1"
+    version  = "5.1.0-libtorrentv1"
   }
 
   flood = {
