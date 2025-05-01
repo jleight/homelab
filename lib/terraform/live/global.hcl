@@ -1,5 +1,6 @@
 inputs = {
   env_directory = get_env("ENV_DIR")
+  username      = get_env("USER")
 
   network = {
     interface = "en0"

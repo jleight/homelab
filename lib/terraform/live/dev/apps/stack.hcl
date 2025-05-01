@@ -1,6 +1,13 @@
 inputs = {
   stack = "apps"
 
+  gitea = {
+    renovate   = "helm"
+    repository = "https://dl.gitea.com/charts"
+    chart      = "gitea"
+    version    = "11.0.1"
+  }
+
   isponsorblocktv = {
     renovate = "docker"
     image    = "dmunozv04/isponsorblocktv"
