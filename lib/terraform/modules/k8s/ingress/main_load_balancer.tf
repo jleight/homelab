@@ -63,7 +63,7 @@ resource "kubectl_manifest" "load_balancer" {
             hostname = "*.${local.load_balancer_domain}"
             allowedRoutes = {
               namespaces = {
-                from = "All"
+                from = local.cert_manager_enabled ? "Same" : "All"
               }
             }
           }
@@ -91,6 +91,42 @@ resource "kubectl_manifest" "load_balancer" {
           }
         ] : []
       )
+    }
+  })
+}
+
+resource "kubectl_manifest" "load_balancer_http_to_https" {
+  count = local.load_balancer_enabled && local.cert_manager_enabled ? 1 : 0
+
+  yaml_body = yamlencode({
+    apiVersion = "gateway.networking.k8s.io/v1"
+    kind       = "HTTPRoute"
+
+    metadata = {
+      namespace = local.load_balancer_namespace
+      name      = "http-to-https"
+    }
+
+    spec = {
+      parentRefs = [
+        {
+          namespace   = local.load_balancer_namespace
+          name        = local.load_balancer_name
+          sectionName = "http"
+        }
+      ]
+      rules = [
+        {
+          filters = [
+            {
+              type = "RequestRedirect"
+              requestRedirect = {
+                scheme = "https"
+              }
+            }
+          ]
+        }
+      ]
     }
   })
 }
