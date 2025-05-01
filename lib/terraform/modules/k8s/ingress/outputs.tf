@@ -19,6 +19,10 @@ output "load_balancer_name" {
   value = local.load_balancer_name
 }
 
+output "load_balancer_section" {
+  value = local.load_balancer_section
+}
+
 output "load_balancer_domain" {
   value = local.load_balancer_domain
 }

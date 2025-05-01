@@ -41,8 +41,9 @@ resource "kubectl_manifest" "ingress_private_http_route" {
     spec = {
       parentRefs = [
         {
-          namespace = var.gateway_namespace
-          name      = var.gateway_name
+          namespace   = var.gateway_namespace
+          name        = var.gateway_name
+          sectionName = var.gateway_section
         }
       ]
       hostnames = [

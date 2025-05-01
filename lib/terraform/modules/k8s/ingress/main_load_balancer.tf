@@ -1,9 +1,10 @@
 locals {
   load_balancer_enabled = local.enabled && var.k8s_ingress.load_balancer.enabled
 
-  load_balancer_namespace = local.enabled ? kubernetes_namespace.load_balancer[0].metadata[0].name : ""
-  load_balancer_name      = local.enabled ? "load-balancer" : ""
-  load_balancer_domain    = local.enabled ? var.k8s_cluster_domain : ""
+  load_balancer_namespace = local.load_balancer_enabled ? kubernetes_namespace.load_balancer[0].metadata[0].name : ""
+  load_balancer_name      = local.load_balancer_enabled ? "load-balancer" : ""
+  load_balancer_section   = local.load_balancer_enabled ? (local.cert_manager_enabled ? "https" : "http") : ""
+  load_balancer_domain    = local.load_balancer_enabled ? var.k8s_cluster_domain : ""
 }
 
 resource "kubernetes_namespace" "load_balancer" {

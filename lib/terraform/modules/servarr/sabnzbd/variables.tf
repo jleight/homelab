@@ -34,6 +34,11 @@ variable "gateway_name" {
   type        = string
 }
 
+variable "gateway_section" {
+  description = "Name of the gateway section for private ingress."
+  type        = string
+}
+
 variable "gateway_domain" {
   description = "Domain for the gateway for private ingress."
   type        = string
