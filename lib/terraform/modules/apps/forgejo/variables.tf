@@ -34,8 +34,8 @@ variable "gateway_domain" {
   type        = string
 }
 
-variable "gitea" {
-  description = "Gitea configuration."
+variable "forgejo" {
+  description = "Forgejo configuration."
   type = object({
     repository = string
     chart      = string

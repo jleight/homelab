@@ -1,7 +1,7 @@
 resource "onepassword_item" "admin_user" {
   count = local.enabled ? 1 : 0
 
-  title    = "Gitea"
+  title    = "Forgejo"
   category = "login"
   vault    = local.vault_uuid
 

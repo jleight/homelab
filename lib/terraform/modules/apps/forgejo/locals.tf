@@ -4,7 +4,7 @@ locals {
   name      = local.component
   namespace = local.enabled ? kubernetes_namespace.this[0].metadata[0].name : null
 
-  hostname = "${var.gitea.subdomain}.${var.gateway_domain}"
+  hostname = "${var.forgejo.subdomain}.${var.gateway_domain}"
 
   vault_uuid          = local.enabled ? data.onepassword_vault.terraform[0].uuid : null
   admin_user_username = var.username

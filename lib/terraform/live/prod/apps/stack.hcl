@@ -1,11 +1,11 @@
 inputs = {
   stack = "apps"
 
-  gitea = {
+  forgejo = {
     renovate   = "helm"
-    repository = "https://dl.gitea.com/charts"
-    chart      = "gitea"
-    version    = "11.0.1"
+    repository = "oci://code.forgejo.org/forgejo-helm"
+    chart      = "forgejo"
+    version    = "12.3.0"
   }
 
   isponsorblocktv = {

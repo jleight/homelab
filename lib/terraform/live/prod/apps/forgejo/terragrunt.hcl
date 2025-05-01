@@ -1,5 +1,5 @@
 terraform {
-  source = "${get_parent_terragrunt_dir()}/../modules//apps/gitea"
+  source = "${get_parent_terragrunt_dir()}/../modules//apps/forgejo"
 }
 
 include {
@@ -15,7 +15,7 @@ dependency "k8s_ingress" {
 }
 
 inputs = {
-  component = "gitea"
+  component = "forgejo"
 
   data_storage_class = dependency.k8s_storage.outputs.app_data_storage_class_name
 
