@@ -21,6 +21,13 @@ inputs = {
     ]
   }
 
+  postgres = {
+    renovate   = "helm"
+    repository = "https://cloudnative-pg.github.io/charts"
+    chart      = "cloudnative-pg"
+    version    = "0.23.2"
+  }
+
   smokeping = {
     renovate = "docker"
     image    = "lscr.io/linuxserver/smokeping"
