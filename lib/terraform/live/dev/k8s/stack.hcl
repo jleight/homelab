@@ -71,7 +71,7 @@ inputs = {
       renovate   = "helm"
       repository = "https://prometheus-community.github.io/helm-charts"
       chart      = "kube-prometheus-stack"
-      version    = "70.7.0"
+      version    = "70.10.0"
     }
   }
 
