@@ -22,7 +22,7 @@ resource "kubectl_manifest" "cloudflare_tunnel" {
   count = local.cloudflare_enabled ? 1 : 0
 
   yaml_body = yamlencode({
-    apiVersion = "networking.cfargotunnel.com/v1alpha1"
+    apiVersion = "networking.cfargotunnel.com/v1alpha2"
     kind       = local.cloudflare_tunnel_kind
 
     metadata = {
@@ -30,7 +30,11 @@ resource "kubectl_manifest" "cloudflare_tunnel" {
     }
 
     spec = {
-      size = 2
+      deployPatch = yamlencode({
+        spec = {
+          replicas = 2
+        }
+      })
 
       newTunnel = {
         name = local.cloudflare_tunnel_name
