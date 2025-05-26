@@ -25,7 +25,7 @@ inputs = {
     renovate   = "helm"
     repository = "https://cloudnative-pg.github.io/charts"
     chart      = "cloudnative-pg"
-    version    = "0.23.2"
+    version    = "0.24.0"
   }
 
   smokeping = {
