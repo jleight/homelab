@@ -31,7 +31,7 @@ inputs = {
   smokeping = {
     renovate = "docker"
     image    = "lscr.io/linuxserver/smokeping"
-    version  = "2.8.2"
+    version  = "2.9.0"
 
     subdomain     = "ping"
     owner         = "Jonathon Leight"
