@@ -18,7 +18,7 @@ resource "kubernetes_persistent_volume_claim" "data" {
     }
 
     access_modes = [
-      "ReadWriteOnce"
+      "ReadWriteMany"
     ]
   }
 }
