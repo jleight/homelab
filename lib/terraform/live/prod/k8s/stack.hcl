@@ -87,7 +87,7 @@ inputs = {
       renovate   = "helm"
       repository = "https://openebs.github.io/openebs"
       chart      = "openebs"
-      version    = "v4.2.0"
+      version    = "4.3.2"
       enabled    = false
     }
 
