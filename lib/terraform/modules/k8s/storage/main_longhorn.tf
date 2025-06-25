@@ -78,7 +78,7 @@ resource "kubectl_manifest" "longhorn_backup_daily" {
   count = local.longhorn_enabled ? 1 : 0
 
   yaml_body = yamlencode({
-    apiVersion = "longhorn.io/v1beta1"
+    apiVersion = "longhorn.io/v1beta2"
     kind       = "RecurringJob"
 
     metadata = {
@@ -110,7 +110,7 @@ resource "kubectl_manifest" "longhorn_backup_monthly" {
   count = local.longhorn_enabled ? 1 : 0
 
   yaml_body = yamlencode({
-    apiVersion = "longhorn.io/v1beta1"
+    apiVersion = "longhorn.io/v1beta2"
     kind       = "RecurringJob"
 
     metadata = {
