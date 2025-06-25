@@ -32,32 +32,29 @@ resource "helm_release" "external_dns" {
   chart      = var.k8s_ingress.external_dns.chart
   version    = var.k8s_ingress.external_dns.version
 
-  dynamic "set" {
-    for_each = {
+  set = [
+    for k, v in {
       "provider.name"                      = "cloudflare"
       "env[0].name"                        = "CF_API_TOKEN"
       "env[0].valueFrom.secretKeyRef.name" = "cloudflare-api-token"
       "env[0].valueFrom.secretKeyRef.key"  = "api_token"
-    }
+    } : { name = k, value = v }
+  ]
 
-    content {
-      name  = set.key
-      value = set.value
+  set_list = [
+    {
+      name = "sources"
+      value = [
+        "gateway-grpcroute",
+        "gateway-httproute",
+        "gateway-tcproute",
+        "gateway-tlsroute",
+        "gateway-udproute",
+        "ingress",
+        "service"
+      ]
     }
-  }
-
-  set_list {
-    name = "sources"
-    value = [
-      "gateway-grpcroute",
-      "gateway-httproute",
-      "gateway-tcproute",
-      "gateway-tlsroute",
-      "gateway-udproute",
-      "ingress",
-      "service"
-    ]
-  }
+  ]
 
   depends_on = [kubernetes_secret.external_dns_cloudflare_api_token]
 }

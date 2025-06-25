@@ -12,20 +12,15 @@ resource "helm_release" "openebs" {
   chart            = var.k8s_storage.openebs.chart
   version          = var.k8s_storage.openebs.version
 
-  dynamic "set" {
-    for_each = {
+  set = [
+    for k, v in {
       "mayastor.csi.node.initContainers.enabled" = false
       "engines.local.lvm.enabled"                = false
       "engines.local.zfs.enabled"                = false
       "engines.replicated.mayastor.enabled"      = false
       "mayastor.io_engine.envcontext"            = "iova-mode=pa"
-    }
-
-    content {
-      name  = set.key
-      value = set.value
-    }
-  }
+    } : { name = k, value = v }
+  ]
 }
 
 resource "kubernetes_storage_class" "openebs" {

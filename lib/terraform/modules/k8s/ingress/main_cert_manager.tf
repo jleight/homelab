@@ -45,19 +45,14 @@ resource "helm_release" "cert_manager" {
   chart      = var.k8s_ingress.cert_manager.chart
   version    = var.k8s_ingress.cert_manager.version
 
-  dynamic "set" {
-    for_each = {
+  set = [
+    for k, v in {
       "crds.enabled"            = true
       "config.apiVersion"       = "controller.config.cert-manager.io/v1alpha1"
       "config.kind"             = "ControllerConfiguration"
       "config.enableGatewayAPI" = true
-    }
-
-    content {
-      name  = set.key
-      value = set.value
-    }
-  }
+    } : { name = k, value = v }
+  ]
 
   depends_on = [
     kubernetes_secret.cert_manager_cloudflare_api_token,

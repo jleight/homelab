@@ -20,14 +20,9 @@ resource "helm_release" "this" {
   chart      = var.postgres.chart
   version    = var.postgres.version
 
-  dynamic "set" {
-    for_each = {
+  set = [
+    for k, v in {
       "monitoring.grafanaDashboard.create" = true
-    }
-
-    content {
-      name  = set.key
-      value = set.value
-    }
-  }
+    } : { name = k, value = v }
+  ]
 }

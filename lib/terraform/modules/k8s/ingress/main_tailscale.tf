@@ -37,16 +37,17 @@ resource "helm_release" "tailscale" {
   chart      = var.k8s_ingress.tailscale.chart
   version    = var.k8s_ingress.tailscale.version
 
-  set {
-    name  = "operatorConfig.hostname"
-    value = "tailscale-operator-${local.stack}-${local.environment}"
-  }
-
-  set {
-    name  = "apiServerProxyConfig.mode"
-    value = true
-    type  = "string"
-  }
+  set = [
+    {
+      name  = "operatorConfig.hostname"
+      value = "tailscale-operator-${local.stack}-${local.environment}"
+    },
+    {
+      name  = "apiServerProxyConfig.mode"
+      value = true
+      type  = "string"
+    }
+  ]
 
   depends_on = [kubernetes_secret.tailscale_operator_oauth]
 }

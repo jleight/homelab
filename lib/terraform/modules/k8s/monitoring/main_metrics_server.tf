@@ -11,8 +11,10 @@ resource "helm_release" "metrics_server" {
   chart      = var.k8s_monitoring.metrics_server.chart
   version    = var.k8s_monitoring.metrics_server.version
 
-  # set_list {
-  #   name  = "args"
-  #   value = ["--kubelet-preferred-address-types=Hostname,InternalDNS,InternalIP,ExternalDNS,ExternalIP"]
-  # }
+  # set_list = [
+  #   {
+  #     name  = "args"
+  #     value = ["--kubelet-preferred-address-types=Hostname,InternalDNS,InternalIP,ExternalDNS,ExternalIP"]
+  #   }
+  # ]
 }

@@ -39,15 +39,16 @@ resource "helm_release" "longhorn" {
   chart      = var.k8s_storage.longhorn.chart
   version    = var.k8s_storage.longhorn.version
 
-  set {
-    name  = "defaultBackupStore.backupTarget"
-    value = "cifs:${var.smb_nas02_url}/${local.stack}_${local.environment}_backup"
-  }
-
-  set {
-    name  = "defaultBackupStore.backupTargetCredentialSecret"
-    value = local.longhorn_nas02_credentials_name
-  }
+  set = [
+    {
+      name  = "defaultBackupStore.backupTarget"
+      value = "cifs:${var.smb_nas02_url}/${local.stack}_${local.environment}_backup"
+    },
+    {
+      name  = "defaultBackupStore.backupTargetCredentialSecret"
+      value = local.longhorn_nas02_credentials_name
+    }
+  ]
 }
 
 resource "kubernetes_storage_class" "longhorn_appdata" {

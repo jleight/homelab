@@ -19,7 +19,7 @@ terraform {
 }
 
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     config_path = local.kubeconfig_file
   }
 }

@@ -11,8 +11,10 @@ resource "helm_release" "prometheus" {
   chart      = var.k8s_monitoring.prometheus.chart
   version    = var.k8s_monitoring.prometheus.version
 
-  set {
-    name  = "sidecar.dashboards.searchNamespace"
-    value = "ALL"
-  }
+  set = [
+    {
+      name  = "sidecar.dashboards.searchNamespace"
+      value = "ALL"
+    }
+  ]
 }

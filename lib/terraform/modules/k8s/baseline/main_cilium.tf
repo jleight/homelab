@@ -7,8 +7,8 @@ resource "helm_release" "cilium" {
   chart      = var.k8s_baseline.cilium.chart
   version    = var.k8s_baseline.cilium.version
 
-  dynamic "set" {
-    for_each = {
+  set = [
+    for k, v in {
       "ipam.mode"                    = "kubernetes"
       "cgroup.autoMount.enabled"     = false
       "cgroup.hostRoot"              = "/sys/fs/cgroup"
@@ -21,25 +21,15 @@ resource "helm_release" "cilium" {
       "gatewayAPI.enableAppProtocol" = true
       "bgpControlPlane.enabled"      = true
       "socketLB.hostNamespaceOnly"   = true
-    }
+    } : { name = k, value = v }
+  ]
 
-    content {
-      name  = set.key
-      value = set.value
-    }
-  }
-
-  dynamic "set_list" {
-    for_each = {
+  set_list = [
+    for k, v in {
       "securityContext.capabilities.ciliumAgent"      = ["CHOWN", "KILL", "NET_ADMIN", "NET_RAW", "IPC_LOCK", "SYS_ADMIN", "SYS_RESOURCE", "DAC_OVERRIDE", "FOWNER", "SETGID", "SETUID"]
       "securityContext.capabilities.cleanCiliumState" = ["NET_ADMIN", "SYS_ADMIN", "SYS_RESOURCE"]
-    }
-
-    content {
-      name  = set_list.key
-      value = set_list.value
-    }
-  }
+    } : { name = k, value = v }
+  ]
 
   depends_on = [kubectl_manifest.gateway_crds]
 

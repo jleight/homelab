@@ -7,8 +7,8 @@ resource "helm_release" "this" {
   chart      = var.forgejo.chart
   version    = var.forgejo.version
 
-  dynamic "set" {
-    for_each = {
+  set = [
+    for k, v in {
       "gitea.additionalConfigFromEnvs[0].name"                        = "FORGEJO__DATABASE__PASSWD"
       "gitea.additionalConfigFromEnvs[0].valueFrom.secretKeyRef.key"  = "password"
       "gitea.additionalConfigFromEnvs[0].valueFrom.secretKeyRef.name" = local.postgres_secret
@@ -30,11 +30,6 @@ resource "helm_release" "this" {
       "redis.architecture"                                            = "standalone"
       "redis.enabled"                                                 = true
       "redis.master.persistence.enabled"                              = false
-    }
-
-    content {
-      name  = set.key
-      value = set.value
-    }
-  }
+    } : { name = k, value = v }
+  ]
 }
