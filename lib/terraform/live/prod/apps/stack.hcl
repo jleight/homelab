@@ -21,6 +21,19 @@ inputs = {
     ]
   }
 
+  plex = {
+    renovate   = "helm"
+    repository = "https://raw.githubusercontent.com/plexinc/pms-docker/gh-pages"
+    chart      = "plex-media-server"
+    version    = "1.0.2"
+
+    plex_image = {
+      renovate = "docker"
+      image    = "plexinc/pms-docker"
+      version  = "1.41.8.9834-071366d65"
+    }
+  }
+
   postgres = {
     renovate   = "helm"
     repository = "https://cloudnative-pg.github.io/charts"

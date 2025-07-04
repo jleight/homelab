@@ -12,6 +12,5 @@ dependencies {
 
 inputs = {
   component = "isponsorblocktv"
-
-  enabled = false
+  enabled   = false
 }
