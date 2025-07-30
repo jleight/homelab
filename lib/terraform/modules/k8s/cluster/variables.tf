@@ -26,8 +26,8 @@ variable "k8s_cluster" {
     nodes = map(object({
       enabled           = optional(bool, true)
       name              = string
-      schematic_id      = optional(string, "376567988ad370138ad8b2698212367b8edcb69b5fd68c80be1f2ec7d603b4ba")
-      talos_version     = optional(string, "1.9.5")
+      schematic_id      = optional(string, "613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245")
+      talos_version     = optional(string, "1.10.5")
       secure_boot       = optional(bool, false)
       install_disk      = string
       storage_disk      = string
