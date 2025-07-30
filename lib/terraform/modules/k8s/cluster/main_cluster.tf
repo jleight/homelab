@@ -20,127 +20,170 @@ resource "talos_machine_configuration_apply" "control_plane" {
 
   machine_configuration_input = try(data.talos_machine_configuration.control_plane[0].machine_configuration, null)
 
-  config_patches = [
-    yamlencode({
-      machine = {
-        install = {
-          disk = each.value.install_disk
-          wipe = true
-          image = format(
-            "factory.talos.dev/installer%s/%s:v%s",
-            each.value.secure_boot ? "-secureboot" : "",
-            each.value.schematic_id,
-            each.value.talos_version
-          )
-        }
-        sysctls = {
-          "user.max_user_namespaces" = "11255"
-          "vm.nr_hugepages"          = "1024"
-        }
-        kernel = {
-          modules = [
-            { name = "nvme_tcp" },
-            { name = "vfio_pci" }
-          ]
-        }
-        disks = [
-          {
-            device     = each.value.storage_disk
-            partitions = [{ mountpoint = "/var/lib/longhorn" }]
+  config_patches = concat(
+    [
+      yamlencode({
+        machine = {
+          install = {
+            disk = each.value.install_disk
+            wipe = true
+            image = format(
+              "factory.talos.dev/installer%s/%s:v%s",
+              each.value.secure_boot ? "-secureboot" : "",
+              each.value.schematic_id,
+              each.value.talos_version
+            )
           }
-        ]
-        systemDiskEncryption = each.value.secure_boot ? {
-          for k in ["state", "ephemeral"] : k => {
-            provider = "luks2"
-            keys = [
-              {
-                slot = 0
-                tpm  = {}
-              }
+          sysctls = {
+            "user.max_user_namespaces" = "11255"
+            "vm.nr_hugepages"          = "1024"
+          }
+          kernel = {
+            modules = [
+              { name = "nvme_tcp" },
+              { name = "vfio_pci" }
             ]
           }
-        } : {}
-        network = {
-          hostname = each.value.name
-          interfaces = [
+          disks = each.value.storage_disk == null ? [] : [
             {
-              interface = each.value.network_interface
-              addresses = [
-                "${local.node_ips.v4[each.key]}/24",
-                "${local.node_ips.v6_pd[each.key]}/64"
-              ]
-              routes = [
+              device     = each.value.storage_disk
+              partitions = [{ mountpoint = "/var/lib/longhorn" }]
+            }
+          ]
+          systemDiskEncryption = each.value.secure_boot ? {
+            for k in ["state", "ephemeral"] : k => {
+              provider = "luks2"
+              keys = [
                 {
-                  network = "0.0.0.0/0"
-                  gateway = module.ipam.nodes.v4_gateway
-                },
-                {
-                  network = "::/0"
-                  gateway = module.ipam.nodes.v6_gateway
+                  slot = 0
+                  tpm  = {}
                 }
               ]
             }
-          ]
-          nameservers = var.network.nameservers
-        }
-        certSANs = [
-          local.endpoint
-        ]
-        kubelet = {
-          extraArgs = {
-            "rotate-server-certificates" = true
+          } : {}
+          network = {
+            hostname = each.value.name
+            interfaces = [
+              {
+                interface = each.value.network_interface
+                dhcp      = false
+                vlans = [
+                  {
+                    vlanId = 1
+                    dhcp   = false
+                  },
+                  {
+                    vlanId = each.value.vlan_id
+                    addresses = [
+                      "${local.node_ips.v4[each.key]}/24",
+                      "${local.node_ips.v6_pd[each.key]}/64"
+                    ]
+                    routes = [
+                      {
+                        network = "0.0.0.0/0"
+                        gateway = module.ipam.nodes.v4_gateway
+                      },
+                      {
+                        network = "::/0"
+                        gateway = module.ipam.nodes.v6_gateway
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+            nameservers = var.network.nameservers
           }
-          extraConfig = {
-            featureGates = {
-              "UserNamespacesSupport"              = true
-              "UserNamespacesPodSecurityStandards" = true
+          certSANs = [
+            local.endpoint
+          ]
+          kubelet = {
+            extraArgs = {
+              "rotate-server-certificates" = true
+            }
+            extraConfig = {
+              featureGates = {
+                "UserNamespacesSupport"              = true
+                "UserNamespacesPodSecurityStandards" = true
+              }
+            }
+            extraMounts = [
+              {
+                type        = "bind"
+                source      = "/var/local"
+                destination = "/var/local"
+                options     = ["bind", "rshared", "rw"]
+              },
+              each.value.storage_disk == null ? {
+                type        = "bind"
+                source      = "/var/mnt/u-longhorn"
+                destination = "/var/lib/longhorn"
+                options     = ["bind", "rshared", "rw"]
+                } : {
+                type        = "bind"
+                source      = "/var/lib/longhorn"
+                destination = "/var/lib/longhorn"
+                options     = ["bind", "rshared", "rw"]
+              }
+            ]
+          }
+        }
+        cluster = {
+          allowSchedulingOnControlPlanes = true
+          network = {
+            podSubnets     = [module.ipam.resources.pods]
+            serviceSubnets = [module.ipam.resources.services]
+            cni            = { name = "none" }
+          }
+          proxy = {
+            disabled = true
+          }
+          apiServer = {
+            extraArgs = {
+              "feature-gates" = join(
+                ",",
+                [
+                  "UserNamespacesSupport=true",
+                  "UserNamespacesPodSecurityStandards=true"
+                ]
+              )
             }
           }
-          extraMounts = [
-            {
-              type        = "bind"
-              source      = "/var/local"
-              destination = "/var/local"
-              options     = ["bind", "rshared", "rw"]
-            },
-            {
-              type        = "bind"
-              source      = "/var/lib/longhorn"
-              destination = "/var/lib/longhorn"
-              options     = ["bind", "rshared", "rw"]
+          controllerManager = {
+            extraArgs = {
+              "terminated-pod-gc-threshold" = 1
             }
-          ]
-        }
-      }
-      cluster = {
-        allowSchedulingOnControlPlanes = true
-        network = {
-          podSubnets     = [module.ipam.resources.pods]
-          serviceSubnets = [module.ipam.resources.services]
-          cni            = { name = "none" }
-        }
-        proxy = {
-          disabled = true
-        }
-        apiServer = {
-          extraArgs = {
-            "feature-gates" = join(
-              ",",
-              [
-                "UserNamespacesSupport=true",
-                "UserNamespacesPodSecurityStandards=true"
-              ]
-            )
           }
         }
-        controllerManager = {
-          extraArgs = {
-            "terminated-pod-gc-threshold" = 1
+      })
+    ],
+    each.value.storage_disk == null ? [
+      yamlencode({
+        apiVersion = "v1alpha1"
+        kind       = "VolumeConfig"
+        name       = "EPHEMERAL"
+        provisioning = {
+          diskSelector = {
+            match = "system_disk"
           }
+          minSize = "100MiB"
+          maxSize = "40GiB"
         }
-      }
-    })
-  ]
+      }),
+      yamlencode({
+        apiVersion = "v1alpha1"
+        kind       = "UserVolumeConfig"
+        name       = "longhorn"
+        provisioning = {
+          diskSelector = {
+            match = "system_disk"
+          }
+          minSize = "100MiB"
+          grow    = true
+        }
+      })
+    ] : []
+  )
 }
 
 resource "talos_machine_bootstrap" "this" {

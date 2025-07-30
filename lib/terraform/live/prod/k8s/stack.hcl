@@ -12,6 +12,7 @@ inputs = {
         storage_disk      = "/dev/disk/by-id/nvme-Timetec_35TTFP6PCIE-1TB_TY241207B1T1365"
         network_interface = "enp1s0"
         mac_address       = "e8:ff:1e:d9:6f:a3"
+        vlan_id           = 3
         ipv4_offset       = 20
       }
       eq14_2 = {
@@ -20,6 +21,7 @@ inputs = {
         storage_disk      = "/dev/disk/by-id/nvme-Timetec_MS10_QS241217B1T2814"
         network_interface = "enp1s0"
         mac_address       = "e8:ff:1e:d9:72:e7"
+        vlan_id           = 3
         ipv4_offset       = 21
       }
       eq14_3 = {
@@ -28,7 +30,17 @@ inputs = {
         storage_disk      = "/dev/disk/by-id/nvme-Timetec_MS10_QS241217B1T2617"
         network_interface = "enp1s0"
         mac_address       = "e8:ff:1e:d9:65:f3"
+        vlan_id           = 3
         ipv4_offset       = 22
+      }
+      fw16_1 = {
+        name              = "prod-04"
+        schematic_id      = "892b9731dc945ff679f4a695aa2e8ae93d6f2c2a8764ae66fbbaaa5b35230669" # siderolabs/amdgpu
+        install_disk      = "/dev/nvme0n1"
+        network_interface = "enp196s0f3u1"
+        mac_address       = "9c:bf:0d:00:58:50"
+        vlan_id           = 3
+        ipv4_offset       = 23
       }
     }
   }

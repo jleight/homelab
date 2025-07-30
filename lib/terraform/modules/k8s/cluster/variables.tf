@@ -30,9 +30,10 @@ variable "k8s_cluster" {
       talos_version     = optional(string, "1.10.5")
       secure_boot       = optional(bool, false)
       install_disk      = string
-      storage_disk      = string
+      storage_disk      = optional(string, null)
       network_interface = string
       mac_address       = string
+      vlan_id           = number
       ipv4_offset       = number
     }))
   })
