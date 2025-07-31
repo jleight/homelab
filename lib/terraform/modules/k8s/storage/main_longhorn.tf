@@ -47,6 +47,10 @@ resource "helm_release" "longhorn" {
     {
       name  = "defaultBackupStore.backupTargetCredentialSecret"
       value = local.longhorn_nas02_credentials_name
+    },
+    {
+      name  = "defaultSettings.defaultDataPath"
+      value = "/var/mnt/longhorn"
     }
   ]
 }

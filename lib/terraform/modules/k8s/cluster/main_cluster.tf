@@ -47,7 +47,7 @@ resource "talos_machine_configuration_apply" "control_plane" {
           disks = each.value.storage_disk == null ? [] : [
             {
               device     = each.value.storage_disk
-              partitions = [{ mountpoint = "/var/lib/longhorn" }]
+              partitions = [{ mountpoint = "/var/mnt/longhorn" }]
             }
           ]
           systemDiskEncryption = each.value.secure_boot ? {
@@ -114,15 +114,10 @@ resource "talos_machine_configuration_apply" "control_plane" {
                 destination = "/var/local"
                 options     = ["bind", "rshared", "rw"]
               },
-              each.value.storage_disk == null ? {
+              {
                 type        = "bind"
-                source      = "/var/mnt/u-longhorn"
-                destination = "/var/lib/longhorn"
-                options     = ["bind", "rshared", "rw"]
-                } : {
-                type        = "bind"
-                source      = "/var/lib/longhorn"
-                destination = "/var/lib/longhorn"
+                source      = "/var/mnt/longhorn"
+                destination = "/var/mnt/longhorn"
                 options     = ["bind", "rshared", "rw"]
               }
             ]
@@ -178,8 +173,8 @@ resource "talos_machine_configuration_apply" "control_plane" {
           diskSelector = {
             match = "system_disk"
           }
-          minSize = "100MiB"
-          grow    = true
+          minSize = "1TiB"
+          maxSize = "1TiB"
         }
       })
     ] : []
