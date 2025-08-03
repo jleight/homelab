@@ -45,6 +45,6 @@ inputs = {
   audiobookshelf = {
     renovate = "docker"
     image    = "ghcr.io/advplyr/audiobookshelf"
-    version  = "2.25.1"
+    version  = "2.27.0"
   }
 }
