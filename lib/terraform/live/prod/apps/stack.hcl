@@ -25,7 +25,7 @@ inputs = {
     renovate   = "helm"
     repository = "https://raw.githubusercontent.com/plexinc/pms-docker/gh-pages"
     chart      = "plex-media-server"
-    version    = "1.0.2"
+    version    = "1.1.2"
 
     plex_image = {
       renovate = "docker"
