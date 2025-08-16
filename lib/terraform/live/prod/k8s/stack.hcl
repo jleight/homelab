@@ -113,7 +113,7 @@ inputs = {
       renovate   = "helm"
       repository = "https://pkgs.tailscale.com/helmcharts"
       chart      = "tailscale-operator"
-      version    = "1.84.3"
+      version    = "1.86.2"
     }
 
     cloudflare = {
