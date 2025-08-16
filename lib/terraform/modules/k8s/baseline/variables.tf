@@ -23,5 +23,23 @@ variable "k8s_baseline" {
       chart      = string
       version    = string
     })
+
+    node_feature_discovery = object({
+      repository = string
+      chart      = string
+      version    = string
+    })
+
+    amd_gpu = object({
+      repository = string
+      chart      = string
+      version    = string
+    })
+
+    intel_gpu = object({
+      repository = string
+      chart      = string
+      version    = string
+    })
   })
 }

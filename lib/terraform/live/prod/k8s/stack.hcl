@@ -1,3 +1,8 @@
+locals {
+  schematic_id_eq14 = "0751f1135eff2bc906854a62cc450c94f3dc65428d42110fc7998db8959dd5e5" # iscsi-tools, util-linux-tools, i915
+  schematic_id_fw16 = "65cf8364cd0de4cf7b851dc7067a2db83d0ba04f11d8635c6cd3334be6ffb825" # iscsi-tools, util-linux-tools, amd-ucode, amdgpu
+}
+
 inputs = {
   stack = "k8s"
 
@@ -8,6 +13,7 @@ inputs = {
     nodes = {
       eq14_1 = {
         name              = "prod-01"
+        schematic_id      = local.schematic_id_eq14
         install_disk      = "/dev/disk/by-id/nvme-NVME_SSD_512GB_20241220100125"
         storage_disk      = "/dev/disk/by-id/nvme-Timetec_35TTFP6PCIE-1TB_TY241207B1T1365"
         network_interface = "enp1s0"
@@ -17,6 +23,7 @@ inputs = {
       }
       eq14_2 = {
         name              = "prod-02"
+        schematic_id      = local.schematic_id_eq14
         install_disk      = "/dev/disk/by-id/nvme-NVME_SSD_512GB_20241220100051"
         storage_disk      = "/dev/disk/by-id/nvme-Timetec_MS10_QS241217B1T2814"
         network_interface = "enp1s0"
@@ -26,6 +33,7 @@ inputs = {
       }
       eq14_3 = {
         name              = "prod-03"
+        schematic_id      = local.schematic_id_eq14
         install_disk      = "/dev/disk/by-id/nvme-NVME_SSD_512GB_20241220101351"
         storage_disk      = "/dev/disk/by-id/nvme-Timetec_MS10_QS241217B1T2617"
         network_interface = "enp1s0"
@@ -35,7 +43,7 @@ inputs = {
       }
       fw16_1 = {
         name              = "prod-04"
-        schematic_id      = "65cf8364cd0de4cf7b851dc7067a2db83d0ba04f11d8635c6cd3334be6ffb825" # amd-ucode, amdgpu, iscsi-tools, util-linux-tools
+        schematic_id      = local.schematic_id_fw16
         install_disk      = "/dev/nvme0n1"
         network_interface = "enp196s0f3u1"
         mac_address       = "9c:bf:0d:00:58:50"
@@ -65,6 +73,27 @@ inputs = {
       repository = "https://helm.cilium.io"
       chart      = "cilium"
       version    = "1.18.1"
+    }
+
+    node_feature_discovery = {
+      renovate   = "helm"
+      repository = "https://kubernetes-sigs.github.io/node-feature-discovery/charts"
+      chart      = "node-feature-discovery"
+      version    = "0.17.3"
+    }
+
+    amd_gpu = {
+      renovate   = "helm"
+      repository = "https://rocm.github.io/k8s-device-plugin"
+      chart      = "amd-gpu"
+      version    = "0.20.0"
+    }
+
+    intel_gpu = {
+      renovate   = "helm"
+      repository = "https://intel.github.io/helm-charts"
+      chart      = "intel-device-plugins-operator"
+      version    = "0.32.1"
     }
   }
 
