@@ -2,7 +2,7 @@ inputs = {
   stack = "apps"
 
   forgejo = {
-    renovate   = "helm"
+    #renovate   = "helm"
     repository = "oci://code.forgejo.org/forgejo-helm"
     chart      = "forgejo"
     version    = "12.3.0"
