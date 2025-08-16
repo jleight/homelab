@@ -10,6 +10,8 @@ data "talos_machine_configuration" "control_plane" {
 
   machine_secrets = try(talos_machine_secrets.this[0].machine_secrets, null)
   machine_type    = "controlplane"
+
+  kubernetes_version = var.k8s_cluster.version
 }
 
 resource "talos_machine_configuration_apply" "control_plane" {
