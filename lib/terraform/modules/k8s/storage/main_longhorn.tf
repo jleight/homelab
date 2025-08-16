@@ -51,6 +51,10 @@ resource "helm_release" "longhorn" {
     {
       name  = "defaultSettings.defaultDataPath"
       value = "/var/mnt/longhorn"
+    },
+    {
+      name  = "defaultSettings.concurrentAutomaticEngineUpgradePerNodeLimit"
+      value = "3"
     }
   ]
 }
