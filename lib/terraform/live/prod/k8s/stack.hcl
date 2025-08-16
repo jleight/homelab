@@ -73,7 +73,7 @@ inputs = {
       renovate   = "helm"
       repository = "https://kubernetes-sigs.github.io/metrics-server"
       chart      = "metrics-server"
-      version    = "v3.12.2"
+      version    = "3.13.0"
     }
 
     prometheus = {
