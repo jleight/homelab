@@ -26,7 +26,7 @@ variable "k8s_cluster" {
     nodes = map(object({
       enabled           = optional(bool, true)
       name              = string
-      schematic_id      = optional(string, "613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245")
+      schematic_id      = optional(string, "613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245") # iscsi-tools, util-linux-tools
       talos_version     = optional(string, "1.10.5")
       secure_boot       = optional(bool, false)
       install_disk      = string

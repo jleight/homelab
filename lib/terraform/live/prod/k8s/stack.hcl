@@ -35,7 +35,7 @@ inputs = {
       }
       fw16_1 = {
         name              = "prod-04"
-        schematic_id      = "892b9731dc945ff679f4a695aa2e8ae93d6f2c2a8764ae66fbbaaa5b35230669" # siderolabs/amdgpu
+        schematic_id      = "65cf8364cd0de4cf7b851dc7067a2db83d0ba04f11d8635c6cd3334be6ffb825" # amd-ucode, amdgpu, iscsi-tools, util-linux-tools
         install_disk      = "/dev/nvme0n1"
         network_interface = "enp196s0f3u1"
         mac_address       = "9c:bf:0d:00:58:50"
