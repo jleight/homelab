@@ -30,7 +30,7 @@ inputs = {
     plex_image = {
       renovate = "docker"
       image    = "plexinc/pms-docker"
-      version  = "1.41.8.9834-071366d65"
+      version  = "1.42.1.10060-4e8b05daf"
     }
 
     node_name = "prod-04"
