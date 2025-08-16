@@ -1,3 +1,7 @@
+locals {
+  affinity_prefix = "affinity.nodeAffinity.preferredDuringSchedulingIgnoredDuringExecution[0]"
+}
+
 resource "helm_release" "this" {
   count = local.enabled ? 1 : 0
 
@@ -18,6 +22,11 @@ resource "helm_release" "this" {
       "extraVolumes[0].persistentVolumeClaim.claimName" = local.media_pvc_name
       "extraVolumeMounts[0].name"                       = "media"
       "extraVolumeMounts[0].mountPath"                  = "/media"
+
+      "${local.affinity_prefix}.weight"                                   = "1"
+      "${local.affinity_prefix}.preference.matchExpressions[0].key"       = "kubernetes.io/hostname"
+      "${local.affinity_prefix}.preference.matchExpressions[0].operator"  = "In"
+      "${local.affinity_prefix}.preference.matchExpressions[0].values[0]" = var.plex.node_name
     } : { name = k, value = v }
   ]
 }

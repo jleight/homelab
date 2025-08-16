@@ -32,6 +32,8 @@ inputs = {
       image    = "plexinc/pms-docker"
       version  = "1.41.8.9834-071366d65"
     }
+
+    node_name = "prod-04"
   }
 
   postgres = {

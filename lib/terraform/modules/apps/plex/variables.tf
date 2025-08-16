@@ -30,5 +30,7 @@ variable "plex" {
       image   = string
       version = string
     })
+
+    node_name = string
   })
 }
