@@ -22,15 +22,7 @@ variable "media_storage_class" {
 variable "plex" {
   description = "Plex configuration."
   type = object({
-    repository = string
-    chart      = string
-    version    = string
-
-    plex_image = object({
-      image   = string
-      version = string
-    })
-
-    node_name = string
+    image   = string
+    version = string
   })
 }

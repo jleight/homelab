@@ -5,7 +5,7 @@ inputs = {
     #renovate   = "helm"
     repository = "oci://code.forgejo.org/forgejo-helm"
     chart      = "forgejo"
-    version    = "12.3.0"
+    version    = "13.0.1"
   }
 
   isponsorblocktv = {
@@ -22,18 +22,9 @@ inputs = {
   }
 
   plex = {
-    renovate   = "helm"
-    repository = "https://raw.githubusercontent.com/plexinc/pms-docker/gh-pages"
-    chart      = "plex-media-server"
-    version    = "1.1.2"
-
-    plex_image = {
-      renovate = "docker"
-      image    = "plexinc/pms-docker"
-      version  = "1.42.1.10060-4e8b05daf"
-    }
-
-    node_name = "prod-04"
+    renovate = "docker"
+    image    = "lscr.io/linuxserver/plex"
+    version  = "1.42.1"
   }
 
   postgres = {
