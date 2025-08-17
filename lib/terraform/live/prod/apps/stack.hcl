@@ -2,10 +2,13 @@ inputs = {
   stack = "apps"
 
   forgejo = {
-    #renovate   = "helm"
+    renovate   = "docker"
+    image      = "code.forgejo.org/forgejo-helm/forgejo"
+    version    = "13.0.1"
+
+    # ^ hack for renovate to support oci://
     repository = "oci://code.forgejo.org/forgejo-helm"
     chart      = "forgejo"
-    version    = "13.0.1"
   }
 
   isponsorblocktv = {
