@@ -13,7 +13,7 @@ resource "helm_release" "prometheus" {
 
   set = [
     {
-      name  = "sidecar.dashboards.searchNamespace"
+      name  = "grafana.sidecar.dashboards.searchNamespace"
       value = "ALL"
     }
   ]
