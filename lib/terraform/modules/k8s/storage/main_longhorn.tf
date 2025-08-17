@@ -55,6 +55,10 @@ resource "helm_release" "longhorn" {
     {
       name  = "defaultSettings.concurrentAutomaticEngineUpgradePerNodeLimit"
       value = "3"
+    },
+    {
+      name  = "metrics.serviceMonitor.enabled"
+      value = "true"
     }
   ]
 }
