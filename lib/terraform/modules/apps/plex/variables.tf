@@ -19,6 +19,21 @@ variable "media_storage_class" {
   type        = string
 }
 
+variable "gateway_namespace" {
+  description = "Namespace for the gateway for private ingress."
+  type        = string
+}
+
+variable "gateway_name" {
+  description = "Name of the gateway for private ingress."
+  type        = string
+}
+
+variable "gateway_section" {
+  description = "Name of the gateway section for private ingress."
+  type        = string
+}
+
 variable "plex" {
   description = "Plex configuration."
   type = object({

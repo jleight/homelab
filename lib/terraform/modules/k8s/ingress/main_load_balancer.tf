@@ -67,6 +67,16 @@ resource "kubectl_manifest" "load_balancer" {
                 from = local.cert_manager_enabled ? "Same" : "All"
               }
             }
+          },
+          {
+            name     = "plex"
+            protocol = "HTTP"
+            port     = 32400
+            allowedRoutes = {
+              namespaces = {
+                from = "All"
+              }
+            }
           }
         ],
         local.cert_manager_enabled ? [

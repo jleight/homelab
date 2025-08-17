@@ -24,7 +24,9 @@ locals {
 
   port = 32400
 
-  claim_secret_name = local.enabled ? kubernetes_secret.claim[0].metadata[0].name : null
-  config_pvc_name   = local.enabled ? kubernetes_persistent_volume_claim.config[0].metadata[0].name : null
-  media_pvc_name    = local.enabled ? kubernetes_persistent_volume_claim.media[0].metadata[0].name : null
+  service_account_name = local.enabled ? kubernetes_service_account.this[0].metadata[0].name : null
+  service_name         = local.enabled ? kubernetes_service.this[0].metadata[0].name : null
+  claim_secret_name    = local.enabled ? kubernetes_secret.claim[0].metadata[0].name : null
+  config_pvc_name      = local.enabled ? kubernetes_persistent_volume_claim.config[0].metadata[0].name : null
+  media_pvc_name       = local.enabled ? kubernetes_persistent_volume_claim.media[0].metadata[0].name : null
 }

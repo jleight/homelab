@@ -21,6 +21,8 @@ resource "kubernetes_deployment" "this" {
       }
 
       spec {
+        service_account_name = local.service_account_name
+
         container {
           name = "plex"
 
