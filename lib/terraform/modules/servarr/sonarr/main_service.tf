@@ -19,15 +19,9 @@ resource "kubernetes_service" "this" {
 
   spec {
     port {
-      name        = "flood"
+      name        = "http"
       port        = 80
-      target_port = local.flood_port
-    }
-
-    port {
-      name        = "qbittorrent"
-      port        = local.qbittorrent_port
-      target_port = local.qbittorrent_port
+      target_port = local.port
     }
 
     selector = local.match_labels

@@ -1,12 +1,13 @@
 locals {
   sabnzbd_config = local.enabled ? templatefile(
-    "${path.module}/etc/sabnzbd.tftpl",
+    "${path.module}/etc/sabnzbd.ini.tftpl",
     {
       api_key = random_bytes.api_key[0].hex
       nzb_key = random_bytes.nzb_key[0].hex
 
-      url_host = local.hostname
-      url_path = local.path
+      url_service = local.service_name
+      url_host    = local.hostname
+      url_path    = local.path
 
       download_dir = "/media/incomplete"
       complete_dir = "/media/unsorted"

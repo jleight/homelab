@@ -47,4 +47,10 @@ inputs = {
     image    = "ghcr.io/advplyr/audiobookshelf"
     version  = "2.28.0"
   }
+
+  sonarr = {
+    renovate = "docker"
+    image    = "lscr.io/linuxserver/sonarr"
+    version  = "4.0.15"
+  }
 }
