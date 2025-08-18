@@ -13,7 +13,7 @@ resource "kubernetes_persistent_volume_claim" "data" {
 
     resources {
       requests = {
-        storage = "100Mi"
+        storage = "1Gi"
       }
     }
 
