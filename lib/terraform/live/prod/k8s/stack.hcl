@@ -43,6 +43,7 @@ inputs = {
         ipv4_offset       = 22
       }
       fw16_1 = {
+        enabled           = false
         name              = "prod-04"
         schematic_id      = local.schematic_id_fw16
         install_disk      = "/dev/nvme0n1"
