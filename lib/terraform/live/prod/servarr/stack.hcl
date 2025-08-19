@@ -48,6 +48,12 @@ inputs = {
     version  = "2.28.0"
   }
 
+  radarr = {
+    renovate = "docker"
+    image    = "lscr.io/linuxserver/radarr"
+    version  = "5.26.2"
+  }
+
   sonarr = {
     renovate = "docker"
     image    = "lscr.io/linuxserver/sonarr"

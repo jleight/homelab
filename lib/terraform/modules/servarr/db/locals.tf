@@ -11,4 +11,8 @@ locals {
   sonarr_secret   = local.enabled ? kubernetes_secret.sonarr_user[0].metadata[0].name : null
   sonarr_username = local.enabled ? "sonarr" : null
   sonarr_password = local.enabled ? random_password.sonarr_user[0].result : null
+
+  radarr_secret   = local.enabled ? kubernetes_secret.radarr_user[0].metadata[0].name : null
+  radarr_username = local.enabled ? "radarr" : null
+  radarr_password = local.enabled ? random_password.radarr_user[0].result : null
 }

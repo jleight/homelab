@@ -38,6 +38,14 @@ resource "kubectl_manifest" "this" {
             passwordSecret = {
               name = local.sonarr_secret
             }
+          },
+          {
+            name   = local.radarr_username
+            ensure = "present"
+            login  = true
+            passwordSecret = {
+              name = local.radarr_secret
+            }
           }
         ]
       }
