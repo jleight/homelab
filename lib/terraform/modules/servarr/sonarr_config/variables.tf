@@ -51,3 +51,18 @@ variable "qbittorrent_password" {
   type        = string
   sensitive   = true
 }
+
+variable "plex_namespace" {
+  description = "Namespace for the plex deployment."
+  type        = string
+}
+
+variable "plex_service_name" {
+  description = "Name of the plex service."
+  type        = string
+}
+
+variable "plex_port" {
+  description = "Plex port."
+  type        = number
+}

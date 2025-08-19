@@ -43,30 +43,6 @@ resource "kubectl_manifest" "sonarr_main_db" {
   })
 }
 
-resource "kubectl_manifest" "sonarr_logs_db" {
-  count = local.enabled ? 1 : 0
-
-  yaml_body = yamlencode({
-    apiVersion = "postgresql.cnpg.io/v1"
-    kind       = "Database"
-
-    metadata = {
-      namespace = local.namespace
-      name      = "sonarr-logs"
-    }
-
-    spec = {
-      cluster = {
-        name = local.name
-      }
-
-      name   = "sonarr-logs"
-      ensure = "absent"
-      owner  = local.sonarr_username
-    }
-  })
-}
-
 resource "kubectl_manifest" "sonarr_log_db" {
   count = local.enabled ? 1 : 0
 
