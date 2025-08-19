@@ -28,10 +28,8 @@ resource "kubectl_manifest" "intel_gpu_device_plugin" {
     spec = {
       image = "intel/intel-gpu-plugin:${var.k8s_baseline.intel_gpu.version}"
 
-      sharedDevNum              = 2
-      preferredAllocationPolicy = "balanced"
-
-      logLevel = 4
+      sharedDevNum = 1
+      logLevel     = 4
 
       nodeSelector = {
         "feature.node.kubernetes.io/pci-0300_8086.present" = "true"
