@@ -1,15 +1,10 @@
-resource "radarr_indexer" "nzbfinder" {
+resource "radarr_indexer_newznab" "nzbfinder" {
   count = local.enabled ? 1 : 0
 
   name     = "NZB Finder"
   priority = 1
 
-  implementation  = "Newznab"
-  config_contract = "NewznabSettings"
-  protocol        = "usenet"
-
   base_url   = "https://nzbfinder.ws"
-  api_path   = "/api"
   api_key    = local.enabled ? data.onepassword_item.nzbfinder[0].credential : ""
   categories = [2040, 2045, 2060, 2070]
 
