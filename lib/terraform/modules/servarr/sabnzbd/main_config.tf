@@ -9,8 +9,8 @@ locals {
       url_host    = local.hostname
       url_path    = local.path
 
-      download_dir = "/media/incomplete"
-      complete_dir = "/media/unsorted"
+      download_dir = "/downloads/incomplete"
+      complete_dir = "/downloads/unsorted"
 
       servers = {
         for k, v in var.sabnzbd.servers : k => {

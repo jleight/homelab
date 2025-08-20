@@ -66,11 +66,19 @@ resource "kubernetes_deployment" "this" {
           volume_mount {
             name       = "temp"
             mount_path = "/config/logs"
+            sub_path   = "logs"
+          }
+
+          volume_mount {
+            name       = "temp"
+            mount_path = "/downloads/incomplete"
+            sub_path   = "incomplete"
           }
 
           volume_mount {
             name       = "media"
-            mount_path = "/media"
+            mount_path = "/downloads/unsorted"
+            sub_path   = "unsorted"
           }
         }
 
@@ -91,17 +99,17 @@ resource "kubernetes_deployment" "this" {
         }
 
         volume {
-          name = "temp"
-
-          empty_dir {}
-        }
-
-        volume {
           name = "media"
 
           persistent_volume_claim {
             claim_name = local.media_pvc_name
           }
+        }
+
+        volume {
+          name = "temp"
+
+          empty_dir {}
         }
       }
     }

@@ -2,7 +2,7 @@ resource "radarr_remote_path_mapping" "sabnzbd" {
   count = local.enabled ? 1 : 0
 
   host        = var.sabnzbd_service_name
-  remote_path = "/media/unsorted/"
+  remote_path = "/downloads/unsorted/"
   local_path  = "/downloads/"
 }
 
