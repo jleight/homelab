@@ -26,10 +26,6 @@ resource "helm_release" "this" {
       "persistence.storageClass"                                      = var.data_storage_class
       "postgresql-ha.enabled"                                         = false
       "postgresql.enabled"                                            = false
-      "redis-cluster.enabled"                                         = false
-      "redis.architecture"                                            = "standalone"
-      "redis.enabled"                                                 = true
-      "redis.master.persistence.enabled"                              = false
     } : { name = k, value = v }
   ]
 }
