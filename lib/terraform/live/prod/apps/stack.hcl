@@ -23,7 +23,7 @@ inputs = {
     immich_server = {
       renovate = "docker"
       image    = "ghcr.io/immich-app/immich-server"
-      version  = "v1.138.1"
+      version  = "v1.139.4"
     }
   }
 
