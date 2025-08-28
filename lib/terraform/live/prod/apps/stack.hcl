@@ -1,6 +1,13 @@
 inputs = {
   stack = "apps"
 
+  dragonflydb = {
+    renovate   = "github-tags"
+    repository = "dragonflydb/dragonfly-operator"
+    version    = "v1.2.1"
+    url_format = "https://raw.githubusercontent.com/%s/refs/tags/%s/manifests/dragonfly-operator.yaml"
+  }
+
   forgejo = {
     renovate = "docker"
     image    = "code.forgejo.org/forgejo-helm/forgejo"
