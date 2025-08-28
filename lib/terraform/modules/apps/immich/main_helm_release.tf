@@ -17,8 +17,8 @@ resource "helm_release" "this" {
       "env.DB_DATABASE_NAME"                                     = "app"
       "env.DB_PASSWORD.secretKeyRef.name"                        = local.postgres_secret
       "env.DB_PASSWORD.secretKeyRef.key"                         = "password"
+      "env.REDIS_HOSTNAME"                                       = "${local.name}-cache.${local.namespace}.svc.cluster.local"
       "postgresql.global.postgresql.auth.existingSecret"         = local.postgres_secret
-      "redis.enabled"                                            = true
       "machine-learning.image.tag"                               = "${var.immich.immich_server.version}-openvino"
       "machine-learning.resources.limits.gpu\\.intel\\.com/i915" = "1"
       "machine-learning.persistence.cache.type"                  = "pvc"
