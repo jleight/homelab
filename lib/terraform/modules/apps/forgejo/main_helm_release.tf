@@ -24,6 +24,7 @@ resource "helm_release" "this" {
       "gitea.config.server.DOMAIN"                                    = local.hostname
       "gitea.config.server.ROOT_URL"                                  = "https://${local.hostname}"
       "persistence.storageClass"                                      = var.data_storage_class
+      "persistence.accessModes[0]"                                    = "ReadWriteMany"
       "postgresql-ha.enabled"                                         = false
       "postgresql.enabled"                                            = false
     } : { name = k, value = v }
