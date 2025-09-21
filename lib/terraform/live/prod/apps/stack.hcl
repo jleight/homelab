@@ -53,6 +53,12 @@ inputs = {
     ]
   }
 
+  mealie = {
+    renovate = "docker"
+    image    = "ghcr.io/mealie-recipes/mealie"
+    version  = "v3.2.1"
+  }
+
   plex = {
     renovate = "docker"
     image    = "lscr.io/linuxserver/plex"
