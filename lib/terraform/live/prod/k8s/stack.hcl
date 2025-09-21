@@ -95,7 +95,7 @@ inputs = {
       renovate   = "helm"
       repository = "https://intel.github.io/helm-charts"
       chart      = "intel-device-plugins-operator"
-      version    = "0.32.1"
+      version    = "0.34.0"
     }
   }
 
