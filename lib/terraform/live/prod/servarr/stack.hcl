@@ -59,4 +59,10 @@ inputs = {
     image    = "lscr.io/linuxserver/sonarr"
     version  = "4.0.15"
   }
+
+  overseerr = {
+    renovate = "docker"
+    image    = "ghcr.io/sct/overseerr"
+    version  = "1.34.0"
+  }
 }
