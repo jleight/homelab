@@ -62,7 +62,7 @@ inputs = {
   plex = {
     renovate = "docker"
     image    = "lscr.io/linuxserver/plex"
-    version  = "1.42.1"
+    version  = "1.42.2"
   }
 
   postgres = {
