@@ -81,7 +81,7 @@ inputs = {
       renovate   = "helm"
       repository = "https://kubernetes-sigs.github.io/node-feature-discovery/charts"
       chart      = "node-feature-discovery"
-      version    = "0.17.4"
+      version    = "0.18.0"
     }
 
     amd_gpu = {
