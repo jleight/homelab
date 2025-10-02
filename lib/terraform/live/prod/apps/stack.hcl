@@ -56,7 +56,7 @@ inputs = {
   mealie = {
     renovate = "docker"
     image    = "ghcr.io/mealie-recipes/mealie"
-    version  = "v3.3.0"
+    version  = "v3.3.1"
   }
 
   plex = {
