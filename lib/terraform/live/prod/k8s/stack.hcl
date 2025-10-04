@@ -78,10 +78,13 @@ inputs = {
     }
 
     node_feature_discovery = {
-      renovate   = "helm"
-      repository = "https://kubernetes-sigs.github.io/node-feature-discovery/charts"
+      renovate = "docker"
+      image    = "registry.k8s.io/nfd/charts/node-feature-discovery"
+      version  = "0.18.0"
+
+      # ^ hack for renovate to support oci://
+      repository = "oci://registry.k8s.io/nfd/charts"
       chart      = "node-feature-discovery"
-      version    = "0.18.0"
     }
 
     amd_gpu = {
