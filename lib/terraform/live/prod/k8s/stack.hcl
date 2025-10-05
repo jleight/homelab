@@ -7,7 +7,6 @@ inputs = {
   stack = "k8s"
 
   k8s_cluster = {
-    version   = "1.33.3"
     domain    = "leightha.us"
     subdomain = "kube"
 
