@@ -3,6 +3,11 @@ variable "env_directory" {
   type        = string
 }
 
+variable "k8s_version" {
+  description = "Kubernetes version."
+  type        = string
+}
+
 variable "cloudflare_api_token" {
   description = "API token for Cloudflare."
   type        = string
@@ -20,7 +25,6 @@ variable "network" {
 variable "k8s_cluster" {
   description = "Settings for the Kubernetes cluster."
   type = object({
-    version   = string
     domain    = string
     subdomain = string
 

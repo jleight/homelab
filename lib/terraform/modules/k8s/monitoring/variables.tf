@@ -3,6 +3,11 @@ variable "env_directory" {
   type        = string
 }
 
+variable "k8s_version" {
+  description = "Kubernetes version."
+  type        = string
+}
+
 variable "k8s_monitoring" {
   description = "Settings for monitoring a Kubernetes cluster."
   type = object({
