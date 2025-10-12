@@ -1,3 +1,7 @@
+locals {
+  cmcm = "controllers.main.containers.main"
+}
+
 resource "helm_release" "this" {
   count = local.enabled ? 1 : 0
 
@@ -9,21 +13,20 @@ resource "helm_release" "this" {
 
   set = [
     for k, v in {
-      "image.tag"                                                = var.immich.immich_server.version
-      "immich.persistence.library.existingClaim"                 = local.media_pvc_name
-      "server.persistence.library.subPath"                       = "photos"
-      "env.DB_HOSTNAME"                                          = "${local.name}-db-rw.${local.namespace}.svc.cluster.local"
-      "env.DB_USERNAME"                                          = local.postgres_username
-      "env.DB_DATABASE_NAME"                                     = "app"
-      "env.DB_PASSWORD.secretKeyRef.name"                        = local.postgres_secret
-      "env.DB_PASSWORD.secretKeyRef.key"                         = "password"
-      "env.REDIS_HOSTNAME"                                       = "${local.name}-cache.${local.namespace}.svc.cluster.local"
-      "postgresql.global.postgresql.auth.existingSecret"         = local.postgres_secret
-      "machine-learning.image.tag"                               = "${var.immich.immich_server.version}-openvino"
-      "machine-learning.resources.limits.gpu\\.intel\\.com/i915" = "1"
-      "machine-learning.persistence.cache.type"                  = "pvc"
-      "machine-learning.persistence.cache.existingClaim"         = local.media_pvc_name
-      "machine-learning.persistence.cache.subPath"               = "photos/cache"
+      "${local.cmcm}.image.tag"                                                = var.immich.immich_server.version
+      "${local.cmcm}.env.REDIS_HOSTNAME"                                       = "${local.name}-cache.${local.namespace}.svc.cluster.local"
+      "immich.persistence.library.existingClaim"                               = local.media_pvc_name
+      "server.${local.cmcm}.env.DB_HOSTNAME"                                   = "${local.name}-db-rw.${local.namespace}.svc.cluster.local"
+      "server.${local.cmcm}.env.DB_USERNAME"                                   = local.postgres_username
+      "server.${local.cmcm}.env.DB_DATABASE_NAME"                              = "app"
+      "server.${local.cmcm}.env.DB_PASSWORD.secretKeyRef.name"                 = local.postgres_secret
+      "server.${local.cmcm}.env.DB_PASSWORD.secretKeyRef.key"                  = "password"
+      "server.persistence.data.advancedMounts.main.main.0.subPath"             = "photos"
+      "machine-learning.${local.cmcm}.image.tag"                               = "${var.immich.immich_server.version}-openvino"
+      "machine-learning.${local.cmcm}.resources.limits.gpu\\.intel\\.com/i915" = "1"
+      "machine-learning.persistence.cache.type"                                = "persistentVolumeClaim"
+      "machine-learning.persistence.cache.existingClaim"                       = local.media_pvc_name
+      "machine-learning.persistence.cache.advancedMounts.main.main.0.subPath"  = "photos/cache"
     } : { name = k, value = v }
   ]
 }
