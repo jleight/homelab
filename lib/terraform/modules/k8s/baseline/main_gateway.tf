@@ -17,5 +17,7 @@ data "kubectl_file_documents" "gateway_crds" {
 resource "kubectl_manifest" "gateway_crds" {
   for_each = local.enabled ? data.kubectl_file_documents.gateway_crds[0].manifests : {}
 
+  server_side_apply = true
+
   yaml_body = each.value
 }
