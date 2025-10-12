@@ -25,16 +25,9 @@ inputs = {
   }
 
   plex = {
-    renovate   = "helm"
-    repository = "https://raw.githubusercontent.com/plexinc/pms-docker/gh-pages"
-    chart      = "plex-media-server"
-    version    = "1.1.2"
-
-    plex_image = {
-      renovate = "docker"
-      image    = "plexinc/pms-docker"
-      version  = "1.42.1.10060-4e8b05daf"
-    }
+    renovate = "docker"
+    image    = "lscr.io/linuxserver/plex"
+    version  = "1.42.2"
   }
 
   postgres = {
