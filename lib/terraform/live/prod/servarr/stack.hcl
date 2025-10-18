@@ -51,7 +51,7 @@ inputs = {
   radarr = {
     renovate = "docker"
     image    = "lscr.io/linuxserver/radarr"
-    version  = "5.27.5"
+    version  = "5.28.0"
   }
 
   sonarr = {
