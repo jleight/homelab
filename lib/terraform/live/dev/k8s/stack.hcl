@@ -95,7 +95,7 @@ inputs = {
       renovate   = "helm"
       repository = "https://raw.githubusercontent.com/kubernetes-csi/csi-driver-smb/master/charts"
       chart      = "csi-driver-smb"
-      version    = "1.19.0"
+      version    = "1.19.1"
     }
   }
 
