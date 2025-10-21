@@ -43,7 +43,7 @@ inputs = {
   isponsorblocktv = {
     renovate = "docker"
     image    = "dmunozv04/isponsorblocktv"
-    version  = "v2.6.0"
+    version  = "v2.6.1"
 
     devices = [
       {
