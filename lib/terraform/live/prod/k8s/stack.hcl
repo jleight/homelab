@@ -79,7 +79,7 @@ inputs = {
     node_feature_discovery = {
       renovate = "docker"
       image    = "registry.k8s.io/nfd/charts/node-feature-discovery"
-      version  = "0.18.2"
+      version  = "0.18.3"
 
       # ^ hack for renovate to support oci://
       repository = "oci://registry.k8s.io/nfd/charts"
