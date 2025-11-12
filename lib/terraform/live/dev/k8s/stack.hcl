@@ -80,7 +80,7 @@ inputs = {
       renovate   = "helm"
       repository = "https://charts.longhorn.io"
       chart      = "longhorn"
-      version    = "1.10.0"
+      version    = "1.10.1"
     }
 
     openebs = {
