@@ -58,7 +58,7 @@ inputs = {
     kubelet_cert_approver = {
       renovate   = "github-tags"
       repository = "alex1989hu/kubelet-serving-cert-approver"
-      version    = "v0.9.3"
+      version    = "v0.10.0"
       url_format = "https://raw.githubusercontent.com/%s/refs/tags/%s/deploy/standalone-install.yaml"
     }
 
