@@ -84,7 +84,7 @@ resource "kubernetes_storage_class" "longhorn_appdata" {
     "replicaAutoBalance"  = "least-effort"
   }
 
-  depends_on = [helm_release.openebs]
+  depends_on = [helm_release.longhorn]
 }
 
 resource "kubectl_manifest" "longhorn_backup_daily" {

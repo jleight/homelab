@@ -34,18 +34,6 @@ variable "k8s_storage" {
       version = string
     }), null)
 
-    openebs = object({
-      repository = string
-      chart      = string
-      version    = string
-      enabled    = optional(bool, true)
-    })
-
-    openebs_test = optional(object({
-      image   = string
-      version = string
-    }), null)
-
     csi_smb = object({
       repository = string
       chart      = string

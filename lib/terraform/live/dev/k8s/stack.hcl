@@ -83,14 +83,6 @@ inputs = {
       version    = "1.10.1"
     }
 
-    openebs = {
-      renovate   = "helm"
-      repository = "https://openebs.github.io/openebs"
-      chart      = "openebs"
-      version    = "4.3.3"
-      enabled    = false
-    }
-
     csi_smb = {
       renovate   = "helm"
       repository = "https://raw.githubusercontent.com/kubernetes-csi/csi-driver-smb/master/charts"
