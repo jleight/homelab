@@ -90,7 +90,7 @@ inputs = {
       renovate   = "helm"
       repository = "https://rocm.github.io/k8s-device-plugin"
       chart      = "amd-gpu"
-      version    = "0.20.0"
+      version    = "0.21.0"
     }
 
     intel_gpu = {
