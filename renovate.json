@@ -16,5 +16,13 @@
         "(?:\\S+?) = {\\s+?renovate\\s+?=\\s\"(?<datasource>[^\"]+?)\"\\s+?image\\s+?=\\s\"(?<packageName>(?:.+/)?(?<depName>[^\"]+))\"\\s+?version\\s+?=\\s\"(?<currentValue>[^\"]+?)\""
       ]
     }
+  ],
+  "packageRules": [
+    {
+      "description": "Only upgrade to major versions of prometheus",
+      "matchDepNames": ["prometheus"],
+      "matchUpdateTypes": ["minor", "patch", "pin"],
+      "enabled": false
+    }
   ]
 }
