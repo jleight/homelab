@@ -59,6 +59,13 @@ inputs = {
     version  = "v3.6.1"
   }
 
+  open_webui = {
+    renovate   = "helm"
+    repository = "https://helm.openwebui.com"
+    chart      = "open-webui"
+    version    = "8.19.0"
+  }
+
   plex = {
     renovate = "docker"
     image    = "lscr.io/linuxserver/plex"
