@@ -31,6 +31,8 @@ resource "kubectl_manifest" "intel_gpu_device_plugin" {
       sharedDevNum = 1
       logLevel     = 4
 
+      preferredAllocationPolicy = "none"
+
       nodeSelector = {
         "feature.node.kubernetes.io/pci-0300_8086.present" = "true"
       }
