@@ -27,6 +27,7 @@ resource "helm_release" "this" {
       "openaiBaseApiUrl"                            = "http://fwd01.leightha.us:1234/v1"
       "openaiApiKey"                                = random_password.openai_api_key[0].result
       "image.tag"                                   = "main"
+      "image.pullPolicy"                            = "Always"
       "ollama.enabled"                              = false
       "persistence.accessModes[0]"                  = "ReadWriteMany"
       "persistence.storageClass"                    = var.data_storage_class
