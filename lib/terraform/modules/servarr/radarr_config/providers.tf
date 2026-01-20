@@ -4,7 +4,8 @@ terraform {
       source = "hashicorp/kubernetes"
     }
     onepassword = {
-      source = "1Password/onepassword"
+      source  = "1Password/onepassword"
+      version = "~> 2.2.1"
     }
     radarr = {
       source = "devopsarr/radarr"

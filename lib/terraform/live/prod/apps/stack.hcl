@@ -11,7 +11,7 @@ inputs = {
   forgejo = {
     renovate = "docker"
     image    = "code.forgejo.org/forgejo-helm/forgejo"
-    version  = "16.0.0"
+    version  = "16.0.1"
 
     # ^ hack for renovate to support oci://
     repository = "oci://code.forgejo.org/forgejo-helm"
