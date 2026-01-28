@@ -80,7 +80,7 @@ inputs = {
       renovate   = "helm"
       repository = "https://charts.longhorn.io"
       chart      = "longhorn"
-      version    = "1.10.1"
+      version    = "1.10.2"
     }
 
     csi_smb = {
