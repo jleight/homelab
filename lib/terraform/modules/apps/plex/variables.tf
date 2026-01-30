@@ -39,5 +39,7 @@ variable "plex" {
   type = object({
     image   = string
     version = string
+
+    replicas = optional(number, 1)
   })
 }

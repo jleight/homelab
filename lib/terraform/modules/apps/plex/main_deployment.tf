@@ -9,7 +9,7 @@ resource "kubernetes_deployment" "this" {
   }
 
   spec {
-    replicas = 1
+    replicas = var.plex.replicas
 
     selector {
       match_labels = local.match_labels
