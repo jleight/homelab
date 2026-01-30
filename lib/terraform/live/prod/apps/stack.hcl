@@ -4,7 +4,7 @@ inputs = {
   dragonflydb = {
     renovate   = "github-tags"
     repository = "dragonflydb/dragonfly-operator"
-    version    = "v1.3.1"
+    version    = "v1.4.0"
     url_format = "https://raw.githubusercontent.com/%s/refs/tags/%s/manifests/dragonfly-operator.yaml"
   }
 
