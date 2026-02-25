@@ -24,7 +24,7 @@ resource "helm_release" "this" {
 
   set = [
     for k, v in {
-      "openaiBaseApiUrl"                            = "http://fwd01.leightha.us:1234/v1"
+      "openaiBaseApiUrl"                            = "http://fwd01.leightha.us:8080/v1"
       "openaiApiKey"                                = random_password.openai_api_key[0].result
       "image.tag"                                   = "main"
       "image.pullPolicy"                            = "Always"
