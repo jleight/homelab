@@ -19,7 +19,7 @@ resource "kubectl_manifest" "load_balancer_pool" {
   count = local.load_balancer_enabled ? 1 : 0
 
   yaml_body = yamlencode({
-    apiVersion = "cilium.io/v2alpha1"
+    apiVersion = "cilium.io/v2"
     kind       = "CiliumLoadBalancerIPPool"
 
     metadata = {
