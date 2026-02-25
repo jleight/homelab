@@ -13,4 +13,7 @@ locals {
   postgres_password = local.enabled ? random_password.postgres_user[0].result : null
 
   service_name = local.enabled ? local.name : null
+
+  ingress_public_enabled  = local.enabled && var.open_webui.ingress == "public"
+  ingress_private_enabled = local.enabled && var.open_webui.ingress == "private"
 }
