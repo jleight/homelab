@@ -47,7 +47,7 @@ inputs = {
     gateway_crds = {
       renovate   = "github-tags"
       repository = "kubernetes-sigs/gateway-api"
-      version    = "v1.4.1"
+      version    = "v1.5.0"
       url_format = "https://github.com/%s/releases/download/%s/experimental-install.yaml"
     }
 
