@@ -16,7 +16,15 @@ output "load_balancer_namespace" {
 }
 
 output "load_balancer_name" {
-  value = local.load_balancer_name
+  value = "load-balancer"
+}
+
+output "private_load_balancer_name" {
+  value = local.private_load_balancer_name
+}
+
+output "public_load_balancer_name" {
+  value = local.public_load_balancer_name
 }
 
 output "load_balancer_section" {

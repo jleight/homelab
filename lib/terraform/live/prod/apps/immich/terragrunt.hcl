@@ -24,7 +24,7 @@ inputs = {
   tunnel_name = dependency.k8s_ingress.outputs.tunnel_name
 
   gateway_namespace = dependency.k8s_ingress.outputs.load_balancer_namespace
-  gateway_name      = dependency.k8s_ingress.outputs.load_balancer_name
-  gateway_section   = dependency.k8s_ingress.outputs.load_balancer_section
+  gateway_name      = dependency.k8s_ingress.outputs.private_load_balancer_name
+  gateway_section   = "https"
   gateway_domain    = dependency.k8s_ingress.outputs.load_balancer_domain
 }
