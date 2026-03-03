@@ -23,7 +23,6 @@ inputs = {
 
   tailscale_operator_client_id     = dependency.secrets.outputs.tailscale_k8s_operator_client_id
   tailscale_operator_client_secret = dependency.secrets.outputs.tailscale_k8s_operator_client_secret
-  cloudflare_account_id            = dependency.secrets.outputs.cloudflare_account_id
   cloudflare_api_token             = dependency.secrets.outputs.cloudflare_api_token
   lets_encrypt_url                 = dependency.secrets.outputs.lets_encrypt_url
   lets_encrypt_email               = dependency.secrets.outputs.lets_encrypt_email
