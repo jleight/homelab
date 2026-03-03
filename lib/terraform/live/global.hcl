@@ -16,5 +16,6 @@ inputs = {
     gateway_as = 65000
   }
 
+  ddns_host     = "ddns.jleight.com"
   smb_nas02_url = "//192.168.1.251"
 }

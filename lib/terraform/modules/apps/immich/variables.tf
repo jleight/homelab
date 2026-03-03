@@ -18,16 +18,6 @@ variable "media_storage_class" {
   type        = string
 }
 
-variable "tunnel_kind" {
-  description = "The kind of the tunnel for public ingress."
-  type        = string
-}
-
-variable "tunnel_name" {
-  description = "The name of the tunnel for public ingress."
-  type        = string
-}
-
 variable "gateway_namespace" {
   description = "Namespace for the gateway for private ingress."
   type        = string
@@ -56,7 +46,7 @@ variable "immich" {
     version    = string
 
     subdomain = optional(string, "photos")
-    ingress   = optional(string, "public")
+    path      = optional(string, "/")
 
     immich_server = object({
       image   = string

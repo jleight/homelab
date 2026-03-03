@@ -8,16 +8,6 @@ variable "data_storage_class" {
   type        = string
 }
 
-variable "tunnel_kind" {
-  description = "The kind of the tunnel for public ingress."
-  type        = string
-}
-
-variable "tunnel_name" {
-  description = "The name of the tunnel for public ingress."
-  type        = string
-}
-
 variable "gateway_namespace" {
   description = "Namespace for the gateway for private ingress."
   type        = string
@@ -47,6 +37,5 @@ variable "open_webui" {
 
     subdomain = optional(string, "llms")
     path      = optional(string, "/")
-    ingress   = optional(string, "public")
   })
 }

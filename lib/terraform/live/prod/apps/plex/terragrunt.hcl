@@ -21,6 +21,6 @@ inputs = {
   media_storage_class = dependency.k8s_storage.outputs.media_storage_class_name
 
   gateway_namespace = dependency.k8s_ingress.outputs.load_balancer_namespace
-  gateway_name      = dependency.k8s_ingress.outputs.public_load_balancer_namea
+  gateway_name      = dependency.k8s_ingress.outputs.public_load_balancer_name
   gateway_section   = "plex"
 }

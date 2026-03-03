@@ -12,6 +12,11 @@ variable "network" {
   })
 }
 
+variable "ddns_host" {
+  description = "Host for network DDNS."
+  type        = string
+}
+
 variable "tailscale_operator_client_id" {
   description = "Client ID for the Tailscale Operator."
   type        = string

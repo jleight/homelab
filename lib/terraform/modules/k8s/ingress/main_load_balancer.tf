@@ -80,7 +80,7 @@ resource "kubectl_manifest" "load_balancer" {
             }
           }
         ],
-          local.cert_manager_enabled ? [
+        local.cert_manager_enabled ? [
           {
             name     = "https"
             protocol = "HTTPS"
@@ -177,9 +177,14 @@ resource "kubectl_manifest" "load_balancer_public" {
       namespace = local.load_balancer_namespace
       name      = local.public_load_balancer_name
 
-      annotations = local.cert_manager_enabled ? {
-        "cert-manager.io/cluster-issuer" = "lets-encrypt"
-      } : {}
+      annotations = merge(
+        {
+          "external-dns.alpha.kubernetes.io/target" = var.ddns_host
+        },
+        local.cert_manager_enabled ? {
+          "cert-manager.io/cluster-issuer" = "lets-encrypt"
+        } : {},
+      )
     }
 
     spec = {
@@ -280,7 +285,7 @@ resource "kubectl_manifest" "load_balancer_private_http_to_https" {
 
     metadata = {
       namespace = local.load_balancer_namespace
-      name      = "http-to-https"
+      name      = "private-http-to-https"
     }
 
     spec = {
@@ -316,7 +321,7 @@ resource "kubectl_manifest" "load_balancer_public_http_to_https" {
 
     metadata = {
       namespace = local.load_balancer_namespace
-      name      = "http-to-https"
+      name      = "public-http-to-https"
     }
 
     spec = {

@@ -8,16 +8,6 @@ variable "data_storage_class" {
   type        = string
 }
 
-variable "tunnel_kind" {
-  description = "The kind of the tunnel for public ingress."
-  type        = string
-}
-
-variable "tunnel_name" {
-  description = "The name of the tunnel for public ingress."
-  type        = string
-}
-
 variable "gateway_namespace" {
   description = "Namespace for the gateway for private ingress."
   type        = string
@@ -48,7 +38,7 @@ variable "smokeping" {
     contact_email = string
     time_zone     = optional(string, "Etc/UTC")
     subdomain     = string
-    ingress       = optional(string, "public")
+    path          = optional(string, "/")
 
     site_title  = optional(string, "Network Latency Grapher")
     site_remark = optional(string, "My homelab's network latency.")
@@ -73,9 +63,4 @@ variable "smokeping" {
       host = string
     }))
   })
-
-  validation {
-    condition     = var.smokeping.ingress == "none" || var.smokeping.ingress == "public" || var.smokeping.ingress == "private"
-    error_message = "Ingress must be either 'none', 'public' or 'private'."
-  }
 }

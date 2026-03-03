@@ -20,7 +20,7 @@ resource "kubernetes_service" "this" {
   spec {
     port {
       name        = "http"
-      port        = 80
+      port        = local.port
       target_port = 80
     }
 
