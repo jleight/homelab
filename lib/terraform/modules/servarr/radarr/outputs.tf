@@ -1,9 +1,9 @@
 output "service_name" {
-  value = local.service_name
+  value = module.app.service_name
 }
 
 output "url" {
-  value = local.enabled ? "https://${local.hostname}${local.path}" : ""
+  value = module.app.url
 }
 
 output "api_key" {

@@ -2,14 +2,12 @@ resource "random_uuid" "api_key" {
   count = local.enabled ? 1 : 0
 }
 
-resource "kubernetes_secret" "config" {
+resource "kubernetes_secret_v1" "config" {
   count = local.enabled ? 1 : 0
 
   metadata {
-    namespace = local.namespace
-    name      = "${local.name}-config"
-
-    labels = local.labels
+    namespace = var.namespace
+    name      = "${local.component}-config"
   }
 
   data = {
@@ -17,7 +15,7 @@ resource "kubernetes_secret" "config" {
       "${path.module}/etc/config.xml.tftpl",
       {
         port    = local.port
-        path    = trimprefix(local.path, "/")
+        path    = trimprefix(var.sonarr.path, "/")
         auth    = var.sonarr.auth
         api_key = local.enabled ? replace(random_uuid.api_key[0].result, "-", "") : ""
 
