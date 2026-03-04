@@ -60,4 +60,11 @@ locals {
   stack       = coalesce(var.stack, var.context.stack)
   component   = coalesce(var.component, var.context.component)
   environment = coalesce(var.environment, var.context.environment)
+
+  context = {
+    enabled     = local.enabled
+    stack       = local.stack
+    component   = local.component
+    environment = local.environment
+  }
 }
