@@ -18,7 +18,7 @@ resource "kubectl_manifest" "ingress" {
           sectionName = var.gateway_section
         }
       ]
-      hostnames = [
+      hostnames = var.subdomain == null ? [] : [
         local.hostname
       ]
       rules = concat(

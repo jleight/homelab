@@ -1,11 +1,11 @@
 output "namespace" {
-  value = local.namespace
+  value = module.app.namespace
 }
 
 output "service_name" {
-  value = local.service_name
+  value = module.app.service_name
 }
 
 output "port" {
-  value = local.port
+  value = module.app.port
 }

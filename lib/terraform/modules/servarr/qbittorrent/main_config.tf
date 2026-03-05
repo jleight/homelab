@@ -50,14 +50,12 @@ data "pbkdf2_key" "qbittorrent" {
   hash_function = "sha512"
 }
 
-resource "kubernetes_config_map" "config" {
+resource "kubernetes_config_map_v1" "config" {
   count = local.enabled ? 1 : 0
 
   metadata {
     namespace = local.namespace
     name      = "${local.name}-config"
-
-    labels = local.labels
   }
 
   data = {
@@ -65,7 +63,7 @@ resource "kubernetes_config_map" "config" {
   }
 }
 
-resource "kubernetes_config_map" "flood_env" {
+resource "kubernetes_config_map_v1" "flood_env" {
   count = local.enabled ? 1 : 0
 
   metadata {
@@ -78,7 +76,7 @@ resource "kubernetes_config_map" "flood_env" {
   }
 }
 
-resource "kubernetes_secret" "flood" {
+resource "kubernetes_secret_v1" "flood" {
   count = local.enabled ? 1 : 0
 
   metadata {

@@ -5,9 +5,9 @@ locals {
       api_key = random_bytes.api_key[0].hex
       nzb_key = random_bytes.nzb_key[0].hex
 
-      url_service = local.service_name
-      url_host    = local.hostname
-      url_path    = local.path
+      url_service = module.app.service_name
+      url_host    = "${var.sabnzbd.subdomain}.${var.gateway_domain}"
+      url_path    = var.sabnzbd.path
 
       download_dir = "/downloads/incomplete"
       complete_dir = "/downloads/unsorted"
@@ -41,14 +41,12 @@ resource "random_bytes" "nzb_key" {
   length = 16
 }
 
-resource "kubernetes_secret" "config" {
+resource "kubernetes_secret_v1" "config" {
   count = local.enabled ? 1 : 0
 
   metadata {
-    namespace = local.namespace
-    name      = "${local.name}-config"
-
-    labels = local.labels
+    namespace = var.namespace
+    name      = "${local.component}-config"
   }
 
   data = {

@@ -1,5 +1,5 @@
 output "service_name" {
-  value = local.service_name
+  value = module.app.service_name
 }
 
 output "api_key" {
