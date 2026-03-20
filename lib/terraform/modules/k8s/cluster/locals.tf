@@ -22,4 +22,6 @@ locals {
       for k, v in var.k8s_cluster.nodes : k => module.slaac_pd[k].ip
     } : {}
   }
+
+  feature_gates = {}
 }

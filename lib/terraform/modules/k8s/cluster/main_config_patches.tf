@@ -25,10 +25,10 @@ locals {
                 partitions = [{ mountpoint = "/var/mnt/longhorn" }]
               }
             ]
-            systemDiskEncryption = {}  # deprecated
+            systemDiskEncryption = {} # deprecated
             network = {
-              hostname = v.name  # deprecated
-              interfaces = [  # deprecated
+              hostname = v.name # deprecated
+              interfaces = [    # deprecated
                 {
                   interface = v.network_interface
                   dhcp      = false
@@ -57,7 +57,7 @@ locals {
                   ]
                 }
               ]
-              nameservers = var.network.nameservers  # deprecated
+              nameservers = var.network.nameservers # deprecated
             }
             certSANs = [
               local.endpoint
@@ -67,10 +67,7 @@ locals {
                 "rotate-server-certificates" = true
               }
               extraConfig = {
-                featureGates = {
-                  "UserNamespacesSupport"              = true
-                  "UserNamespacesPodSecurityStandards" = true
-                }
+                featureGates = local.feature_gates
               }
               extraMounts = [
                 {
@@ -102,10 +99,7 @@ locals {
               extraArgs = {
                 "feature-gates" = join(
                   ",",
-                  [
-                    "UserNamespacesSupport=true",
-                    "UserNamespacesPodSecurityStandards=true"
-                  ]
+                  [for k, v in local.feature_gates : "${k}=${v}"]
                 )
               }
             }

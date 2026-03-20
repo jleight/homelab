@@ -33,6 +33,22 @@ The terraform modules aren't split up properly, yet, so they need to be applied 
    5. Enable the rest of the services.
    6. Apply the module again.
 
+## Upgrading the Cluster
+
+First, upgrade talos.
+You should upgrade to the latest patch version before upgrading to the next minor version.
+
+1. Modify the version in the `k8s/cluster/variables.tf` file.
+2. Apply the module.
+3. Run the `talosctl upgrade` commands (one for each node) that the module outputs.
+
+Then, upgrade kubernetes.
+Again, upgrade to the latest patch version before upgrading to the next minor version.
+
+1. Run `talosctl --nodes ${node_ip} upgrade-k8s --to ${k8s_version}` to upgrade the whole cluster.
+2. Modify the `k8s_version` in `global.hcl`.
+3. Apply the cluster module.
+
 ## References
 
 ### BGP
