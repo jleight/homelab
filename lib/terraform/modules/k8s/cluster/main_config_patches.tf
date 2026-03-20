@@ -19,46 +19,6 @@ locals {
                 { name = "vfio_pci" }
               ]
             }
-            disks = v.storage_disk == null ? [] : [
-              {
-                device     = v.storage_disk
-                partitions = [{ mountpoint = "/var/mnt/longhorn" }]
-              }
-            ]
-            systemDiskEncryption = {} # deprecated
-            network = {
-              hostname = v.name # deprecated
-              interfaces = [    # deprecated
-                {
-                  interface = v.network_interface
-                  dhcp      = false
-                  vlans = [
-                    {
-                      vlanId = 1
-                      dhcp   = false
-                    },
-                    {
-                      vlanId = v.vlan_id
-                      addresses = [
-                        "${local.node_ips.v4[k]}/24",
-                        "${local.node_ips.v6_pd[k]}/64"
-                      ]
-                      routes = [
-                        {
-                          network = "0.0.0.0/0"
-                          gateway = module.ipam.nodes.v4_gateway
-                        },
-                        {
-                          network = "::/0"
-                          gateway = module.ipam.nodes.v6_gateway
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-              nameservers = var.network.nameservers # deprecated
-            }
             certSANs = [
               local.endpoint
             ]
@@ -109,6 +69,43 @@ locals {
               }
             }
           }
+        }),
+        yamlencode({
+          apiVersion = "v1alpha1"
+          kind       = "HostnameConfig"
+          hostname   = v.name
+          auto       = "off"
+        }),
+        yamlencode({
+          apiVersion = "v1alpha1"
+          kind       = "VLANConfig"
+          name       = "${v.network_interface}.1"
+          vlanID     = 1
+          parent     = v.network_interface
+        }),
+        yamlencode({
+          apiVersion = "v1alpha1"
+          kind       = "VLANConfig"
+          name       = "${v.network_interface}.${v.vlan_id}"
+          vlanID     = v.vlan_id
+          parent     = v.network_interface
+          addresses = [
+            { address = "${local.node_ips.v4[k]}/24" },
+            { address = "${local.node_ips.v6_pd[k]}/64" }
+          ]
+          routes = [
+            { gateway = module.ipam.nodes.v4_gateway },
+            { gateway = module.ipam.nodes.v6_gateway }
+          ]
+        }),
+        yamlencode({
+          apiVersion = "v1alpha1"
+          kind       = "ResolverConfig"
+          nameservers = [
+            for ns in var.network.nameservers : {
+              address = ns
+            }
+          ]
         })
       ],
       v.storage_disk == null ? [
@@ -136,7 +133,18 @@ locals {
             maxSize = "1TiB"
           }
         })
-      ] : []
+        ] : [
+        yamlencode({
+          apiVersion = "v1alpha1"
+          kind       = "ExistingVolumeConfig"
+          name       = "longhorn"
+          discovery = {
+            volumeSelector = {
+              match = "volume.name == \"xfs\" && disk.symlinks.exists(s, s == \"${v.storage_disk}\")"
+            }
+          }
+        })
+      ]
     )
   }
 }

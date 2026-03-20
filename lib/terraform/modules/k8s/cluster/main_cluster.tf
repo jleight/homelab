@@ -22,6 +22,8 @@ resource "talos_machine_configuration_apply" "control_plane" {
 
   machine_configuration_input = try(data.talos_machine_configuration.control_plane[0].machine_configuration, null)
   config_patches              = local.config_patches[each.key]
+
+  apply_mode = "staged_if_needing_reboot"
 }
 
 resource "talos_machine_bootstrap" "this" {
