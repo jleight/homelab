@@ -25,10 +25,10 @@ locals {
                 partitions = [{ mountpoint = "/var/mnt/longhorn" }]
               }
             ]
-            systemDiskEncryption = {}
+            systemDiskEncryption = {}  # deprecated
             network = {
-              hostname = v.name
-              interfaces = [
+              hostname = v.name  # deprecated
+              interfaces = [  # deprecated
                 {
                   interface = v.network_interface
                   dhcp      = false
@@ -57,7 +57,7 @@ locals {
                   ]
                 }
               ]
-              nameservers = var.network.nameservers
+              nameservers = var.network.nameservers  # deprecated
             }
             certSANs = [
               local.endpoint

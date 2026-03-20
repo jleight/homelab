@@ -1,11 +1,15 @@
 locals {
-  config_files = local.enabled ? {
-    ".kubeconfig"  = talos_cluster_kubeconfig.this[0].kubeconfig_raw
-    ".talosconfig" = data.talos_client_configuration.this[0].talos_config
-    "eq14_1.yaml"  = talos_machine_configuration_apply.eq14_1.machine_configuration
-    "eq14_2.yaml"  = talos_machine_configuration_apply.eq14_2.machine_configuration
-    "eq14_3.yaml"  = talos_machine_configuration_apply.eq14_3.machine_configuration
-  } : {}
+  config_files = local.enabled ? merge(
+    {
+      ".kubeconfig"  = talos_cluster_kubeconfig.this[0].kubeconfig_raw
+      ".talosconfig" = data.talos_client_configuration.this[0].talos_config
+    },
+    {
+      for k, v in local.nodes : "${k}.yaml" => (
+        talos_machine_configuration_apply.control_plane[k].machine_configuration
+      )
+    }
+  ) : {}
 }
 
 data "talos_client_configuration" "this" {

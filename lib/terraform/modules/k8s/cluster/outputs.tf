@@ -14,7 +14,7 @@ output "upgrade_machines" {
         "talosctl",
         "upgrade",
         "--nodes",
-        local.node_ips.v6_pd[k],
+        local.node_ips.v4[k],
         "--image",
         local.node_images[k],
         "--preserve"

@@ -14,6 +14,16 @@ data "talos_machine_configuration" "control_plane" {
   kubernetes_version = var.k8s_version
 }
 
+resource "talos_machine_configuration_apply" "control_plane" {
+  for_each = local.nodes
+
+  client_configuration = try(talos_machine_secrets.this[0].client_configuration, null)
+  node                 = local.node_ips.v6_pd[each.key]
+
+  machine_configuration_input = try(data.talos_machine_configuration.control_plane[0].machine_configuration, null)
+  config_patches              = local.config_patches[each.key]
+}
+
 resource "talos_machine_bootstrap" "this" {
   count = local.enabled ? 1 : 0
 
@@ -21,5 +31,5 @@ resource "talos_machine_bootstrap" "this" {
   endpoint             = local.endpoint
   node                 = values(local.node_ips.v6_pd)[0]
 
-  depends_on = [talos_machine_configuration_apply.eq14_3]
+  depends_on = [talos_machine_configuration_apply.control_plane]
 }
