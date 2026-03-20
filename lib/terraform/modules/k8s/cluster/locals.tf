@@ -6,6 +6,14 @@ locals {
     for k, v in var.k8s_cluster.nodes : k => v if v.enabled
   } : {}
 
+  node_images = local.enabled ? {
+    for k, v in local.nodes : k => format(
+      "factory.talos.dev/installer/%s:v%s",
+      v.schematic_id,
+      v.talos_version
+    )
+  } : {}
+
   node_ips = {
     v4 = local.enabled ? {
       for k, v in var.k8s_cluster.nodes : k => cidrhost(module.ipam.nodes.v4_cidr, v.ipv4_offset)

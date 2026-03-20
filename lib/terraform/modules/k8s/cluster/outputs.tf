@@ -5,3 +5,20 @@ output "domain" {
 output "node_ipv4s" {
   value = local.enabled ? values(local.node_ips.v4) : []
 }
+
+output "upgrade_machines" {
+  value = {
+    for k, v in local.nodes : k => join(
+      " ",
+      [
+        "talosctl",
+        "upgrade",
+        "--nodes",
+        local.node_ips.v6_pd[k],
+        "--image",
+        local.node_images[k],
+        "--preserve"
+      ]
+    )
+  }
+}

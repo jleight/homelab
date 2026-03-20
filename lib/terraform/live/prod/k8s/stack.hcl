@@ -41,16 +41,6 @@ inputs = {
         vlan_id           = 3
         ipv4_offset       = 22
       }
-      fw16_1 = {
-        enabled           = false
-        name              = "prod-04"
-        schematic_id      = local.schematic_id_fw16
-        install_disk      = "/dev/nvme0n1"
-        network_interface = "enp196s0f3u1"
-        mac_address       = "9c:bf:0d:00:58:50"
-        vlan_id           = 3
-        ipv4_offset       = 23
-      }
     }
   }
 
