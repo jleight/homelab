@@ -15,4 +15,8 @@ locals {
   radarr_secret   = local.enabled ? kubernetes_secret.radarr_user[0].metadata[0].name : null
   radarr_username = local.enabled ? "radarr" : null
   radarr_password = local.enabled ? random_password.radarr_user[0].result : null
+
+  romm_secret   = local.enabled ? kubernetes_secret.romm_user[0].metadata[0].name : null
+  romm_username = local.enabled ? "romm" : null
+  romm_password = local.enabled ? random_password.romm_user[0].result : null
 }

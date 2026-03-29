@@ -65,4 +65,10 @@ inputs = {
     image    = "ghcr.io/sct/overseerr"
     version  = "1.35.0"
   }
+
+  romm = {
+    renovate = "docker"
+    image    = "rommapp/romm"
+    version  = "4.7.0"
+  }
 }

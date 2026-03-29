@@ -46,6 +46,14 @@ resource "kubectl_manifest" "this" {
             passwordSecret = {
               name = local.radarr_secret
             }
+          },
+          {
+            name   = local.romm_username
+            ensure = "present"
+            login  = true
+            passwordSecret = {
+              name = local.romm_secret
+            }
           }
         ]
       }
