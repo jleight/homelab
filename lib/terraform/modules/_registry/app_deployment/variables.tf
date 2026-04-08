@@ -37,6 +37,12 @@ variable "image_version" {
 # Deployment
 # ──────────────────────────────────────────────────────────────────────────────
 
+variable "pod_annotations" {
+  description = "Annotations to add to the pod template."
+  type        = map(string)
+  default     = {}
+}
+
 variable "replicas" {
   description = "Number of deployment replicas."
   type        = number

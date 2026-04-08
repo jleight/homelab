@@ -153,6 +153,21 @@ inputs = {
     }
   }
 
+  reverse_proxy = {
+    renovate = "docker"
+    image    = "nginx"
+    version  = "1.29.7-alpine"
+
+    services = {
+      amp = {
+        frontend_subdomain = "games"
+        backend_host       = "fwd01.leightha.us"
+        backend_port       = 8080
+        public             = true
+      }
+    }
+  }
+
   trakr = {
     renovate = "docker"
     image    = "ghcr.io/jleight/trakr"
