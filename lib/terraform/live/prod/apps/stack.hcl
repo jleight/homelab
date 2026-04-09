@@ -69,7 +69,7 @@ inputs = {
   plex = {
     renovate = "docker"
     image    = "lscr.io/linuxserver/plex"
-    version  = "1.43.0"
+    version  = "1.43.1"
 
     replicas = 0
   }
