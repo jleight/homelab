@@ -3,6 +3,26 @@ variable "env_directory" {
   type        = string
 }
 
+variable "gateway_namespace" {
+  description = "Namespace for the gateway for private ingress."
+  type        = string
+}
+
+variable "gateway_name" {
+  description = "Name of the gateway for private ingress."
+  type        = string
+}
+
+variable "gateway_section" {
+  description = "Name of the gateway section for private ingress."
+  type        = string
+}
+
+variable "gateway_domain" {
+  description = "Domain for the gateway for private ingress."
+  type        = string
+}
+
 variable "smb_nas02_url" {
   description = "SMB URL for NAS02."
   type        = string

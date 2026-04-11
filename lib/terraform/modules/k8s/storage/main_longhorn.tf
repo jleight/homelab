@@ -143,8 +143,55 @@ resource "kubectl_manifest" "longhorn_backup_monthly" {
       labels = { type = "monthly" }
 
       parameters = {
-        full-backup-interval = "0"
+        "full-backup-interval" = "0"
       }
+    }
+  })
+
+  depends_on = [helm_release.longhorn]
+}
+
+resource "kubectl_manifest" "longhorn_ingress" {
+  count = local.longhorn_enabled ? 1 : 0
+
+  yaml_body = yamlencode({
+    apiVersion = "gateway.networking.k8s.io/v1"
+    kind       = "HTTPRoute"
+
+    metadata = {
+      namespace = try(one(kubernetes_namespace.longhorn[0].metadata).name, null)
+      name      = "longhorn-frontend"
+    }
+
+    spec = {
+      parentRefs = [
+        {
+          namespace   = var.gateway_namespace
+          name        = var.gateway_name
+          sectionName = var.gateway_section
+        }
+      ]
+      hostnames = [
+        "longhorn.${var.gateway_domain}"
+      ]
+      rules = [
+        {
+          matches = [
+            {
+              path = {
+                type  = "PathPrefix"
+                value = "/"
+              }
+            }
+          ]
+          backendRefs = [
+            {
+              name = "longhorn-frontend"
+              port = 80
+            }
+          ]
+        }
+      ]
     }
   })
 
