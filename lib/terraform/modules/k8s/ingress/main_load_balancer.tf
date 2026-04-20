@@ -1,14 +1,14 @@
 locals {
   load_balancer_enabled = local.enabled && var.k8s_ingress.load_balancer.enabled
 
-  load_balancer_namespace    = local.load_balancer_enabled ? kubernetes_namespace.load_balancer[0].metadata[0].name : ""
+  load_balancer_namespace    = local.load_balancer_enabled ? kubernetes_namespace_v1.load_balancer[0].metadata[0].name : ""
   private_load_balancer_name = local.load_balancer_enabled ? "private-lb" : ""
   public_load_balancer_name  = local.load_balancer_enabled ? "public-lb" : ""
   load_balancer_section      = local.load_balancer_enabled ? (local.cert_manager_enabled ? "https" : "http") : ""
   load_balancer_domain       = local.load_balancer_enabled ? var.k8s_cluster_domain : ""
 }
 
-resource "kubernetes_namespace" "load_balancer" {
+resource "kubernetes_namespace_v1" "load_balancer" {
   count = local.load_balancer_enabled ? 1 : 0
 
   metadata {

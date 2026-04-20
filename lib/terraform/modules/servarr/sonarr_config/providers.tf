@@ -21,6 +21,6 @@ provider "onepassword" {
 }
 
 provider "sonarr" {
-  url     = local.enabled ? "http://${data.kubernetes_service.sonarr[0].spec[0].cluster_ip}" : ""
+  url     = local.enabled ? "http://${data.kubernetes_service_v1.sonarr[0].spec[0].cluster_ip}" : ""
   api_key = var.sonarr_api_key
 }

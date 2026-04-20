@@ -1,9 +1,9 @@
 locals {
-  namespace = local.enabled ? kubernetes_namespace.this[0].metadata[0].name : null
+  namespace = local.enabled ? kubernetes_namespace_v1.this[0].metadata[0].name : null
   name      = local.component
 }
 
-resource "kubernetes_namespace" "this" {
+resource "kubernetes_namespace_v1" "this" {
   count = local.enabled ? 1 : 0
 
   metadata {

@@ -1,8 +1,8 @@
 locals {
-  namespace = local.enabled ? kubernetes_namespace.this[0].metadata[0].name : null
+  namespace = local.enabled ? kubernetes_namespace_v1.this[0].metadata[0].name : null
   name      = local.component
 
-  config_map_name = local.enabled ? kubernetes_config_map.this[0].metadata[0].name : null
+  config_map_name = local.enabled ? kubernetes_config_map_v1.this[0].metadata[0].name : null
 
   match_labels = {
     "app.kubernetes.io/name"     = local.name
@@ -20,7 +20,7 @@ locals {
   )
 }
 
-resource "kubernetes_namespace" "this" {
+resource "kubernetes_namespace_v1" "this" {
   count = local.enabled ? 1 : 0
 
   metadata {
@@ -28,7 +28,7 @@ resource "kubernetes_namespace" "this" {
   }
 }
 
-resource "kubernetes_config_map" "this" {
+resource "kubernetes_config_map_v1" "this" {
   count = local.enabled ? 1 : 0
 
   metadata {
@@ -54,10 +54,10 @@ resource "kubernetes_config_map" "this" {
     })
   }
 
-  depends_on = [kubernetes_namespace.this]
+  depends_on = [kubernetes_namespace_v1.this]
 }
 
-resource "kubernetes_deployment" "this" {
+resource "kubernetes_deployment_v1" "this" {
   count = local.enabled ? 1 : 0
 
   metadata {
@@ -105,5 +105,5 @@ resource "kubernetes_deployment" "this" {
     }
   }
 
-  depends_on = [kubernetes_config_map.this]
+  depends_on = [kubernetes_config_map_v1.this]
 }

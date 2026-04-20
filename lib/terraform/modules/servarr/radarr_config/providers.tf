@@ -21,6 +21,6 @@ provider "onepassword" {
 }
 
 provider "radarr" {
-  url     = local.enabled ? "http://${data.kubernetes_service.radarr[0].spec[0].cluster_ip}" : ""
+  url     = local.enabled ? "http://${data.kubernetes_service_v1.radarr[0].spec[0].cluster_ip}" : ""
   api_key = var.radarr_api_key
 }

@@ -9,7 +9,7 @@ resource "random_password" "postgres_user" {
   special = false
 }
 
-resource "kubernetes_secret" "postgres" {
+resource "kubernetes_secret_v1" "postgres" {
   count = local.enabled ? 1 : 0
 
   metadata {

@@ -2,7 +2,7 @@ locals {
   csi_smb_test_enabled = local.csi_smb_enabled && var.k8s_storage.csi_smb_test != null
 }
 
-resource "kubernetes_namespace" "csi_smb_test" {
+resource "kubernetes_namespace_v1" "csi_smb_test" {
   count = local.csi_smb_test_enabled ? 1 : 0
 
   metadata {
@@ -10,16 +10,16 @@ resource "kubernetes_namespace" "csi_smb_test" {
   }
 }
 
-resource "kubernetes_persistent_volume_claim" "csi_smb_test" {
+resource "kubernetes_persistent_volume_claim_v1" "csi_smb_test" {
   count = local.csi_smb_test_enabled ? 1 : 0
 
   metadata {
-    namespace = try(one(kubernetes_namespace.csi_smb_test[0].metadata).name, null)
+    namespace = try(one(kubernetes_namespace_v1.csi_smb_test[0].metadata).name, null)
     name      = "csi-smb-test"
   }
 
   spec {
-    storage_class_name = try(one(kubernetes_storage_class.csi_smb_nas02_kubernetes[0].metadata).name, null)
+    storage_class_name = try(one(kubernetes_storage_class_v1.csi_smb_nas02_kubernetes[0].metadata).name, null)
 
     resources {
       requests = {
@@ -35,11 +35,11 @@ resource "kubernetes_persistent_volume_claim" "csi_smb_test" {
   depends_on = [helm_release.csi_smb]
 }
 
-resource "kubernetes_pod" "csi_smb_test" {
+resource "kubernetes_pod_v1" "csi_smb_test" {
   count = local.csi_smb_test_enabled ? 1 : 0
 
   metadata {
-    namespace = try(one(kubernetes_namespace.csi_smb_test[0].metadata).name, null)
+    namespace = try(one(kubernetes_namespace_v1.csi_smb_test[0].metadata).name, null)
     name      = "nginx"
   }
 
@@ -64,7 +64,7 @@ resource "kubernetes_pod" "csi_smb_test" {
       name = "html"
 
       persistent_volume_claim {
-        claim_name = try(one(kubernetes_persistent_volume_claim.csi_smb_test[0].metadata).name, null)
+        claim_name = try(one(kubernetes_persistent_volume_claim_v1.csi_smb_test[0].metadata).name, null)
       }
     }
   }

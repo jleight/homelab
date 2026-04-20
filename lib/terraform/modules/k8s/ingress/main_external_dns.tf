@@ -2,7 +2,7 @@ locals {
   external_dns_enabled = local.enabled && var.k8s_ingress.external_dns.enabled
 }
 
-resource "kubernetes_namespace" "external_dns" {
+resource "kubernetes_namespace_v1" "external_dns" {
   count = local.external_dns_enabled ? 1 : 0
 
   metadata {
@@ -10,11 +10,11 @@ resource "kubernetes_namespace" "external_dns" {
   }
 }
 
-resource "kubernetes_secret" "external_dns_cloudflare_api_token" {
+resource "kubernetes_secret_v1" "external_dns_cloudflare_api_token" {
   count = local.external_dns_enabled ? 1 : 0
 
   metadata {
-    namespace = try(one(kubernetes_namespace.external_dns[0].metadata).name, null)
+    namespace = try(one(kubernetes_namespace_v1.external_dns[0].metadata).name, null)
     name      = "cloudflare-api-token"
   }
 
@@ -26,7 +26,7 @@ resource "kubernetes_secret" "external_dns_cloudflare_api_token" {
 resource "helm_release" "external_dns" {
   count = local.external_dns_enabled ? 1 : 0
 
-  namespace  = try(one(kubernetes_namespace.external_dns[0].metadata).name, null)
+  namespace  = try(one(kubernetes_namespace_v1.external_dns[0].metadata).name, null)
   name       = "external-dns"
   repository = var.k8s_ingress.external_dns.repository
   chart      = var.k8s_ingress.external_dns.chart
@@ -56,5 +56,5 @@ resource "helm_release" "external_dns" {
     }
   ]
 
-  depends_on = [kubernetes_secret.external_dns_cloudflare_api_token]
+  depends_on = [kubernetes_secret_v1.external_dns_cloudflare_api_token]
 }

@@ -1,4 +1,4 @@
-data "kubernetes_service" "sonarr" {
+data "kubernetes_service_v1" "sonarr" {
   count = local.enabled ? 1 : 0
 
   metadata {

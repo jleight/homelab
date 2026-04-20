@@ -1,4 +1,4 @@
-resource "kubernetes_persistent_volume_claim" "media" {
+resource "kubernetes_persistent_volume_claim_v1" "media" {
   count = local.enabled ? 1 : 0
 
   metadata {

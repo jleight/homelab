@@ -2,7 +2,7 @@ locals {
   tailscale_enabled = local.enabled && var.k8s_ingress.tailscale.enabled
 }
 
-resource "kubernetes_namespace" "tailscale" {
+resource "kubernetes_namespace_v1" "tailscale" {
   count = local.tailscale_enabled ? 1 : 0
 
   metadata {
@@ -14,11 +14,11 @@ resource "kubernetes_namespace" "tailscale" {
   }
 }
 
-resource "kubernetes_secret" "tailscale_operator_oauth" {
+resource "kubernetes_secret_v1" "tailscale_operator_oauth" {
   count = local.tailscale_enabled ? 1 : 0
 
   metadata {
-    namespace = try(one(kubernetes_namespace.tailscale[0].metadata).name, null)
+    namespace = try(one(kubernetes_namespace_v1.tailscale[0].metadata).name, null)
     name      = "operator-oauth"
   }
 
@@ -31,7 +31,7 @@ resource "kubernetes_secret" "tailscale_operator_oauth" {
 resource "helm_release" "tailscale" {
   count = local.tailscale_enabled ? 1 : 0
 
-  namespace  = try(one(kubernetes_namespace.tailscale[0].metadata).name, null)
+  namespace  = try(one(kubernetes_namespace_v1.tailscale[0].metadata).name, null)
   name       = "tailscale-operator"
   repository = var.k8s_ingress.tailscale.repository
   chart      = var.k8s_ingress.tailscale.chart
@@ -49,5 +49,5 @@ resource "helm_release" "tailscale" {
     }
   ]
 
-  depends_on = [kubernetes_secret.tailscale_operator_oauth]
+  depends_on = [kubernetes_secret_v1.tailscale_operator_oauth]
 }

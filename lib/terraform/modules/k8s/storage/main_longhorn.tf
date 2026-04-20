@@ -1,10 +1,10 @@
 locals {
   longhorn_enabled = local.enabled && var.k8s_storage.longhorn.enabled
 
-  longhorn_nas02_credentials_name = local.longhorn_enabled ? kubernetes_secret.longhorn_nas02_credentials[0].metadata[0].name : null
+  longhorn_nas02_credentials_name = local.longhorn_enabled ? kubernetes_secret_v1.longhorn_nas02_credentials[0].metadata[0].name : null
 }
 
-resource "kubernetes_namespace" "longhorn" {
+resource "kubernetes_namespace_v1" "longhorn" {
   count = local.longhorn_enabled ? 1 : 0
 
   metadata {
@@ -16,11 +16,11 @@ resource "kubernetes_namespace" "longhorn" {
   }
 }
 
-resource "kubernetes_secret" "longhorn_nas02_credentials" {
+resource "kubernetes_secret_v1" "longhorn_nas02_credentials" {
   count = local.longhorn_enabled ? 1 : 0
 
   metadata {
-    namespace = try(one(kubernetes_namespace.longhorn[0].metadata).name, null)
+    namespace = try(one(kubernetes_namespace_v1.longhorn[0].metadata).name, null)
     name      = "smb-nas02-credentials"
   }
 
@@ -33,7 +33,7 @@ resource "kubernetes_secret" "longhorn_nas02_credentials" {
 resource "helm_release" "longhorn" {
   count = local.longhorn_enabled ? 1 : 0
 
-  namespace  = try(one(kubernetes_namespace.longhorn[0].metadata).name, null)
+  namespace  = try(one(kubernetes_namespace_v1.longhorn[0].metadata).name, null)
   name       = "longhorn"
   repository = var.k8s_storage.longhorn.repository
   chart      = var.k8s_storage.longhorn.chart
@@ -64,7 +64,7 @@ resource "helm_release" "longhorn" {
   ]
 }
 
-resource "kubernetes_storage_class" "longhorn_appdata" {
+resource "kubernetes_storage_class_v1" "longhorn_appdata" {
   count = local.longhorn_enabled ? 1 : 0
 
   metadata {
@@ -95,7 +95,7 @@ resource "kubectl_manifest" "longhorn_backup_daily" {
     kind       = "RecurringJob"
 
     metadata = {
-      namespace = try(one(kubernetes_namespace.longhorn[0].metadata).name, null)
+      namespace = try(one(kubernetes_namespace_v1.longhorn[0].metadata).name, null)
       name      = "daily"
     }
 
@@ -127,7 +127,7 @@ resource "kubectl_manifest" "longhorn_backup_monthly" {
     kind       = "RecurringJob"
 
     metadata = {
-      namespace = try(one(kubernetes_namespace.longhorn[0].metadata).name, null)
+      namespace = try(one(kubernetes_namespace_v1.longhorn[0].metadata).name, null)
       name      = "monthly"
     }
 
@@ -159,7 +159,7 @@ resource "kubectl_manifest" "longhorn_ingress" {
     kind       = "HTTPRoute"
 
     metadata = {
-      namespace = try(one(kubernetes_namespace.longhorn[0].metadata).name, null)
+      namespace = try(one(kubernetes_namespace_v1.longhorn[0].metadata).name, null)
       name      = "longhorn-frontend"
     }
 

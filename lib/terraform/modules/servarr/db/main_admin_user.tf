@@ -9,7 +9,7 @@ resource "random_password" "admin_user" {
   special = false
 }
 
-resource "kubernetes_secret" "admin_user" {
+resource "kubernetes_secret_v1" "admin_user" {
   count = local.enabled ? 1 : 0
 
   metadata {

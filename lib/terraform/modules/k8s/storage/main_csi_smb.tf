@@ -12,7 +12,7 @@ resource "helm_release" "csi_smb" {
   version    = var.k8s_storage.csi_smb.version
 }
 
-resource "kubernetes_secret" "csi_smb_nas02_credentials" {
+resource "kubernetes_secret_v1" "csi_smb_nas02_credentials" {
   count = local.csi_smb_enabled ? 1 : 0
 
   metadata {
@@ -26,7 +26,7 @@ resource "kubernetes_secret" "csi_smb_nas02_credentials" {
   }
 }
 
-resource "kubernetes_storage_class" "csi_smb_nas02_kubernetes" {
+resource "kubernetes_storage_class_v1" "csi_smb_nas02_kubernetes" {
   count = local.csi_smb_enabled ? 1 : 0
 
   metadata {
@@ -43,10 +43,10 @@ resource "kubernetes_storage_class" "csi_smb_nas02_kubernetes" {
     "source"                                          = "${var.smb_nas02_url}/Kubernetes"
     "subDir"                                          = "${local.stack}-${local.environment}/$${pvc.metadata.namespace}/$${pvc.metadata.name}"
     "onDelete"                                        = "delete"
-    "csi.storage.k8s.io/provisioner-secret-namespace" = try(one(kubernetes_secret.csi_smb_nas02_credentials[0].metadata).namespace, null)
-    "csi.storage.k8s.io/provisioner-secret-name"      = try(one(kubernetes_secret.csi_smb_nas02_credentials[0].metadata).name, null)
-    "csi.storage.k8s.io/node-stage-secret-namespace"  = try(one(kubernetes_secret.csi_smb_nas02_credentials[0].metadata).namespace, null)
-    "csi.storage.k8s.io/node-stage-secret-name"       = try(one(kubernetes_secret.csi_smb_nas02_credentials[0].metadata).name, null)
+    "csi.storage.k8s.io/provisioner-secret-namespace" = try(one(kubernetes_secret_v1.csi_smb_nas02_credentials[0].metadata).namespace, null)
+    "csi.storage.k8s.io/provisioner-secret-name"      = try(one(kubernetes_secret_v1.csi_smb_nas02_credentials[0].metadata).name, null)
+    "csi.storage.k8s.io/node-stage-secret-namespace"  = try(one(kubernetes_secret_v1.csi_smb_nas02_credentials[0].metadata).namespace, null)
+    "csi.storage.k8s.io/node-stage-secret-name"       = try(one(kubernetes_secret_v1.csi_smb_nas02_credentials[0].metadata).name, null)
   }
 
   mount_options = [
@@ -55,7 +55,7 @@ resource "kubernetes_storage_class" "csi_smb_nas02_kubernetes" {
   ]
 }
 
-resource "kubernetes_storage_class" "csi_smb_nas02_media" {
+resource "kubernetes_storage_class_v1" "csi_smb_nas02_media" {
   count = local.csi_smb_enabled ? 1 : 0
 
   metadata {
@@ -71,8 +71,8 @@ resource "kubernetes_storage_class" "csi_smb_nas02_media" {
   parameters = {
     "source"                                         = "${var.smb_nas02_url}/Media"
     "onDelete"                                       = "retain"
-    "csi.storage.k8s.io/node-stage-secret-namespace" = try(one(kubernetes_secret.csi_smb_nas02_credentials[0].metadata).namespace, null)
-    "csi.storage.k8s.io/node-stage-secret-name"      = try(one(kubernetes_secret.csi_smb_nas02_credentials[0].metadata).name, null)
+    "csi.storage.k8s.io/node-stage-secret-namespace" = try(one(kubernetes_secret_v1.csi_smb_nas02_credentials[0].metadata).namespace, null)
+    "csi.storage.k8s.io/node-stage-secret-name"      = try(one(kubernetes_secret_v1.csi_smb_nas02_credentials[0].metadata).name, null)
   }
 
   mount_options = [

@@ -5,7 +5,7 @@ resource "random_password" "romm_user" {
   special = false
 }
 
-resource "kubernetes_secret" "romm_user" {
+resource "kubernetes_secret_v1" "romm_user" {
   count = local.enabled ? 1 : 0
 
   metadata {

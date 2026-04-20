@@ -1,4 +1,4 @@
-data "kubernetes_service" "radarr" {
+data "kubernetes_service_v1" "radarr" {
   count = local.enabled ? 1 : 0
 
   metadata {

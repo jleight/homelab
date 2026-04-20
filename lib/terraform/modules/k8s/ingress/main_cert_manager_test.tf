@@ -2,7 +2,7 @@ locals {
   cert_manager_test_enabled = local.cert_manager_enabled && try(var.k8s_ingress.cert_manager_test.enabled, false)
 }
 
-resource "kubernetes_namespace" "cert_manager_test" {
+resource "kubernetes_namespace_v1" "cert_manager_test" {
   count = local.cert_manager_test_enabled ? 1 : 0
 
   metadata {
@@ -18,7 +18,7 @@ resource "kubectl_manifest" "cert_manager_test_certificate" {
     kind       = "Certificate"
 
     metadata = {
-      namespace = try(one(kubernetes_namespace.cert_manager_test[0].metadata).name, null)
+      namespace = try(one(kubernetes_namespace_v1.cert_manager_test[0].metadata).name, null)
       name      = "self-signed-test"
     }
 

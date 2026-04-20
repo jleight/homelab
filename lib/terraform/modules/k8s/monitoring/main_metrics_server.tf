@@ -5,7 +5,7 @@ locals {
 resource "helm_release" "metrics_server" {
   count = local.metrics_server_enabled ? 1 : 0
 
-  namespace  = try(one(kubernetes_namespace.this[0].metadata).name, null)
+  namespace  = try(one(kubernetes_namespace_v1.this[0].metadata).name, null)
   name       = "metrics-server"
   repository = var.k8s_monitoring.metrics_server.repository
   chart      = var.k8s_monitoring.metrics_server.chart

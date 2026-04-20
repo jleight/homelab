@@ -5,7 +5,7 @@ resource "random_password" "sonarr_user" {
   special = false
 }
 
-resource "kubernetes_secret" "sonarr_user" {
+resource "kubernetes_secret_v1" "sonarr_user" {
   count = local.enabled ? 1 : 0
 
   metadata {

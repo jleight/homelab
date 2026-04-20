@@ -2,7 +2,7 @@ locals {
   cert_manager_enabled = local.enabled && var.k8s_ingress.cert_manager.enabled
 }
 
-resource "kubernetes_namespace" "cert_manager" {
+resource "kubernetes_namespace_v1" "cert_manager" {
   count = local.cert_manager_enabled ? 1 : 0
 
   metadata {
@@ -10,11 +10,11 @@ resource "kubernetes_namespace" "cert_manager" {
   }
 }
 
-resource "kubernetes_secret" "cert_manager_cloudflare_api_token" {
+resource "kubernetes_secret_v1" "cert_manager_cloudflare_api_token" {
   count = local.cert_manager_enabled ? 1 : 0
 
   metadata {
-    namespace = try(one(kubernetes_namespace.cert_manager[0].metadata).name, null)
+    namespace = try(one(kubernetes_namespace_v1.cert_manager[0].metadata).name, null)
     name      = "cloudflare-api-token"
   }
 
@@ -23,11 +23,11 @@ resource "kubernetes_secret" "cert_manager_cloudflare_api_token" {
   }
 }
 
-resource "kubernetes_secret" "cert_manager_lets_encrypt" {
+resource "kubernetes_secret_v1" "cert_manager_lets_encrypt" {
   count = local.cert_manager_enabled && var.lets_encrypt_private_key != null ? 1 : 0
 
   metadata {
-    namespace = try(one(kubernetes_namespace.cert_manager[0].metadata).name, null)
+    namespace = try(one(kubernetes_namespace_v1.cert_manager[0].metadata).name, null)
     name      = "lets-encrypt"
   }
 
@@ -39,7 +39,7 @@ resource "kubernetes_secret" "cert_manager_lets_encrypt" {
 resource "helm_release" "cert_manager" {
   count = local.cert_manager_enabled ? 1 : 0
 
-  namespace  = try(one(kubernetes_namespace.cert_manager[0].metadata).name, null)
+  namespace  = try(one(kubernetes_namespace_v1.cert_manager[0].metadata).name, null)
   name       = "cert-manager"
   repository = var.k8s_ingress.cert_manager.repository
   chart      = var.k8s_ingress.cert_manager.chart
@@ -55,8 +55,8 @@ resource "helm_release" "cert_manager" {
   ]
 
   depends_on = [
-    kubernetes_secret.cert_manager_cloudflare_api_token,
-    kubernetes_secret.cert_manager_lets_encrypt
+    kubernetes_secret_v1.cert_manager_cloudflare_api_token,
+    kubernetes_secret_v1.cert_manager_lets_encrypt
   ]
 }
 
@@ -68,7 +68,7 @@ resource "kubectl_manifest" "cert_manager_issuer_self_signed" {
     kind       = "ClusterIssuer"
 
     metadata = {
-      namespace = try(one(kubernetes_namespace.cert_manager[0].metadata).name, null)
+      namespace = try(one(kubernetes_namespace_v1.cert_manager[0].metadata).name, null)
       name      = "self-signed"
     }
 
@@ -88,7 +88,7 @@ resource "kubectl_manifest" "cert_manager_issuer_lets_encrypt" {
     kind       = "ClusterIssuer"
 
     metadata = {
-      namespace = try(one(kubernetes_namespace.cert_manager[0].metadata).name, null)
+      namespace = try(one(kubernetes_namespace_v1.cert_manager[0].metadata).name, null)
       name      = "lets-encrypt"
     }
 
@@ -106,7 +106,7 @@ resource "kubectl_manifest" "cert_manager_issuer_lets_encrypt" {
             dns01 = {
               cloudflare = {
                 apiTokenSecretRef = {
-                  name = try(one(kubernetes_secret.cert_manager_cloudflare_api_token[0].metadata).name, null)
+                  name = try(one(kubernetes_secret_v1.cert_manager_cloudflare_api_token[0].metadata).name, null)
                   key  = "api_token"
                 }
               }

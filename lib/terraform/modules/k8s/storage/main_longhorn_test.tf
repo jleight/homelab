@@ -2,7 +2,7 @@ locals {
   longhorn_test_enabled = local.longhorn_enabled && var.k8s_storage.longhorn_test != null
 }
 
-resource "kubernetes_namespace" "longhorn_test" {
+resource "kubernetes_namespace_v1" "longhorn_test" {
   count = local.longhorn_test_enabled ? 1 : 0
 
   metadata {
@@ -10,16 +10,16 @@ resource "kubernetes_namespace" "longhorn_test" {
   }
 }
 
-resource "kubernetes_persistent_volume_claim" "longhorn_test" {
+resource "kubernetes_persistent_volume_claim_v1" "longhorn_test" {
   count = local.longhorn_test_enabled ? 1 : 0
 
   metadata {
-    namespace = try(one(kubernetes_namespace.longhorn_test[0].metadata).name, null)
+    namespace = try(one(kubernetes_namespace_v1.longhorn_test[0].metadata).name, null)
     name      = "longhorn-test"
   }
 
   spec {
-    storage_class_name = try(one(kubernetes_storage_class.longhorn_appdata[0].metadata).name, null)
+    storage_class_name = try(one(kubernetes_storage_class_v1.longhorn_appdata[0].metadata).name, null)
 
     resources {
       requests = {
@@ -35,11 +35,11 @@ resource "kubernetes_persistent_volume_claim" "longhorn_test" {
   depends_on = [helm_release.longhorn]
 }
 
-resource "kubernetes_pod" "longhorn_test" {
+resource "kubernetes_pod_v1" "longhorn_test" {
   count = local.longhorn_test_enabled ? 1 : 0
 
   metadata {
-    namespace = try(one(kubernetes_namespace.longhorn_test[0].metadata).name, null)
+    namespace = try(one(kubernetes_namespace_v1.longhorn_test[0].metadata).name, null)
     name      = "nginx"
   }
 
@@ -64,7 +64,7 @@ resource "kubernetes_pod" "longhorn_test" {
       name = "html"
 
       persistent_volume_claim {
-        claim_name = try(one(kubernetes_persistent_volume_claim.longhorn_test[0].metadata).name, null)
+        claim_name = try(one(kubernetes_persistent_volume_claim_v1.longhorn_test[0].metadata).name, null)
       }
     }
   }
