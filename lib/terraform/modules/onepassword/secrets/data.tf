@@ -31,3 +31,10 @@ data "onepassword_item" "smb_nas02" {
   vault = try(data.onepassword_vault.terraform[0].uuid, null)
   title = var.smb_nas02_item
 }
+
+data "onepassword_item" "youtube_screen_id_apple_tv_4k" {
+  count = local.enabled ? 1 : 0
+
+  vault = try(data.onepassword_vault.terraform[0].uuid, null)
+  title = var.youtube_screen_id_apple_tv_4k_item
+}

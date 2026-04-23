@@ -2,7 +2,7 @@ locals {
   namespace = local.enabled ? kubernetes_namespace_v1.this[0].metadata[0].name : null
   name      = local.component
 
-  config_map_name = local.enabled ? kubernetes_config_map_v1.this[0].metadata[0].name : null
+  secret_name = local.enabled ? kubernetes_secret_v1.this[0].metadata[0].name : null
 
   match_labels = {
     "app.kubernetes.io/name"     = local.name
@@ -28,7 +28,7 @@ resource "kubernetes_namespace_v1" "this" {
   }
 }
 
-resource "kubernetes_config_map_v1" "this" {
+resource "kubernetes_secret_v1" "this" {
   count = local.enabled ? 1 : 0
 
   metadata {
@@ -41,9 +41,10 @@ resource "kubernetes_config_map_v1" "this" {
   data = {
     "config.json" = jsonencode({
       devices = [
-        for i, d in var.isponsorblocktv.devices : merge(d, {
-          offset = i
-        })
+        {
+          name      = "Apple TV 4K"
+          screen_id = var.youtube_screen_id_apple_tv_4k
+        }
       ]
       apikey              = var.isponsorblocktv.api_key
       skip_categories     = var.isponsorblocktv.skip_categories
@@ -51,6 +52,9 @@ resource "kubernetes_config_map_v1" "this" {
       skip_count_tracking = var.isponsorblocktv.skip_count_tracking
       mute_ads            = var.isponsorblocktv.mute_ads
       skip_ads            = var.isponsorblocktv.skip_ads
+      minimum_skip_length = var.isponsorblocktv.minimum_skip_length
+      auto_play           = var.isponsorblocktv.auto_play
+      join_name           = var.isponsorblocktv.join_name
     })
   }
 
@@ -97,13 +101,13 @@ resource "kubernetes_deployment_v1" "this" {
         volume {
           name = "config"
 
-          config_map {
-            name = local.config_map_name
+          secret {
+            secret_name = local.secret_name
           }
         }
       }
     }
   }
 
-  depends_on = [kubernetes_config_map_v1.this]
+  depends_on = [kubernetes_secret_v1.this]
 }

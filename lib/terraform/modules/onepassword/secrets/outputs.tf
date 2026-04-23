@@ -37,3 +37,8 @@ output "smb_nas02_password" {
   value     = try(data.onepassword_item.smb_nas02[0].password, null)
   sensitive = true
 }
+
+output "youtube_screen_id_apple_tv_4k" {
+  value     = try(data.onepassword_item.youtube_screen_id_apple_tv_4k[0].credential, null)
+  sensitive = true
+}

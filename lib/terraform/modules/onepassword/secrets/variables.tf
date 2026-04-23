@@ -23,3 +23,8 @@ variable "smb_nas02_item" {
   description = "The title of the item containing the SMB credentials for nas02."
   type        = string
 }
+
+variable "youtube_screen_id_apple_tv_4k_item" {
+  description = "The title of the item containing the Screen ID for YouTube on the Apple TV 4K."
+  type        = string
+}
