@@ -1,6 +1,39 @@
 inputs = {
   stack = "apps"
 
+  core_scope = {
+    renovate = "docker"
+    image    = "ghcr.io/kpa-clawbot/corescope"
+    version  = "v3.5.2"
+
+    default_region = "BUF"
+
+    regions = {
+      "BUF" = "Buffalo"
+    }
+
+    map_defaults = {
+      center = [42.88, -78.88]
+      zoom = 11
+    }
+
+    channel_keys = {
+      "Public" = "8b3387e9c5cdea6ac9e5edbaa115cd72"
+    }
+
+    hash_channels = [
+      "#test",
+      "#wardriving",
+      "#wny"
+    ]
+
+    litestream = {
+      renovate = "docker"
+      image    = "litestream/litestream"
+      version  = "0.3.13"
+    }
+  }
+
   dragonflydb = {
     renovate   = "github-tags"
     repository = "dragonflydb/dragonfly-operator"

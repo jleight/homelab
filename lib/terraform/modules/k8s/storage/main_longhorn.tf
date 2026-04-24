@@ -87,6 +87,31 @@ resource "kubernetes_storage_class_v1" "longhorn_appdata" {
   depends_on = [helm_release.longhorn]
 }
 
+# Single-replica, strict-local Longhorn storage class.
+# For workloads (like SQLite) where distributed replication corrupts the DB.
+# The pod is effectively pinned to whichever node the replica lands on.
+resource "kubernetes_storage_class_v1" "longhorn_appdata_local" {
+  count = local.longhorn_enabled ? 1 : 0
+
+  metadata {
+    name = "longhorn-appdata-local"
+  }
+
+  storage_provisioner = "driver.longhorn.io"
+
+  volume_binding_mode    = "WaitForFirstConsumer"
+  reclaim_policy         = "Retain"
+  allow_volume_expansion = true
+
+  parameters = {
+    "numberOfReplicas"    = "1"
+    "staleReplicaTimeout" = "30"
+    "dataLocality"        = "strict-local"
+  }
+
+  depends_on = [helm_release.longhorn]
+}
+
 resource "kubectl_manifest" "longhorn_backup_daily" {
   count = local.longhorn_enabled ? 1 : 0
 
