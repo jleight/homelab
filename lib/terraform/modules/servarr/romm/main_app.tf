@@ -37,25 +37,23 @@ module "app" {
   } : {}
 
   persistent_volume_claims = {
-    data = {
-      storage_class = var.data_storage_class
-    }
     media = {
       storage_class = var.media_storage_class
       storage_size  = "10Ti"
     }
   }
 
+  volumes_empty_dir = ["redis-data"]
+
   volume_mounts = [
     {
-      name       = "data"
+      name       = "media"
       mount_path = "/romm/resources"
-      sub_path   = "resources"
+      sub_path   = "roms/resources"
     },
     {
-      name       = "data"
+      name       = "redis-data"
       mount_path = "/redis-data"
-      sub_path   = "redis-data"
     },
     {
       name       = "config"
