@@ -64,7 +64,6 @@ resource "kubernetes_deployment_v1" "this" {
         }
 
         # Litestream streams the SQLite WAL to the SMB-backed backup PVC.
-        # Shares the data volume read-only; writes only to the backup volume.
         container {
           name = "litestream"
 
@@ -76,7 +75,6 @@ resource "kubernetes_deployment_v1" "this" {
           volume_mount {
             name       = "data"
             mount_path = "/app/data"
-            read_only  = true
           }
 
           volume_mount {
