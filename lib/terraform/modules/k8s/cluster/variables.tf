@@ -32,7 +32,7 @@ variable "k8s_cluster" {
       enabled           = optional(bool, true)
       name              = string
       schematic_id      = optional(string, "613e1592b2da41ae5e265e8789429f22e121aab91cb4deb6bc3c0b6262961245") # iscsi-tools, util-linux-tools
-      talos_version     = optional(string, "1.12.6")
+      talos_version     = optional(string, "1.13.0")
       install_disk      = string
       storage_disk      = optional(string, null)
       network_interface = string
