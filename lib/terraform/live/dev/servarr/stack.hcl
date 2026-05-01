@@ -4,7 +4,7 @@ inputs = {
   sabnzbd = {
     renovate = "docker"
     image    = "lscr.io/linuxserver/sabnzbd"
-    version  = "4.5.5"
+    version  = "5.0.1"
 
     servers = {
       frugal_main = {
