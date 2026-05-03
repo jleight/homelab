@@ -39,7 +39,7 @@ inputs = {
   flood = {
     renovate = "docker"
     image    = "jesec/flood"
-    version  = "4.13.9"
+    version  = "4.13.10"
   }
 
   audiobookshelf = {
