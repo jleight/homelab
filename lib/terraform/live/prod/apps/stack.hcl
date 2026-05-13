@@ -10,6 +10,11 @@ inputs = {
 
     regions = {
       "BUF" = "Buffalo"
+      "ROC" = "Rochester"
+      "YKF" = "Breslau"
+      "YLK" = "Barrie"
+      "YTR" = "Trenton"
+      "YYZ" = "Toronto"
     }
 
     map_defaults = {
