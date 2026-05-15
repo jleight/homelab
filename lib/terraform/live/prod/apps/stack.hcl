@@ -65,7 +65,7 @@ inputs = {
   immich = {
     renovate = "docker"
     image    = "ghcr.io/immich-app/immich-charts/immich"
-    version  = "0.11.1"
+    version  = "0.12.0"
 
     # ^ hack for renovate to support oci://
     repository = "oci://ghcr.io/immich-app/immich-charts"
