@@ -115,6 +115,27 @@ inputs = {
     version    = "0.28.2"
   }
 
+  reverse_proxy = {
+    renovate = "docker"
+    image    = "nginx"
+    version  = "1.30.0-alpine"
+
+    services = {
+      amp = {
+        frontend_subdomain = "games"
+        backend_host       = "fwd01.leightha.us"
+        backend_port       = 8080
+        public             = true
+      }
+      lemonade = {
+        frontend_subdomain = "lemonade"
+        backend_host       = "fwd01.leightha.us"
+        backend_port       = 8000
+        public             = false
+      }
+    }
+  }
+
   smokeping = {
     renovate = "docker"
     image    = "lscr.io/linuxserver/smokeping"
@@ -183,27 +204,6 @@ inputs = {
       nas01 = {
         name = "nas01"
         host = "192.168.1.254"
-      }
-    }
-  }
-
-  reverse_proxy = {
-    renovate = "docker"
-    image    = "nginx"
-    version  = "1.30.0-alpine"
-
-    services = {
-      amp = {
-        frontend_subdomain = "games"
-        backend_host       = "fwd01.leightha.us"
-        backend_port       = 8080
-        public             = true
-      }
-      lemonade = {
-        frontend_subdomain = "lemonade"
-        backend_host       = "fwd01.leightha.us"
-        backend_port       = 8000
-        public             = false
       }
     }
   }
