@@ -55,6 +55,11 @@ resource "helm_release" "vernemq" {
           # Cleartext WebSocket listener — TLS termination happens at the gateway.
           "DOCKER_VERNEMQ_LISTENER__WS__DEFAULT" = "0.0.0.0:${local.vernemq_ws_port}"
 
+          # vmq_acl ships with a permissive default ACL (`topic #`) that
+          # short-circuits the auth_on_publish/subscribe hook chain before our
+          # webhook ever runs. Disable it so the webhook is the sole authority.
+          "DOCKER_VERNEMQ_PLUGINS__VMQ_ACL" = "off"
+
           "DOCKER_VERNEMQ_PLUGINS__VMQ_WEBHOOKS" = "on"
 
           "DOCKER_VERNEMQ_VMQ_WEBHOOKS__USER_REGISTER__HOOK"     = "auth_on_register"
