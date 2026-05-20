@@ -44,8 +44,6 @@ inputs = {
       chart      = "vernemq"
       version    = "2.1.2"
 
-      subdomain = "mqtt.mesh"
-
       auth = {
         renovate = "docker"
         image    = "python"

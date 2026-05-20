@@ -5,34 +5,6 @@ resource "random_password" "vernemq_internal" {
   special = false
 }
 
-# TLS cert for the publicly-exposed MQTTS listener. The public LB gateway runs
-# the matching listener in passthrough mode, so VerneMQ terminates TLS itself
-# using this secret.
-resource "kubectl_manifest" "vernemq_certificate" {
-  count = local.enabled ? 1 : 0
-
-  yaml_body = yamlencode({
-    apiVersion = "cert-manager.io/v1"
-    kind       = "Certificate"
-
-    metadata = {
-      namespace = local.namespace
-      name      = local.vernemq_name
-
-      labels = local.labels
-    }
-
-    spec = {
-      secretName = local.vernemq_cert_secret
-      dnsNames   = [local.vernemq_public_host]
-      issuerRef = {
-        kind = "ClusterIssuer"
-        name = "lets-encrypt"
-      }
-    }
-  })
-}
-
 resource "helm_release" "vernemq" {
   count = local.enabled ? 1 : 0
 
@@ -48,30 +20,23 @@ resource "helm_release" "vernemq" {
 
       replicaCount = 1
 
+      # mqtt: plain TCP on 1883 for the in-cluster CoreScope subscriber.
+      # ws: MQTT-over-WebSocket on 8080 — the public LB gateway terminates
+      # TLS on 443 for `mqtt.mesh.leightha.us` and forwards cleartext WS
+      # in-cluster to this listener.
       service = {
         type = "ClusterIP"
         mqtt = {
           enabled = true
         }
-        mqtts = {
+        ws = {
           enabled = true
-          port    = 8883
+          port    = local.vernemq_ws_port
         }
       }
 
-      # Mount the cert-manager-issued cert into the pod so the SSL listener
-      # can pick it up via the LISTENER__SSL__CERTFILE / KEYFILE env vars.
-      secretMounts = [
-        {
-          name       = "vernemq-tls"
-          secretName = local.vernemq_cert_secret
-          path       = "/etc/ssl/vernemq"
-        }
-      ]
-
       # No durable session state needed — CoreScope subscribes immediately
-      # and external publishers use QoS 0. Skipping the PVC also avoids the
-      # extra storage class plumbing.
+      # and external publishers use QoS 0.
       persistentVolume = {
         enabled = false
       }
@@ -87,10 +52,8 @@ resource "helm_release" "vernemq" {
 
           "DOCKER_VERNEMQ_ALLOW_ANONYMOUS" = "off"
 
-          "DOCKER_VERNEMQ_LISTENER__SSL__DEFAULT"  = "0.0.0.0:8883"
-          "DOCKER_VERNEMQ_LISTENER__SSL__CERTFILE" = "/etc/ssl/vernemq/tls.crt"
-          "DOCKER_VERNEMQ_LISTENER__SSL__KEYFILE"  = "/etc/ssl/vernemq/tls.key"
-          "DOCKER_VERNEMQ_LISTENER__SSL__CAFILE"   = "/etc/ssl/vernemq/tls.crt"
+          # Cleartext WebSocket listener — TLS termination happens at the gateway.
+          "DOCKER_VERNEMQ_LISTENER__WS__DEFAULT" = "0.0.0.0:${local.vernemq_ws_port}"
 
           "DOCKER_VERNEMQ_PLUGINS__VMQ_WEBHOOKS" = "on"
 
@@ -107,20 +70,17 @@ resource "helm_release" "vernemq" {
     })
   ]
 
-  depends_on = [
-    kubernetes_service_v1.vernemq_auth,
-    kubectl_manifest.vernemq_certificate
-  ]
+  depends_on = [kubernetes_service_v1.vernemq_auth]
 }
 
-# Route the public LB gateway's mqtts listener to VerneMQ. The gateway runs
-# this in TLS passthrough mode, so the encrypted stream is forwarded as-is.
-resource "kubectl_manifest" "vernemq_tls_route" {
+# Forward `mqtt.mesh.<domain>` traffic from the public LB's per-host HTTPS
+# listener to VerneMQ's WS listener. Envoy auto-handles the WebSocket upgrade.
+resource "kubectl_manifest" "vernemq_http_route" {
   count = local.enabled ? 1 : 0
 
   yaml_body = yamlencode({
-    apiVersion = "gateway.networking.k8s.io/v1alpha2"
-    kind       = "TLSRoute"
+    apiVersion = "gateway.networking.k8s.io/v1"
+    kind       = "HTTPRoute"
 
     metadata = {
       namespace = local.namespace
@@ -131,19 +91,39 @@ resource "kubectl_manifest" "vernemq_tls_route" {
       parentRefs = [
         {
           namespace   = var.gateway_namespace
-          name        = var.mqtt_gateway_name
-          sectionName = "mqtts"
+          name        = var.gateway_name
+          sectionName = var.mqtt_gateway_section
         }
       ]
-      hostnames = [
-        local.vernemq_public_host
-      ]
+      hostnames = [local.vernemq_public_host]
       rules = [
         {
+          matches = [
+            {
+              path = {
+                type  = "PathPrefix"
+                value = "/"
+              }
+            }
+          ]
+          # VerneMQ's Cowboy router only dispatches WS upgrades on `/mqtt`,
+          # but meshcoretomqtt (and most other clients) hardcode `/`. Rewrite
+          # the path here so the upgrade lands where VerneMQ expects.
+          filters = [
+            {
+              type = "URLRewrite"
+              urlRewrite = {
+                path = {
+                  type            = "ReplaceFullPath"
+                  replaceFullPath = "/mqtt"
+                }
+              }
+            }
+          ]
           backendRefs = [
             {
               name = local.vernemq_name
-              port = 8883
+              port = local.vernemq_ws_port
             }
           ]
         }

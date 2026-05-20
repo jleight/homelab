@@ -19,12 +19,12 @@ locals {
   # subscribe cheaply over plain TCP within the cluster.
   vernemq_name          = "${local.name}-vernemq"
   vernemq_host          = "${local.vernemq_name}.${local.namespace}.svc.cluster.local"
-  vernemq_public_host   = "${var.core_scope.vernemq.subdomain}.${var.gateway_domain}"
+  vernemq_public_host   = var.mqtt_hostname
   vernemq_internal_user = "core-scope"
   vernemq_internal_pass = local.enabled ? random_password.vernemq_internal[0].result : null
   vernemq_auth_name     = "${local.name}-vernemq-auth"
   vernemq_auth_port     = 8080
-  vernemq_cert_secret   = "${local.vernemq_name}-tls"
+  vernemq_ws_port       = 8080
 
   config_json = jsonencode(merge(
     {

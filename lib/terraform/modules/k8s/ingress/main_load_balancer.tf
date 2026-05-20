@@ -1,12 +1,17 @@
 locals {
   load_balancer_enabled = local.enabled && var.k8s_ingress.load_balancer.enabled
 
-  load_balancer_namespace        = local.load_balancer_enabled ? kubernetes_namespace_v1.load_balancer[0].metadata[0].name : ""
-  private_load_balancer_name     = local.load_balancer_enabled ? "private-lb" : ""
-  public_load_balancer_name      = local.load_balancer_enabled ? "public-lb" : ""
-  public_mqtt_load_balancer_name = local.load_balancer_enabled ? "public-mqtt-lb" : ""
-  load_balancer_section          = local.load_balancer_enabled ? (local.cert_manager_enabled ? "https" : "http") : ""
-  load_balancer_domain           = local.load_balancer_enabled ? var.k8s_cluster_domain : ""
+  load_balancer_namespace    = local.load_balancer_enabled ? kubernetes_namespace_v1.load_balancer[0].metadata[0].name : ""
+  private_load_balancer_name = local.load_balancer_enabled ? "private-lb" : ""
+  public_load_balancer_name  = local.load_balancer_enabled ? "public-lb" : ""
+  load_balancer_section      = local.load_balancer_enabled ? (local.cert_manager_enabled ? "https" : "http") : ""
+  load_balancer_domain       = local.load_balancer_enabled ? var.k8s_cluster_domain : ""
+
+  # The wildcard cert covers only `*.leightha.us` (one label deep), so a
+  # three-label name like `mqtt.mesh.leightha.us` needs its own cert + listener.
+  # Used by core_scope to terminate WSS-over-443 for the MQTT broker.
+  mqtt_load_balancer_hostname = local.load_balancer_enabled ? "mqtt.mesh.${local.load_balancer_domain}" : ""
+  mqtt_load_balancer_section  = "https-mqtt"
 }
 
 resource "kubernetes_namespace_v1" "load_balancer" {
@@ -234,52 +239,32 @@ resource "kubectl_manifest" "load_balancer_public" {
                 }
               ]
             }
+          },
+          # Per-host HTTPS listener for the MQTT WSS endpoint — the wildcard
+          # above doesn't cover three-label names. cert-manager auto-issues a
+          # cert for this specific hostname via the gateway annotation.
+          {
+            name     = local.mqtt_load_balancer_section
+            protocol = "HTTPS"
+            port     = 443
+            hostname = local.mqtt_load_balancer_hostname
+            allowedRoutes = {
+              namespaces = {
+                from = "All"
+              }
+            }
+            tls = {
+              mode = "Terminate"
+              certificateRefs = [
+                {
+                  kind = "Secret"
+                  name = replace(local.mqtt_load_balancer_hostname, ".", "-")
+                }
+              ]
+            }
           }
         ] : []
       )
-    }
-  })
-}
-
-# MQTT lives on its own Gateway because Cilium fails to attach HTTPRoutes when
-# the same Gateway also has a TLS-passthrough listener — the HTTPS-terminate
-# and TLS-passthrough modes can't coexist on one envoy-rendered gateway.
-resource "kubectl_manifest" "load_balancer_public_mqtt" {
-  count = local.load_balancer_enabled ? 1 : 0
-
-  yaml_body = yamlencode({
-    apiVersion = "gateway.networking.k8s.io/v1"
-    kind       = "Gateway"
-
-    metadata = {
-      namespace = local.load_balancer_namespace
-      name      = local.public_mqtt_load_balancer_name
-
-      annotations = {
-        "external-dns.alpha.kubernetes.io/target" = var.ddns_host
-      }
-    }
-
-    spec = {
-      gatewayClassName = "cilium"
-      listeners = [
-        {
-          name     = "mqtts"
-          protocol = "TLS"
-          port     = 8883
-          tls = {
-            mode = "Passthrough"
-          }
-          allowedRoutes = {
-            kinds = [
-              { kind = "TLSRoute" }
-            ]
-            namespaces = {
-              from = "All"
-            }
-          }
-        }
-      ]
     }
   })
 }

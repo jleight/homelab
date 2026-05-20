@@ -19,8 +19,12 @@ output "public_load_balancer_name" {
   value = local.public_load_balancer_name
 }
 
-output "public_mqtt_load_balancer_name" {
-  value = local.public_mqtt_load_balancer_name
+output "mqtt_load_balancer_hostname" {
+  value = local.mqtt_load_balancer_hostname
+}
+
+output "mqtt_load_balancer_section" {
+  value = local.mqtt_load_balancer_section
 }
 
 output "load_balancer_section" {

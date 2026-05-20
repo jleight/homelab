@@ -41,8 +41,13 @@ variable "gateway_name" {
   type        = string
 }
 
-variable "mqtt_gateway_name" {
-  description = "Name of the gateway for the MQTT TLS-passthrough listener."
+variable "mqtt_gateway_section" {
+  description = "Name of the gateway section used for the MQTT WSS listener."
+  type        = string
+}
+
+variable "mqtt_hostname" {
+  description = "Public hostname clients use to reach the MQTT broker over WSS."
   type        = string
 }
 
@@ -98,11 +103,6 @@ variable "core_scope" {
       repository = string
       chart      = string
       version    = string
-
-      # Subdomain on the gateway domain used for the publicly-exposed MQTTS
-      # listener. The wildcard cert covers `*.<gateway_domain>`, so any
-      # subdomain here is reachable via the public LB without extra DNS work.
-      subdomain = optional(string, "mqtt")
 
       # Tiny Python sidecar that VerneMQ calls during CONNECT/PUBLISH/SUBSCRIBE
       # to authorize external publishers. The code is mounted from a ConfigMap
