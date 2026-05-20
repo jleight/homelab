@@ -11,13 +11,16 @@ The internal listener (used by CoreScope to subscribe) bypasses the JWT path
 via a fixed username/password pair injected through the environment.
 """
 
+import base64
+import binascii
 import json
 import logging
 import os
 import sys
+import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-import jwt
+from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 USERNAME_PREFIX = "v1_"
@@ -52,21 +55,63 @@ def extract_pubkey(username: str) -> str | None:
     return hex_key
 
 
+def _b64url_decode(data: str) -> bytes:
+    # JWT base64url with padding stripped — add it back.
+    pad = "=" * (-len(data) % 4)
+    return base64.urlsafe_b64decode(data + pad)
+
+
 def verify_jwt(pubkey_hex: str, token: str) -> str | None:
+    """Verify a MeshCore-style JWT.
+
+    Differs from RFC 7519 / PyJWT in three ways:
+      - header `alg` is "Ed25519" instead of "EdDSA"
+      - signature is hex-encoded (uppercase) instead of base64url
+      - payload includes a `publicKey` claim that should match the username
+    """
     try:
-        pubkey = Ed25519PublicKey.from_public_bytes(bytes.fromhex(pubkey_hex))
-        jwt.decode(token, pubkey, algorithms=["EdDSA"], audience=EXPECTED_AUDIENCE)
-        return None
-    except jwt.ExpiredSignatureError:
-        return "jwt expired"
-    except jwt.InvalidAudienceError:
-        return "jwt audience mismatch"
-    except jwt.InvalidSignatureError:
-        return "jwt signature invalid"
-    except jwt.DecodeError as exc:
+        header_b64, payload_b64, signature_hex = token.split(".")
+    except ValueError:
+        return "jwt malformed (not three parts)"
+
+    try:
+        header = json.loads(_b64url_decode(header_b64))
+        payload = json.loads(_b64url_decode(payload_b64))
+    except (ValueError, binascii.Error, UnicodeDecodeError) as exc:
         return f"jwt decode error: {exc}"
+
+    if header.get("alg") != "Ed25519":
+        return f"jwt alg mismatch: got {header.get('alg')!r}"
+
+    try:
+        signature = bytes.fromhex(signature_hex)
+    except ValueError:
+        return "jwt signature not hex"
+
+    signing_input = f"{header_b64}.{payload_b64}".encode("utf-8")
+    try:
+        Ed25519PublicKey.from_public_bytes(bytes.fromhex(pubkey_hex)).verify(
+            signature, signing_input
+        )
+    except InvalidSignature:
+        return "jwt signature invalid"
     except Exception as exc:
-        return f"jwt error: {exc.__class__.__name__}: {exc}"
+        return f"jwt verify error: {exc.__class__.__name__}: {exc}"
+
+    exp = payload.get("exp")
+    if not isinstance(exp, (int, float)) or time.time() >= exp:
+        return "jwt expired"
+
+    aud = payload.get("audience") or payload.get("aud")
+    if aud != EXPECTED_AUDIENCE:
+        return f"jwt audience mismatch: got {aud!r}, want {EXPECTED_AUDIENCE!r}"
+
+    # Payload's publicKey (uppercase hex) must match the username's pubkey.
+    claim_pub = (payload.get("publicKey") or "").lower()
+    if claim_pub and claim_pub != pubkey_hex.lower():
+        return "jwt publicKey claim does not match username"
+
+    return None
 
 
 def ok():

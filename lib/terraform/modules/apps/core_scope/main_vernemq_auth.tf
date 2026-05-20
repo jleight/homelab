@@ -87,7 +87,7 @@ resource "kubernetes_deployment_v1" "vernemq_auth" {
           # then exec the script. Pod restarts are rare; the ~3s warmup is fine.
           command = ["sh", "-c"]
           args = [
-            "pip install --quiet --root-user-action=ignore pyjwt cryptography && exec python -u /app/auth.py"
+            "pip install --quiet --root-user-action=ignore cryptography && exec python -u /app/auth.py"
           ]
 
           port {
