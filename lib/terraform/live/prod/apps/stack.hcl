@@ -133,7 +133,7 @@ inputs = {
   reverse_proxy = {
     renovate = "docker"
     image    = "nginx"
-    version  = "1.30.0-alpine"
+    version  = "1.31.0-alpine"
 
     services = {
       amp = {
