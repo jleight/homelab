@@ -27,6 +27,13 @@ resource "kubernetes_deployment_v1" "this" {
     template {
       metadata {
         labels = local.labels
+
+        annotations = {
+          # CoreScope reads config.json once at startup. Rolling the pod when
+          # the config changes is the simplest way to apply updates — pin the
+          # hash here so Terraform updates trigger a recreate.
+          "checksum/config" = sha256(local.config_json)
+        }
       }
 
       spec {
