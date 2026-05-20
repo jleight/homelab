@@ -41,6 +41,11 @@ variable "gateway_name" {
   type        = string
 }
 
+variable "mqtt_gateway_name" {
+  description = "Name of the gateway for the MQTT TLS-passthrough listener."
+  type        = string
+}
+
 variable "gateway_section" {
   description = "Name of the gateway section for ingress."
   type        = string
@@ -87,6 +92,25 @@ variable "core_scope" {
     litestream = object({
       image   = string
       version = string
+    })
+
+    vernemq = object({
+      repository = string
+      chart      = string
+      version    = string
+
+      # Subdomain on the gateway domain used for the publicly-exposed MQTTS
+      # listener. The wildcard cert covers `*.<gateway_domain>`, so any
+      # subdomain here is reachable via the public LB without extra DNS work.
+      subdomain = optional(string, "mqtt")
+
+      # Tiny Python sidecar that VerneMQ calls during CONNECT/PUBLISH/SUBSCRIBE
+      # to authorize external publishers. The code is mounted from a ConfigMap
+      # into a stock python image — no custom image build.
+      auth = object({
+        image   = string
+        version = string
+      })
     })
   })
 }

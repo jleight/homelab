@@ -19,6 +19,10 @@ output "public_load_balancer_name" {
   value = local.public_load_balancer_name
 }
 
+output "public_mqtt_load_balancer_name" {
+  value = local.public_mqtt_load_balancer_name
+}
+
 output "load_balancer_section" {
   value = local.load_balancer_section
 }

@@ -51,6 +51,13 @@ resource "helm_release" "cert_manager" {
       "config.apiVersion"       = "controller.config.cert-manager.io/v1alpha1"
       "config.kind"             = "ControllerConfiguration"
       "config.enableGatewayAPI" = true
+
+      # Skip the authoritative-NS walk in the DNS-01 self-check and query
+      # public recursors directly. The walk gets stuck in long backoffs when
+      # an intermediate lookup blips, leaving challenges pending for many
+      # minutes even after the TXT record has fully propagated.
+      "extraArgs[0]" = "--dns01-recursive-nameservers=1.1.1.1:53\\,8.8.8.8:53"
+      "extraArgs[1]" = "--dns01-recursive-nameservers-only"
     } : { name = k, value = v }
   ]
 

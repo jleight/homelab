@@ -14,6 +14,18 @@ locals {
 
   api_key = local.enabled ? random_password.api_key[0].result : null
 
+  # Internal-listener credentials for VerneMQ. The auth webhook short-circuits
+  # this username/password pair without running the JWT path, so CoreScope can
+  # subscribe cheaply over plain TCP within the cluster.
+  vernemq_name          = "${local.name}-vernemq"
+  vernemq_host          = "${local.vernemq_name}.${local.namespace}.svc.cluster.local"
+  vernemq_public_host   = "${var.core_scope.vernemq.subdomain}.${var.gateway_domain}"
+  vernemq_internal_user = "core-scope"
+  vernemq_internal_pass = local.enabled ? random_password.vernemq_internal[0].result : null
+  vernemq_auth_name     = "${local.name}-vernemq-auth"
+  vernemq_auth_port     = 8080
+  vernemq_cert_secret   = "${local.vernemq_name}-tls"
+
   config_json = jsonencode(merge(
     {
       port   = local.port
@@ -25,6 +37,16 @@ locals {
           broker   = "mqtt://${local.mqtt_hostname}:1883"
           username = local.mqtt_username
           password = local.mqtt_password
+          topics = [
+            "meshcore/+/+/packets",
+            "meshcore/#"
+          ]
+        },
+        {
+          name     = "vernemq"
+          broker   = "mqtt://${local.vernemq_host}:1883"
+          username = local.vernemq_internal_user
+          password = local.vernemq_internal_pass
           topics = [
             "meshcore/+/+/packets",
             "meshcore/#"

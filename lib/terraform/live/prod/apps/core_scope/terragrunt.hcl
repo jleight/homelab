@@ -24,4 +24,6 @@ inputs = {
   gateway_name      = dependency.k8s_ingress.outputs.public_load_balancer_name
   gateway_section   = "https"
   gateway_domain    = dependency.k8s_ingress.outputs.load_balancer_domain
+
+  mqtt_gateway_name = dependency.k8s_ingress.outputs.public_mqtt_load_balancer_name
 }
