@@ -13,6 +13,13 @@ resource "random_password" "openai_api_key" {
   special = false
 }
 
+resource "random_password" "webui_secret_key" {
+  count = local.enabled ? 1 : 0
+
+  length  = 64
+  special = false
+}
+
 resource "helm_release" "this" {
   count = local.enabled ? 1 : 0
 
@@ -42,6 +49,8 @@ resource "helm_release" "this" {
       "extraEnvVars[3].value"                       = "${local.name}-db.${local.namespace}.svc.cluster.local"
       "extraEnvVars[4].name"                        = "DATABASE_NAME"
       "extraEnvVars[4].value"                       = "app"
+      "extraEnvVars[5].name"                        = "WEBUI_SECRET_KEY"
+      "extraEnvVars[5].value"                       = random_password.webui_secret_key[0].result
     } : { name = k, value = v }
   ]
 }
