@@ -94,13 +94,13 @@ resource "kubectl_manifest" "vernemq_http_route" {
 
     spec = {
       parentRefs = [
-        {
+        for l in var.mqtt_gateway_listeners : {
           namespace   = var.gateway_namespace
           name        = var.gateway_name
-          sectionName = var.mqtt_gateway_section
+          sectionName = l.section
         }
       ]
-      hostnames = [local.vernemq_public_host]
+      hostnames = local.vernemq_public_hosts
       rules = [
         {
           matches = [

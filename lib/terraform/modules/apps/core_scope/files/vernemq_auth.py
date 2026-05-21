@@ -26,7 +26,10 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 USERNAME_PREFIX = "v1_"
 INTERNAL_USERNAME = os.environ["INTERNAL_USERNAME"]
 INTERNAL_PASSWORD = os.environ["INTERNAL_PASSWORD"]
-EXPECTED_AUDIENCE = os.environ["EXPECTED_AUDIENCE"]
+# Comma-separated list — clients may set their `audience` to any of these and
+# the JWT will be accepted. Lets us serve the same broker under multiple
+# public hostnames (e.g. leightha.us and wnymeshcore.org).
+EXPECTED_AUDIENCES = {a.strip() for a in os.environ["EXPECTED_AUDIENCES"].split(",") if a.strip()}
 
 logging.basicConfig(
     level=logging.INFO,
@@ -103,8 +106,8 @@ def verify_jwt(pubkey_hex: str, token: str) -> str | None:
         return "jwt expired"
 
     aud = payload.get("audience") or payload.get("aud")
-    if aud != EXPECTED_AUDIENCE:
-        return f"jwt audience mismatch: got {aud!r}, want {EXPECTED_AUDIENCE!r}"
+    if aud not in EXPECTED_AUDIENCES:
+        return f"jwt audience mismatch: got {aud!r}, want one of {sorted(EXPECTED_AUDIENCES)!r}"
 
     # Payload's publicKey (uppercase hex) must match the username's pubkey.
     claim_pub = (payload.get("publicKey") or "").lower()
@@ -257,5 +260,5 @@ class Handler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    log.info("listening on :8080 (audience=%s)", EXPECTED_AUDIENCE)
+    log.info("listening on :8080 (audiences=%s)", sorted(EXPECTED_AUDIENCES))
     HTTPServer(("0.0.0.0", 8080), Handler).serve_forever()

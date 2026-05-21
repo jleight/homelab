@@ -41,24 +41,20 @@ variable "gateway_name" {
   type        = string
 }
 
-variable "mqtt_gateway_section" {
-  description = "Name of the gateway section used for the MQTT WSS listener."
-  type        = string
+variable "gateway_listeners" {
+  description = "Listener (section, hostname) pairs the app HTTPRoute attaches to. The HTTPRoute serves every hostname listed."
+  type = list(object({
+    section  = string
+    hostname = string
+  }))
 }
 
-variable "mqtt_hostname" {
-  description = "Public hostname clients use to reach the MQTT broker over WSS."
-  type        = string
-}
-
-variable "gateway_section" {
-  description = "Name of the gateway section for ingress."
-  type        = string
-}
-
-variable "gateway_domain" {
-  description = "Domain for the gateway for ingress."
-  type        = string
+variable "mqtt_gateway_listeners" {
+  description = "Listener (section, hostname) pairs the VerneMQ WSS HTTPRoute attaches to."
+  type = list(object({
+    section  = string
+    hostname = string
+  }))
 }
 
 variable "core_scope" {
@@ -67,8 +63,7 @@ variable "core_scope" {
     image   = string
     version = string
 
-    subdomain = optional(string, "mesh")
-    path      = optional(string, "/")
+    path = optional(string, "/")
 
     # The app ships Caddy and Mosquitto in its container. In k8s we terminate
     # TLS at the gateway and use an external MQTT broker, so both are disabled.

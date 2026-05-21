@@ -111,6 +111,11 @@ resource "kubectl_manifest" "cert_manager_issuer_lets_encrypt" {
         solvers = [
           {
             dns01 = {
+              # Follow CNAMEs from `_acme-challenge.<name>` so we can issue
+              # certs for delegated domains: the owner CNAMEs their challenge
+              # name into a zone we control, and the TXT lands here.
+              cnameStrategy = "Follow"
+
               cloudflare = {
                 apiTokenSecretRef = {
                   name = try(one(kubernetes_secret_v1.cert_manager_cloudflare_api_token[0].metadata).name, null)

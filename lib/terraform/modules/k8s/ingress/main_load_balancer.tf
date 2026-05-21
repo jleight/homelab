@@ -7,11 +7,43 @@ locals {
   load_balancer_section      = local.load_balancer_enabled ? (local.cert_manager_enabled ? "https" : "http") : ""
   load_balancer_domain       = local.load_balancer_enabled ? var.k8s_cluster_domain : ""
 
-  # The wildcard cert covers only `*.leightha.us` (one label deep), so a
-  # three-label name like `mqtt.mesh.leightha.us` needs its own cert + listener.
-  # Used by core_scope to terminate WSS-over-443 for the MQTT broker.
-  mqtt_load_balancer_hostname = local.load_balancer_enabled ? "mqtt.mesh.${local.load_balancer_domain}" : ""
-  mqtt_load_balancer_section  = "https-mqtt"
+  # Per-host HTTPS listeners on public-lb. The standard `https` listener uses
+  # the `*.leightha.us` wildcard, which only covers one label deep — anything
+  # with more labels (e.g. `mqtt.mesh.leightha.us`) or in a different domain
+  # (e.g. `map.wnymeshcore.org`) needs its own listener with its own cert.
+  # cert-manager-gateway-shim auto-issues a Certificate per listener from the
+  # gateway's `cert-manager.io/cluster-issuer` annotation; delegated domains
+  # rely on `cnameStrategy: Follow` on the issuer (see main_cert_manager.tf).
+  public_lb_app_listeners = local.load_balancer_enabled ? [
+    {
+      section  = "https"
+      hostname = "mesh.${local.load_balancer_domain}"
+    },
+    {
+      section  = "https-map-wny"
+      hostname = "map.wnymeshcore.org"
+    },
+  ] : []
+
+  public_lb_mqtt_listeners = local.load_balancer_enabled ? [
+    {
+      section  = "https-mqtt"
+      hostname = "mqtt.mesh.${local.load_balancer_domain}"
+    },
+    {
+      section  = "https-mqtt-map-wny"
+      hostname = "mqtt.map.wnymeshcore.org"
+    },
+  ] : []
+
+  # All explicit-host listeners that need to be added to the public-lb spec
+  # (the wildcard `https` listener already exists separately).
+  public_lb_extra_listeners = [
+    for l in concat(
+      local.public_lb_app_listeners,
+      local.public_lb_mqtt_listeners
+    ) : l if l.section != "https"
+  ]
 }
 
 resource "kubernetes_namespace_v1" "load_balancer" {
@@ -219,51 +251,54 @@ resource "kubectl_manifest" "load_balancer_public" {
             }
           }
         ],
-        local.cert_manager_enabled ? [
-          {
-            name     = "https"
-            protocol = "HTTPS"
-            port     = 443
-            hostname = "*.${local.load_balancer_domain}"
-            allowedRoutes = {
-              namespaces = {
-                from = "All"
+        local.cert_manager_enabled ? concat(
+          [
+            {
+              name     = "https"
+              protocol = "HTTPS"
+              port     = 443
+              hostname = "*.${local.load_balancer_domain}"
+              allowedRoutes = {
+                namespaces = {
+                  from = "All"
+                }
+              }
+              tls = {
+                mode = "Terminate"
+                certificateRefs = [
+                  {
+                    kind = "Secret"
+                    name = "wildcard-${replace(local.load_balancer_domain, ".", "-")}"
+                  }
+                ]
               }
             }
-            tls = {
-              mode = "Terminate"
-              certificateRefs = [
-                {
-                  kind = "Secret"
-                  name = "wildcard-${replace(local.load_balancer_domain, ".", "-")}"
+          ],
+          # Explicit-host listeners for names that aren't covered by the
+          # wildcard cert (three-label leightha.us names, delegated domains).
+          [
+            for l in local.public_lb_extra_listeners : {
+              name     = l.section
+              protocol = "HTTPS"
+              port     = 443
+              hostname = l.hostname
+              allowedRoutes = {
+                namespaces = {
+                  from = "All"
                 }
-              ]
-            }
-          },
-          # Per-host HTTPS listener for the MQTT WSS endpoint — the wildcard
-          # above doesn't cover three-label names. cert-manager auto-issues a
-          # cert for this specific hostname via the gateway annotation.
-          {
-            name     = local.mqtt_load_balancer_section
-            protocol = "HTTPS"
-            port     = 443
-            hostname = local.mqtt_load_balancer_hostname
-            allowedRoutes = {
-              namespaces = {
-                from = "All"
+              }
+              tls = {
+                mode = "Terminate"
+                certificateRefs = [
+                  {
+                    kind = "Secret"
+                    name = replace(l.hostname, ".", "-")
+                  }
+                ]
               }
             }
-            tls = {
-              mode = "Terminate"
-              certificateRefs = [
-                {
-                  kind = "Secret"
-                  name = replace(local.mqtt_load_balancer_hostname, ".", "-")
-                }
-              ]
-            }
-          }
-        ] : []
+          ]
+        ) : []
       )
     }
   })

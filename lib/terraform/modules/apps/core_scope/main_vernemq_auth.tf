@@ -116,8 +116,8 @@ resource "kubernetes_deployment_v1" "vernemq_auth" {
           }
 
           env {
-            name  = "EXPECTED_AUDIENCE"
-            value = local.vernemq_public_host
+            name  = "EXPECTED_AUDIENCES"
+            value = join(",", local.vernemq_public_hosts)
           }
 
           volume_mount {

@@ -19,12 +19,14 @@ output "public_load_balancer_name" {
   value = local.public_load_balancer_name
 }
 
-output "mqtt_load_balancer_hostname" {
-  value = local.mqtt_load_balancer_hostname
+output "public_load_balancer_app_listeners" {
+  description = "List of {section, hostname} pairs the CoreScope app HTTPRoute should attach to."
+  value       = local.public_lb_app_listeners
 }
 
-output "mqtt_load_balancer_section" {
-  value = local.mqtt_load_balancer_section
+output "public_load_balancer_mqtt_listeners" {
+  description = "List of {section, hostname} pairs the VerneMQ WSS HTTPRoute should attach to."
+  value       = local.public_lb_mqtt_listeners
 }
 
 output "load_balancer_section" {

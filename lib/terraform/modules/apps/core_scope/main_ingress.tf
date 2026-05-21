@@ -12,13 +12,13 @@ resource "kubectl_manifest" "ingress" {
 
     spec = {
       parentRefs = [
-        {
+        for l in var.gateway_listeners : {
           namespace   = var.gateway_namespace
           name        = var.gateway_name
-          sectionName = var.gateway_section
+          sectionName = l.section
         }
       ]
-      hostnames = [local.hostname]
+      hostnames = local.hostnames
       rules = [
         {
           matches = [

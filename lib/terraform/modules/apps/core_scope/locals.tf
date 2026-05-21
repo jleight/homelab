@@ -19,7 +19,7 @@ locals {
   # subscribe cheaply over plain TCP within the cluster.
   vernemq_name          = "${local.name}-vernemq"
   vernemq_host          = "${local.vernemq_name}.${local.namespace}.svc.cluster.local"
-  vernemq_public_host   = var.mqtt_hostname
+  vernemq_public_hosts  = [for l in var.mqtt_gateway_listeners : l.hostname]
   vernemq_internal_user = "core-scope"
   vernemq_internal_pass = local.enabled ? random_password.vernemq_internal[0].result : null
   vernemq_auth_name     = "${local.name}-vernemq-auth"
@@ -84,7 +84,7 @@ locals {
     }
   )
 
-  hostname = "${var.core_scope.subdomain}.${var.gateway_domain}"
+  hostnames = [for l in var.gateway_listeners : l.hostname]
 
   # Litestream replicates to the backup PVC mounted at /backup.
   # One YAML file rendered into a ConfigMap and mounted at /etc/litestream.yml.
