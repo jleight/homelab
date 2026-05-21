@@ -29,7 +29,8 @@ inputs = {
     hash_channels = [
       "#test",
       "#wardriving",
-      "#wny"
+      "#wny",
+      "#xerobot"
     ]
 
     litestream = {
