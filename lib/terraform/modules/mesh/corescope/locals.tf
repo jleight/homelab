@@ -6,12 +6,6 @@ locals {
 
   port = 3000
 
-  vault_uuid = local.enabled ? data.onepassword_vault.terraform[0].uuid : null
-
-  mqtt_hostname = local.enabled ? data.onepassword_item.ha_mqtt[0].hostname : null
-  mqtt_username = local.enabled ? data.onepassword_item.ha_mqtt[0].username : null
-  mqtt_password = local.enabled ? data.onepassword_item.ha_mqtt[0].credential : null
-
   api_key = local.enabled ? random_password.api_key[0].result : null
 
   config_json = jsonencode(merge(
@@ -20,16 +14,6 @@ locals {
       apiKey = local.api_key
 
       mqttSources = [
-        {
-          name     = "home-assistant"
-          broker   = "mqtt://${local.mqtt_hostname}:1883"
-          username = local.mqtt_username
-          password = local.mqtt_password
-          topics = [
-            "meshcore/+/+/packets",
-            "meshcore/#"
-          ]
-        },
         {
           name     = "vernemq"
           broker   = "mqtt://${var.vernemq_host}:1883"
