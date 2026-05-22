@@ -4,12 +4,13 @@ locals {
   name      = local.component
   namespace = var.namespace
 
-  vernemq_name     = local.name
-  vernemq_host     = "${local.vernemq_name}.${local.namespace}.svc.cluster.local"
-  vernemq_ws_port  = 8080
-  auth_name        = "${local.name}-auth"
-  auth_port        = 8080
-  public_hostnames = [for l in var.mqtt_gateway_listeners : l.hostname]
+  vernemq_name      = local.name
+  vernemq_host      = "${local.vernemq_name}.${local.namespace}.svc.cluster.local"
+  vernemq_mqtt_port = 1883
+  vernemq_ws_port   = 8080
+  auth_name         = "${local.name}-auth"
+  auth_port         = 8080
+  public_hostnames  = [for l in var.mqtt_gateway_listeners : l.hostname]
 
   # Username -> generated password. Both the in-cluster CoreScope subscriber
   # and external in-cluster consumers (e.g. MeshBug) authenticate against
