@@ -1,9 +1,17 @@
 terraform {
-  source = "${get_parent_terragrunt_dir()}/../modules//apps/mesh_bug"
+  source = "${get_parent_terragrunt_dir()}/../modules//mesh/meshbug"
 }
 
 include {
   path = find_in_parent_folders("root.hcl")
+}
+
+dependency "namespace" {
+  config_path = "../namespace"
+}
+
+dependency "mqtt" {
+  config_path = "../mqtt"
 }
 
 dependency "k8s_storage" {
@@ -14,12 +22,10 @@ dependency "k8s_ingress" {
   config_path = "../../k8s/ingress"
 }
 
-dependency "core_scope" {
-  config_path = "../core_scope"
-}
-
 inputs = {
-  component = "meshbug"
+  component = "mesh-bug"
+
+  namespace = dependency.namespace.outputs.namespace
 
   data_storage_class = dependency.k8s_storage.outputs.app_data_storage_class_name
 
@@ -28,7 +34,7 @@ inputs = {
   gateway_section   = "https"
   gateway_domain    = dependency.k8s_ingress.outputs.load_balancer_domain
 
-  vernemq_host     = dependency.core_scope.outputs.vernemq_host
-  vernemq_username = dependency.core_scope.outputs.vernemq_meshbug_username
-  vernemq_password = dependency.core_scope.outputs.vernemq_meshbug_password
+  vernemq_host     = dependency.mqtt.outputs.host
+  vernemq_username = dependency.mqtt.outputs.users.mesh_bug.username
+  vernemq_password = dependency.mqtt.outputs.users.mesh_bug.password
 }

@@ -2,7 +2,7 @@ locals {
   kubeconfig_file = "${var.env_directory}/${local.environment}/.kubeconfig"
 
   name      = local.component
-  namespace = local.enabled ? kubernetes_namespace_v1.this[0].metadata[0].name : null
+  namespace = var.namespace
 
   port     = 80
   hostname = "${var.mesh_bug.subdomain}.${var.gateway_domain}"
@@ -21,8 +21,8 @@ locals {
   vault_uuid = local.enabled ? data.onepassword_vault.terraform[0].uuid : null
 
   # Brokers mirror what CoreScope subscribes to: the Home Assistant MQTT
-  # broker (source of truth) and the in-cluster VerneMQ deployed alongside
-  # CoreScope. Each broker pulls its credentials from a dedicated secret in
+  # broker (source of truth) and the in-cluster VerneMQ deployed by the mqtt
+  # module. Each broker pulls its credentials from a per-broker secret in
   # this namespace; MeshBug composes MESHBUG_BROKERS_JSON from these at
   # startup.
   brokers = [

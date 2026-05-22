@@ -2,7 +2,7 @@ locals {
   kubeconfig_file = "${var.env_directory}/${local.environment}/.kubeconfig"
 
   name      = local.component
-  namespace = local.enabled ? kubernetes_namespace_v1.this[0].metadata[0].name : null
+  namespace = var.namespace
 
   port = 3000
 
@@ -13,24 +13,6 @@ locals {
   mqtt_password = local.enabled ? data.onepassword_item.ha_mqtt[0].credential : null
 
   api_key = local.enabled ? random_password.api_key[0].result : null
-
-  # Internal-listener credentials for VerneMQ. The auth webhook short-circuits
-  # this username/password pair without running the JWT path, so CoreScope can
-  # subscribe cheaply over plain TCP within the cluster.
-  vernemq_name          = "${local.name}-vernemq"
-  vernemq_host          = "${local.vernemq_name}.${local.namespace}.svc.cluster.local"
-  vernemq_public_hosts  = [for l in var.mqtt_gateway_listeners : l.hostname]
-  vernemq_internal_user = "core-scope"
-  vernemq_internal_pass = local.enabled ? random_password.vernemq_internal[0].result : null
-  vernemq_meshbug_user  = "meshbug"
-  vernemq_meshbug_pass  = local.enabled ? random_password.vernemq_meshbug[0].result : null
-  vernemq_internal_users = {
-    (local.vernemq_internal_user) = local.vernemq_internal_pass
-    (local.vernemq_meshbug_user)  = local.vernemq_meshbug_pass
-  }
-  vernemq_auth_name = "${local.name}-vernemq-auth"
-  vernemq_auth_port = 8080
-  vernemq_ws_port   = 8080
 
   config_json = jsonencode(merge(
     {
@@ -50,9 +32,9 @@ locals {
         },
         {
           name     = "vernemq"
-          broker   = "mqtt://${local.vernemq_host}:1883"
-          username = local.vernemq_internal_user
-          password = local.vernemq_internal_pass
+          broker   = "mqtt://${var.vernemq_host}:1883"
+          username = var.vernemq_username
+          password = var.vernemq_password
           topics = [
             "meshcore/+/+/packets",
             "meshcore/#"
@@ -92,8 +74,10 @@ locals {
 
   hostnames = [for l in var.gateway_listeners : l.hostname]
 
-  # Litestream replicates to the backup PVC mounted at /backup.
-  # One YAML file rendered into a ConfigMap and mounted at /etc/litestream.yml.
+  # Litestream replicates WAL segments to /backup/meshcore on the NAS share.
+  # The same path is used by the restore initContainer at startup so a fresh
+  # PVC seeds from the most recent replica — that's how this module survives
+  # the namespace move from `core-scope` to `mesh`.
   litestream_config = yamlencode({
     dbs = [
       {

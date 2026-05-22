@@ -9,24 +9,13 @@ variable "vault" {
   default     = "Terraform"
 }
 
-variable "vernemq_host" {
-  description = "In-cluster hostname of the CoreScope VerneMQ broker."
+variable "namespace" {
+  description = "Namespace for MeshBug. Provided by the namespace module."
   type        = string
-}
-
-variable "vernemq_username" {
-  description = "Username for the CoreScope VerneMQ broker."
-  type        = string
-}
-
-variable "vernemq_password" {
-  description = "Password for the CoreScope VerneMQ broker."
-  type        = string
-  sensitive   = true
 }
 
 variable "data_storage_class" {
-  description = "StorageClass for the data volumes."
+  description = "StorageClass for the postgres data volumes."
   type        = string
 }
 
@@ -48,6 +37,22 @@ variable "gateway_section" {
 variable "gateway_domain" {
   description = "Domain for the gateway for public ingress."
   type        = string
+}
+
+variable "vernemq_host" {
+  description = "In-cluster hostname of the broker."
+  type        = string
+}
+
+variable "vernemq_username" {
+  description = "Username for the broker."
+  type        = string
+}
+
+variable "vernemq_password" {
+  description = "Password for the broker."
+  type        = string
+  sensitive   = true
 }
 
 variable "mesh_bug" {

@@ -9,13 +9,18 @@ variable "vault" {
   default     = "Terraform"
 }
 
+variable "namespace" {
+  description = "Namespace for CoreScope. Provided by the namespace module."
+  type        = string
+}
+
 variable "data_storage_class" {
   description = "StorageClass for the SQLite data PVC. Must be a local / single-replica class — distributed block storage corrupts SQLite."
   type        = string
 }
 
 variable "backup_storage_class" {
-  description = "StorageClass for the Litestream backup PVC (SMB share on the NAS)."
+  description = "StorageClass for the Litestream backup PVC (SMB share on the NAS). The same path on this share is read by the restore initContainer and written by the Litestream sidecar — preserves DB across namespace moves."
   type        = string
 }
 
@@ -49,12 +54,20 @@ variable "gateway_listeners" {
   }))
 }
 
-variable "mqtt_gateway_listeners" {
-  description = "Listener (section, hostname) pairs the VerneMQ WSS HTTPRoute attaches to."
-  type = list(object({
-    section  = string
-    hostname = string
-  }))
+variable "vernemq_host" {
+  description = "In-cluster hostname of the broker."
+  type        = string
+}
+
+variable "vernemq_username" {
+  description = "Username for the broker."
+  type        = string
+}
+
+variable "vernemq_password" {
+  description = "Password for the broker."
+  type        = string
+  sensitive   = true
 }
 
 variable "core_scope" {
@@ -70,20 +83,12 @@ variable "core_scope" {
     disable_caddy     = optional(bool, true)
     disable_mosquitto = optional(bool, true)
 
-    # Channel name -> hex key for decrypting channel messages.
-    channel_keys = optional(map(string), {})
-
-    # Channel names (including the '#' prefix) whose keys are derived via
-    # SHA256(name)[:16]. The ingestor auto-derives keys for these.
+    channel_keys  = optional(map(string), {})
     hash_channels = optional(list(string), [])
 
-    # IATA code used as the default in region filters.
     default_region = optional(string, null)
+    regions        = optional(map(string), {})
 
-    # IATA code -> human-readable region name.
-    regions = optional(map(string), {})
-
-    # Default map center and zoom on the map page.
     map_defaults = optional(object({
       center = tuple([number, number])
       zoom   = optional(number, 9)
@@ -92,20 +97,6 @@ variable "core_scope" {
     litestream = object({
       image   = string
       version = string
-    })
-
-    vernemq = object({
-      repository = string
-      chart      = string
-      version    = string
-
-      # Tiny Python sidecar that VerneMQ calls during CONNECT/PUBLISH/SUBSCRIBE
-      # to authorize external publishers. The code is mounted from a ConfigMap
-      # into a stock python image — no custom image build.
-      auth = object({
-        image   = string
-        version = string
-      })
     })
   })
 }

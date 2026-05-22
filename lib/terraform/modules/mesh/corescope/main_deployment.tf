@@ -29,14 +29,41 @@ resource "kubernetes_deployment_v1" "this" {
         labels = local.labels
 
         annotations = {
-          # CoreScope reads config.json once at startup. Rolling the pod when
-          # the config changes is the simplest way to apply updates — pin the
-          # hash here so Terraform updates trigger a recreate.
           "checksum/config" = sha256(local.config_json)
         }
       }
 
       spec {
+        # Seed the SQLite DB from the Litestream replica on first start in
+        # this namespace. -if-db-not-exists makes every subsequent restart
+        # a no-op; -if-replica-exists prevents failure if the NAS path is
+        # empty (e.g. first-ever deploy).
+        init_container {
+          name = "litestream-restore"
+
+          image             = "${var.core_scope.litestream.image}:${var.core_scope.litestream.version}"
+          image_pull_policy = "IfNotPresent"
+
+          command = ["litestream"]
+          args = [
+            "restore",
+            "-if-db-not-exists",
+            "-if-replica-exists",
+            "-o", "/app/data/meshcore.db",
+            "file:///backup/meshcore",
+          ]
+
+          volume_mount {
+            name       = "data"
+            mount_path = "/app/data"
+          }
+
+          volume_mount {
+            name       = "backup"
+            mount_path = "/backup"
+          }
+        }
+
         container {
           name = "core-scope"
 

@@ -1,9 +1,17 @@
 terraform {
-  source = "${get_parent_terragrunt_dir()}/../modules//apps/core_scope"
+  source = "${get_parent_terragrunt_dir()}/../modules//mesh/corescope"
 }
 
 include {
   path = find_in_parent_folders("root.hcl")
+}
+
+dependency "namespace" {
+  config_path = "../namespace"
+}
+
+dependency "mqtt" {
+  config_path = "../mqtt"
 }
 
 dependency "k8s_storage" {
@@ -17,12 +25,16 @@ dependency "k8s_ingress" {
 inputs = {
   component = "core-scope"
 
+  namespace = dependency.namespace.outputs.namespace
+
   data_storage_class   = dependency.k8s_storage.outputs.app_data_local_storage_class_name
   backup_storage_class = dependency.k8s_storage.outputs.backups_storage_class_name
 
   gateway_namespace = dependency.k8s_ingress.outputs.load_balancer_namespace
   gateway_name      = dependency.k8s_ingress.outputs.public_load_balancer_name
+  gateway_listeners = dependency.k8s_ingress.outputs.public_load_balancer_app_listeners
 
-  gateway_listeners      = dependency.k8s_ingress.outputs.public_load_balancer_app_listeners
-  mqtt_gateway_listeners = dependency.k8s_ingress.outputs.public_load_balancer_mqtt_listeners
+  vernemq_host     = dependency.mqtt.outputs.host
+  vernemq_username = dependency.mqtt.outputs.users.core_scope.username
+  vernemq_password = dependency.mqtt.outputs.users.core_scope.password
 }

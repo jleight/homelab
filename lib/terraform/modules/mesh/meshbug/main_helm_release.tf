@@ -9,6 +9,15 @@ resource "helm_release" "this" {
 
   values = [
     yamlencode({
+      # The chart's fullname helper doesn't honor fullnameOverride — it only
+      # checks whether nameOverride (or the chart name) is a substring of
+      # Release.Name. Release is "mesh-bug" and chart is "meshbug", so the
+      # default render is "mesh-bug-meshbug". Setting nameOverride to the
+      # release name satisfies the `contains` check and collapses the
+      # fullname to just "mesh-bug" — which is what the HTTPRoute backendRef
+      # points at.
+      nameOverride = local.name
+
       postgres = {
         existingSecret    = local.postgres_secret
         existingSecretKey = "dsn"

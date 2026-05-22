@@ -1,8 +1,5 @@
 terraform {
   required_providers {
-    helm = {
-      source = "hashicorp/helm"
-    }
     kubectl = {
       source = "gavinbunney/kubectl"
     }
@@ -15,12 +12,6 @@ terraform {
     random = {
       source = "hashicorp/random"
     }
-  }
-}
-
-provider "helm" {
-  kubernetes = {
-    config_path = local.kubeconfig_file
   }
 }
 
