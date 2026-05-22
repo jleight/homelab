@@ -19,7 +19,7 @@ inputs = {
 
     map_defaults = {
       center = [42.88, -78.88]
-      zoom = 11
+      zoom   = 11
     }
 
     channel_keys = {
@@ -105,6 +105,16 @@ inputs = {
     renovate = "docker"
     image    = "ghcr.io/mealie-recipes/mealie"
     version  = "v3.18.0"
+  }
+
+  mesh_bug = {
+    renovate = "docker"
+    image    = "ghcr.io/jleight/charts/meshbug"
+    version  = "2026.5.2"
+
+    # ^ hack for renovate to support oci://
+    repository = "oci://ghcr.io/jleight/charts"
+    chart      = "meshbug"
   }
 
   open_webui = {

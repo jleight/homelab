@@ -5,6 +5,13 @@ resource "random_password" "vernemq_internal" {
   special = false
 }
 
+resource "random_password" "vernemq_meshbug" {
+  count = local.enabled ? 1 : 0
+
+  length  = 32
+  special = false
+}
+
 resource "helm_release" "vernemq" {
   count = local.enabled ? 1 : 0
 

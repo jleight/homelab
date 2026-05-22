@@ -43,8 +43,10 @@ resource "kubernetes_secret_v1" "vernemq_auth_internal" {
   }
 
   data = {
-    username = local.vernemq_internal_user
-    password = local.vernemq_internal_pass
+    # Single JSON blob keyed by username so the auth webhook can support
+    # multiple internal callers (CoreScope, MeshBug, ...) without growing
+    # an env var per user.
+    users = jsonencode(local.vernemq_internal_users)
   }
 }
 
@@ -96,21 +98,11 @@ resource "kubernetes_deployment_v1" "vernemq_auth" {
           }
 
           env {
-            name = "INTERNAL_USERNAME"
+            name = "INTERNAL_USERS"
             value_from {
               secret_key_ref {
                 name = kubernetes_secret_v1.vernemq_auth_internal[0].metadata[0].name
-                key  = "username"
-              }
-            }
-          }
-
-          env {
-            name = "INTERNAL_PASSWORD"
-            value_from {
-              secret_key_ref {
-                name = kubernetes_secret_v1.vernemq_auth_internal[0].metadata[0].name
-                key  = "password"
+                key  = "users"
               }
             }
           }

@@ -24,8 +24,10 @@ from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 USERNAME_PREFIX = "v1_"
-INTERNAL_USERNAME = os.environ["INTERNAL_USERNAME"]
-INTERNAL_PASSWORD = os.environ["INTERNAL_PASSWORD"]
+# Map of {username: password} for internal callers that bypass the JWT path.
+# CoreScope subscribes under one entry; other in-cluster services (e.g.
+# MeshBug) get their own entry so they can be rotated independently.
+INTERNAL_USERS = json.loads(os.environ["INTERNAL_USERS"])
 # Comma-separated list — clients may set their `audience` to any of these and
 # the JWT will be accepted. Lets us serve the same broker under multiple
 # public hostnames (e.g. leightha.us and wnymeshcore.org).
@@ -131,11 +133,11 @@ def handle_register(body, peer):
     password = body.get("password") or ""
     client_id = body.get("client_id") or ""
 
-    if username == INTERNAL_USERNAME:
-        if password == INTERNAL_PASSWORD:
-            log.info("register ok: internal user client_id=%s peer=%s", client_id, peer)
+    if username in INTERNAL_USERS:
+        if password == INTERNAL_USERS[username]:
+            log.info("register ok: internal user=%s client_id=%s peer=%s", username, client_id, peer)
             return ok()
-        log.warning("register deny: internal user bad password client_id=%s peer=%s", client_id, peer)
+        log.warning("register deny: internal user=%s bad password client_id=%s peer=%s", username, client_id, peer)
         return deny("bad internal credentials")
 
     pubkey = extract_pubkey(username)
@@ -164,7 +166,7 @@ def handle_publish(body, peer):
     client_id = body.get("client_id") or ""
     qos = body.get("qos")
 
-    if username == INTERNAL_USERNAME:
+    if username in INTERNAL_USERS:
         return ok()
 
     pubkey = extract_pubkey(username)
@@ -198,8 +200,8 @@ def handle_subscribe(body, peer):
     client_id = body.get("client_id") or ""
     topics = body.get("topics") or []
 
-    if username == INTERNAL_USERNAME:
-        log.info("subscribe ok: internal user topics=%s client_id=%s", topics, client_id)
+    if username in INTERNAL_USERS:
+        log.info("subscribe ok: internal user=%s topics=%s client_id=%s", username, topics, client_id)
         return ok()
 
     pubkey = extract_pubkey(username)
@@ -260,5 +262,9 @@ class Handler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    log.info("listening on :8080 (audiences=%s)", sorted(EXPECTED_AUDIENCES))
+    log.info(
+        "listening on :8080 (audiences=%s, internal_users=%s)",
+        sorted(EXPECTED_AUDIENCES),
+        sorted(INTERNAL_USERS),
+    )
     HTTPServer(("0.0.0.0", 8080), Handler).serve_forever()

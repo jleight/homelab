@@ -22,9 +22,15 @@ locals {
   vernemq_public_hosts  = [for l in var.mqtt_gateway_listeners : l.hostname]
   vernemq_internal_user = "core-scope"
   vernemq_internal_pass = local.enabled ? random_password.vernemq_internal[0].result : null
-  vernemq_auth_name     = "${local.name}-vernemq-auth"
-  vernemq_auth_port     = 8080
-  vernemq_ws_port       = 8080
+  vernemq_meshbug_user  = "meshbug"
+  vernemq_meshbug_pass  = local.enabled ? random_password.vernemq_meshbug[0].result : null
+  vernemq_internal_users = {
+    (local.vernemq_internal_user) = local.vernemq_internal_pass
+    (local.vernemq_meshbug_user)  = local.vernemq_meshbug_pass
+  }
+  vernemq_auth_name = "${local.name}-vernemq-auth"
+  vernemq_auth_port = 8080
+  vernemq_ws_port   = 8080
 
   config_json = jsonencode(merge(
     {
