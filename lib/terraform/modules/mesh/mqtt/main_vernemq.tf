@@ -42,6 +42,8 @@ resource "helm_release" "this" {
 
           "DOCKER_VERNEMQ_ALLOW_ANONYMOUS" = "off"
 
+          "DOCKER_VERNEMQ_MAX_CLIENT_ID_SIZE" = "256"
+
           "DOCKER_VERNEMQ_LISTENER__WS__DEFAULT" = "0.0.0.0:${local.vernemq_ws_port}"
 
           "DOCKER_VERNEMQ_PLUGINS__VMQ_ACL" = "off"
