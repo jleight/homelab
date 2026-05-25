@@ -95,6 +95,12 @@ inputs = {
         backend_port       = 8000
         public             = false
       }
+      octoprint = {
+        frontend_subdomain = "octo"
+        backend_host       = "srv01.leightha.us"
+        backend_port       = 5000
+        public             = false
+      }
     }
   }
 
