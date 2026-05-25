@@ -16,7 +16,7 @@ locals {
 
   postgres_dsn = local.enabled ? "postgres://${local.postgres_username}:${local.postgres_password}@${local.postgres_host}:5432/${local.postgres_database}?sslmode=disable" : null
 
-  service_name = local.enabled ? local.name : null
+  service_name = local.enabled ? "${local.name}-web" : null
 
   brokers = [
     {
