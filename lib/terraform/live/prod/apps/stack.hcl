@@ -52,7 +52,7 @@ inputs = {
   mealie = {
     renovate = "docker"
     image    = "ghcr.io/mealie-recipes/mealie"
-    version  = "v3.18.0"
+    version  = "v3.19.1"
   }
 
   open_webui = {
