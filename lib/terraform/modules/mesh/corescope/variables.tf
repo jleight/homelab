@@ -77,16 +77,17 @@ variable "core_scope" {
     disable_caddy     = optional(bool, true)
     disable_mosquitto = optional(bool, true)
 
-    channel_keys  = optional(map(string), {})
-    hash_channels = optional(list(string), [])
-
     default_region = optional(string, null)
     regions        = optional(map(string), {})
+    hash_regions   = optional(set(string), [])
 
     map_defaults = optional(object({
       center = tuple([number, number])
       zoom   = optional(number, 9)
     }), null)
+
+    channel_keys  = optional(map(string), {})
+    hash_channels = optional(set(string), [])
 
     litestream = object({
       image   = string

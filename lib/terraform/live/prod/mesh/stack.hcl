@@ -17,16 +17,24 @@ inputs = {
       "YYZ" = "Toronto"
     }
 
+    hash_regions = [
+      "#us",
+      "#us-ny",
+      "#us-ny-buf"
+    ]
+
     map_defaults = {
-      center = [42.88, -78.88]
-      zoom   = 11
+      center = [43.01, -78.77]
+      zoom   = 10
     }
 
     channel_keys = {
-      "Public" = "8b3387e9c5cdea6ac9e5edbaa115cd72"
+      "Public"      = "8b3387e9c5cdea6ac9e5edbaa115cd72"
+      "Meshcore716" = "096a7faa51e9076040a9d4175ec53afc"
     }
 
     hash_channels = [
+      "#emergency",
       "#test",
       "#wardriving",
       "#wny",

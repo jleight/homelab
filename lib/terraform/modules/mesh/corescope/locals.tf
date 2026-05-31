@@ -26,9 +26,10 @@ locals {
         }
       ]
 
+      regions      = var.core_scope.regions
+      hashRegions  = var.core_scope.hash_regions
       channelKeys  = var.core_scope.channel_keys
       hashChannels = var.core_scope.hash_channels
-      regions      = var.core_scope.regions
     },
     var.core_scope.default_region == null ? {} : {
       defaultRegion = var.core_scope.default_region
