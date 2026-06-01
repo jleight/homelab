@@ -107,6 +107,12 @@ inputs = {
         backend_port       = 5000
         public             = false
       }
+      odysseus = {
+        frontend_subdomain = "odysseus"
+        backend_host       = "fwd01.leightha.us"
+        backend_port       = 7000
+        public             = false
+      }
     }
   }
 
