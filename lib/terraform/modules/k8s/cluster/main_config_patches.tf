@@ -15,7 +15,9 @@ locals {
             }
             kernel = {
               modules = [
+                { name = "cp210x" },
                 { name = "nvme_tcp" },
+                { name = "usbserial" },
                 { name = "vfio_pci" }
               ]
             }
