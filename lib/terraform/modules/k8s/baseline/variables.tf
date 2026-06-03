@@ -41,5 +41,11 @@ variable "k8s_baseline" {
       chart      = string
       version    = string
     })
+
+    generic_device_plugin = object({
+      repository = string
+      chart      = string
+      version    = string
+    })
   })
 }

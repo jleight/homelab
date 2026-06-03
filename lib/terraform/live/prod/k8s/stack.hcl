@@ -89,6 +89,13 @@ inputs = {
       chart      = "intel-device-plugins-operator"
       version    = "0.35.0"
     }
+
+    generic_device_plugin = {
+      renovate   = "helm"
+      repository = "https://charts.gabe565.com"
+      chart      = "generic-device-plugin"
+      version    = "0.1.3"
+    }
   }
 
   k8s_monitoring = {
