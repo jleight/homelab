@@ -70,4 +70,35 @@ inputs = {
       version  = "3.14-slim"
     }
   }
+
+  pymc = {
+    renovate = "docker"
+    image    = "pymcdev/pymc-repeater"
+    version  = "sha-e17d113"
+
+    subdomain = "pymc"
+
+    serial_port = "/dev/ttyUSB0"
+    baud_rate   = 115200
+
+    companions = [
+      {
+        name = "Xero Base"
+      }
+    ]
+
+    room_servers = [
+      {
+        name      = "Leighthaus"
+        latitude  = 42.96136
+        longitude = -78.86831
+      }
+    ]
+
+    litestream = {
+      renovate = "docker"
+      image    = "litestream/litestream"
+      version  = "0.5.11"
+    }
+  }
 }

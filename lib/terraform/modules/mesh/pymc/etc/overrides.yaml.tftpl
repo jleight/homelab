@@ -1,0 +1,14 @@
+radio_type: kiss
+kiss:
+  port: ${jsonencode(serial_port)}
+  baud_rate: ${baud_rate}
+%{ if identity_key_b64 != "" || admin_password != "" ~}
+repeater:
+%{ endif ~}
+%{ if identity_key_b64 != "" ~}
+  identity_key: !!binary ${identity_key_b64}
+%{ endif ~}
+%{ if admin_password != "" ~}
+  security:
+    admin_password: ${jsonencode(admin_password)}
+%{ endif ~}
