@@ -95,12 +95,6 @@ inputs = {
         backend_port       = 8000
         public             = false
       }
-      meshcore = {
-        frontend_subdomain = "meshcore"
-        backend_host       = "fwd01.leightha.us"
-        backend_port       = 8530
-        public             = false
-      }
       octoprint = {
         frontend_subdomain = "octo"
         backend_host       = "srv01.leightha.us"
