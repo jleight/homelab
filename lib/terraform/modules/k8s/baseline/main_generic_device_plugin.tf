@@ -41,6 +41,21 @@ resource "helm_release" "generic_device_plugin" {
                   ]
                 }
               ]
+            },
+            {
+              # Original Prusa i3 MK3 3D printer (CDC-ACM serial, plugged into prod-01).
+              # → resource devices.k8s.leightha.us/prusa-mk3
+              name = "prusa-mk3"
+              groups = [
+                {
+                  paths = [
+                    {
+                      path      = "/dev/serial/by-id/usb-Prusa_Research*Original_Prusa_i3_MK3*-if00"
+                      mountPath = "/dev/ttyACM0"
+                    }
+                  ]
+                }
+              ]
             }
           ]
         })

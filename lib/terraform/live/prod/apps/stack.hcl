@@ -55,6 +55,12 @@ inputs = {
     version  = "v3.19.2"
   }
 
+  octoprint = {
+    renovate = "docker"
+    image    = "docker.io/octoprint/octoprint"
+    version  = "1.11.7"
+  }
+
   open_webui = {
     renovate   = "helm"
     repository = "https://helm.openwebui.com"
@@ -93,12 +99,6 @@ inputs = {
         frontend_subdomain = "lemonade"
         backend_host       = "fwd01.leightha.us"
         backend_port       = 8000
-        public             = false
-      }
-      octoprint = {
-        frontend_subdomain = "octo"
-        backend_host       = "srv01.leightha.us"
-        backend_port       = 5000
         public             = false
       }
       odysseus = {

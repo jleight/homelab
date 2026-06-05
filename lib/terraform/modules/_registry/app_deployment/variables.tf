@@ -60,6 +60,23 @@ variable "host_network" {
   default     = false
 }
 
+variable "deployment_strategy" {
+  description = "Deployment update strategy: \"RollingUpdate\" (default) or \"Recreate\". Use Recreate for apps holding a single exclusive resource (e.g. a host device) where surging a second pod would deadlock the rollout."
+  type        = string
+  default     = "RollingUpdate"
+
+  validation {
+    condition     = contains(["RollingUpdate", "Recreate"], var.deployment_strategy)
+    error_message = "deployment_strategy must be either \"RollingUpdate\" or \"Recreate\"."
+  }
+}
+
+variable "enable_service_links" {
+  description = "Whether to inject Kubernetes service discovery env vars (SVCNAME_*) into the container. Disable for apps whose own config env vars collide with these (e.g. OctoPrint reads OCTOPRINT_PORT)."
+  type        = bool
+  default     = true
+}
+
 variable "env" {
   description = "Map of environment variables for the main container."
   type        = map(string)

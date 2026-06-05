@@ -11,6 +11,18 @@ resource "kubernetes_deployment_v1" "this" {
   spec {
     replicas = var.replicas
 
+    # Recreate tears the old pod down before starting the new one. Required for
+    # apps that hold a single exclusive resource (e.g. a generic-device-plugin
+    # device): the default RollingUpdate surges a second pod that can never
+    # acquire the still-held device, deadlocking the rollout.
+    dynamic "strategy" {
+      for_each = var.deployment_strategy == "Recreate" ? [1] : []
+
+      content {
+        type = "Recreate"
+      }
+    }
+
     selector {
       match_labels = local.match_labels
     }
@@ -24,6 +36,7 @@ resource "kubernetes_deployment_v1" "this" {
       spec {
         service_account_name = local.service_account_name
         host_network         = var.host_network
+        enable_service_links = var.enable_service_links
 
         dynamic "init_container" {
           for_each = var.init_containers
