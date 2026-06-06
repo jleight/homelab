@@ -56,6 +56,22 @@ resource "helm_release" "generic_device_plugin" {
                   ]
                 }
               ]
+            },
+            {
+              # Home Assistant Connect ZWA-2 (Nabu Casa ZWA-2) Z-Wave radio for
+              # the `home` stack's zwave-js-ui (plugged into prod-03).
+              # → devices.k8s.leightha.us/zwave
+              name = "zwave"
+              groups = [
+                {
+                  paths = [
+                    {
+                      path      = "/dev/serial/by-id/usb-Nabu_Casa_ZWA-2_*-if00"
+                      mountPath = "/dev/zwave"
+                    }
+                  ]
+                }
+              ]
             }
           ]
         })

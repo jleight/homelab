@@ -13,4 +13,16 @@ inputs = {
     chart      = "vernemq"
     version    = "2.1.2"
   }
+
+  zwave_js_ui = {
+    renovate = "docker"
+    image    = "ghcr.io/zwave-js/zwave-js-ui"
+    version  = "11.19.1"
+
+    yq = {
+      renovate = "docker"
+      image    = "docker.io/mikefarah/yq"
+      version  = "4.53.3"
+    }
+  }
 }
