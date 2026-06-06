@@ -58,6 +58,22 @@ resource "helm_release" "generic_device_plugin" {
               ]
             },
             {
+              # Home Assistant Connect ZBT-1 (Nabu Casa SkyConnect) combo radio,
+              # dedicated to Zigbee for the `home` stack's Zigbee2MQTT (plugged
+              # into prod-03). → devices.k8s.leightha.us/zigbee
+              name = "zigbee"
+              groups = [
+                {
+                  paths = [
+                    {
+                      path      = "/dev/serial/by-id/usb-Nabu_Casa_SkyConnect_v1.0_*-if00-port0"
+                      mountPath = "/dev/zigbee"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
               # Home Assistant Connect ZWA-2 (Nabu Casa ZWA-2) Z-Wave radio for
               # the `home` stack's zwave-js-ui (plugged into prod-03).
               # → devices.k8s.leightha.us/zwave

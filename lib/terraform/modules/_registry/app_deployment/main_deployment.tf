@@ -49,6 +49,14 @@ resource "kubernetes_deployment_v1" "this" {
 
             command = init_container.value.command
 
+            dynamic "security_context" {
+              for_each = init_container.value.run_as_user != null ? [1] : []
+
+              content {
+                run_as_user = init_container.value.run_as_user
+              }
+            }
+
             dynamic "volume_mount" {
               for_each = init_container.value.volume_mounts
 

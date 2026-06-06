@@ -14,6 +14,18 @@ inputs = {
     version    = "2.1.2"
   }
 
+  zigbee2mqtt = {
+    renovate = "docker"
+    image    = "ghcr.io/koenkk/zigbee2mqtt"
+    version  = "2.11.0"
+
+    yq = {
+      renovate = "docker"
+      image    = "docker.io/mikefarah/yq"
+      version  = "4.53.3"
+    }
+  }
+
   zwave_js_ui = {
     renovate = "docker"
     image    = "ghcr.io/zwave-js/zwave-js-ui"

@@ -154,9 +154,10 @@ variable "volumes_empty_dir" {
 variable "init_containers" {
   description = "Init containers to add to the deployment."
   type = list(object({
-    name    = string
-    image   = optional(string)
-    command = optional(list(string))
+    name        = string
+    image       = optional(string)
+    command     = optional(list(string))
+    run_as_user = optional(number)
     volume_mounts = optional(list(object({
       name       = string
       mount_path = string
