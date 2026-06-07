@@ -77,6 +77,12 @@ variable "enable_service_links" {
   default     = true
 }
 
+variable "args" {
+  description = "Args for the main container. Overrides (fully replaces) the image's default CMD, leaving the entrypoint intact. Include any image defaults you still need."
+  type        = list(string)
+  default     = []
+}
+
 variable "env" {
   description = "Map of environment variables for the main container."
   type        = map(string)

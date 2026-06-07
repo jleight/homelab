@@ -7,6 +7,12 @@ inputs = {
     version  = "2026.5"
   }
 
+  matter_server = {
+    renovate = "docker"
+    image    = "ghcr.io/matter-js/python-matter-server"
+    version  = "8.1.2"
+  }
+
   mqtt = {
     renovate   = "helm"
     repository = "https://vernemq.github.io/docker-vernemq"
