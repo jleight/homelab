@@ -38,6 +38,12 @@ resource "kubernetes_deployment_v1" "this" {
         host_network         = var.host_network
         enable_service_links = var.enable_service_links
 
+        # A hostNetwork pod otherwise inherits the node's resolver and can't
+        # resolve *.svc.cluster.local — ClusterFirstWithHostNet keeps cluster DNS
+        # (external names still resolve via the upstream forwarder). Default to
+        # it whenever host networking is on; overridable via dns_policy.
+        dns_policy = coalesce(var.dns_policy, var.host_network ? "ClusterFirstWithHostNet" : "ClusterFirst")
+
         dynamic "init_container" {
           for_each = var.init_containers
 

@@ -21,7 +21,7 @@ resource "kubernetes_secret_v1" "postgres" {
     {
       username = local.postgres_username
       password = local.postgres_password
-      url      = local.postgres_url
+      url      = var.use_postgresql_url ? local.postgresql_url : local.postgres_url
     },
     var.postgres_extra_secret_data
   )

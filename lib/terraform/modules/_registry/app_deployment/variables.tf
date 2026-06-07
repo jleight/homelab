@@ -60,6 +60,12 @@ variable "host_network" {
   default     = false
 }
 
+variable "dns_policy" {
+  description = "Pod dnsPolicy. Defaults to ClusterFirstWithHostNet when host_network is true (so cluster DNS still works), else ClusterFirst."
+  type        = string
+  default     = null
+}
+
 variable "deployment_strategy" {
   description = "Deployment update strategy: \"RollingUpdate\" (default) or \"Recreate\". Use Recreate for apps holding a single exclusive resource (e.g. a host device) where surging a second pod would deadlock the rollout."
   type        = string
@@ -347,4 +353,10 @@ variable "postgres_database" {
   description = "Database name used in the postgres_env_vars 'database' field."
   type        = string
   default     = "app"
+}
+
+variable "use_postgresql_url" {
+  description = "Use postgresql:// in the URL instead of postgres://."
+  type        = bool
+  default     = false
 }

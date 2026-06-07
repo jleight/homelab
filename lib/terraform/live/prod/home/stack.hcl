@@ -7,6 +7,18 @@ inputs = {
     version  = "2026.5"
   }
 
+  home_assistant = {
+    renovate = "docker"
+    image    = "ghcr.io/home-assistant/home-assistant"
+    version  = "2026.6.1"
+
+    yq = {
+      renovate = "docker"
+      image    = "docker.io/mikefarah/yq"
+      version  = "4.53.3"
+    }
+  }
+
   matter_server = {
     renovate = "docker"
     image    = "ghcr.io/matter-js/python-matter-server"
