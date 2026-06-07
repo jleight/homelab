@@ -4,20 +4,15 @@ module "app" {
 
   namespace = local.namespace
 
-  image         = var.octoprint.image
-  image_version = var.octoprint.version
-
-  port = 5000
-
   # The printer is a single generic-device-plugin device. Recreate the pod on
   # update (tear down old before new) so the device frees up — a RollingUpdate
   # surge pod could never acquire the still-held device and would deadlock.
   deployment_strategy = "Recreate"
 
-  # OctoPrint's entrypoint reads OCTOPRINT_PORT for its --port flag, which
-  # collides with the Service-link env var Kubernetes injects for the
-  # same-named `octoprint` Service. Disable service links to avoid the clash.
-  enable_service_links = false
+  image         = var.octoprint.image
+  image_version = var.octoprint.version
+
+  port = 5000
 
   subdomain = var.octoprint.subdomain
   path      = var.octoprint.path
@@ -26,6 +21,11 @@ module "app" {
   gateway_name      = var.gateway_name
   gateway_section   = var.gateway_section
   gateway_domain    = var.gateway_domain
+
+  # OctoPrint's entrypoint reads OCTOPRINT_PORT for its --port flag, which
+  # collides with the Service-link env var Kubernetes injects for the
+  # same-named `octoprint` Service. Disable service links to avoid the clash.
+  enable_service_links = false
 
   # Requesting the device-plugin resource is what makes the scheduler place this
   # pod on the node with the printer attached, and what mounts /dev/ttyACM0 into
