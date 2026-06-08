@@ -7,7 +7,8 @@ module "app" {
   image         = var.esphome.image
   image_version = var.esphome.version
 
-  port = 6052
+  port         = 6052
+  host_network = true
 
   subdomain = var.esphome.subdomain
   path      = var.esphome.path
@@ -25,7 +26,12 @@ module "app" {
 
   # Build cache (platformio/compiled artifacts) — regenerable, so an emptyDir
   # is fine. It rebuilds after a pod restart; no need to persist it.
-  volumes_empty_dir = ["cache"]
+  #
+  # ESPHome also writes compiled firmware / build artifacts into /config/.esphome,
+  # which would otherwise fill the small config PVC. Those are regenerable too, so
+  # back that path with its own emptyDir (nested under the /config PVC mount) to
+  # keep them off the PVC.
+  volumes_empty_dir = ["cache", "build"]
 
   volume_mounts = [
     {
@@ -35,6 +41,10 @@ module "app" {
     {
       name       = "cache"
       mount_path = "/cache"
+    },
+    {
+      name       = "build"
+      mount_path = "/config/.esphome"
     }
   ]
 }
