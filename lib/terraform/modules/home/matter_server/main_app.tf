@@ -7,10 +7,7 @@ module "app" {
   image         = var.matter_server.image
   image_version = var.matter_server.version
 
-  port = 5580
-
-  # Matter commissioning relies on mDNS discovery on the local subnet, which the
-  # pod-network overlay hides — so the server needs host networking.
+  port         = 5580
   host_network = true
 
   # Mirrors the image's default CMD (storage + PAA cert dir under /data) and
