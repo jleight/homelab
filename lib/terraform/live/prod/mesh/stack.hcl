@@ -4,7 +4,7 @@ inputs = {
   core_scope = {
     renovate = "docker"
     image    = "ghcr.io/kpa-clawbot/corescope"
-    version  = "v3.8.3"
+    version  = "v3.9.1"
 
     default_region = "BUF"
 
