@@ -18,12 +18,6 @@ inputs = {
     chart      = "forgejo"
   }
 
-  homebridge = {
-    renovate = "docker"
-    image    = "ghcr.io/homebridge/homebridge"
-    version  = "2025-09-21"
-  }
-
   immich = {
     renovate = "docker"
     image    = "ghcr.io/immich-app/immich-charts/immich"
