@@ -88,6 +88,25 @@ resource "helm_release" "generic_device_plugin" {
                   ]
                 }
               ]
+            },
+            {
+              # RTL-SDR Blog V4 (Realtek RTL2832U) software-defined radio for
+              # OpenWebRX (plugged into prod-02). It's a raw libusb device with
+              # no serial tty, so it's matched by USB vendor/product rather than
+              # a /dev/serial/by-id symlink; the plugin mounts the matching
+              # /dev/bus/usb node into the pod.
+              # → devices.k8s.leightha.us/rtl-sdr
+              name = "rtl-sdr"
+              groups = [
+                {
+                  usb = [
+                    {
+                      vendor  = "0bda"
+                      product = "2838"
+                    }
+                  ]
+                }
+              ]
             }
           ]
         })
