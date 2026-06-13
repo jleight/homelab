@@ -18,7 +18,7 @@ module "app" {
     }
   ]
 
-  subdomain = var.flood.subdomain
+  subdomain = var.qbittorrent.subdomain
   path      = "${local.path}/"
 
   gateway_namespace = var.gateway_namespace
@@ -85,7 +85,7 @@ module "app" {
   extra_containers = [
     {
       name                 = "flood"
-      image                = "${var.flood.image}:${var.flood.version}"
+      image                = "${var.qbittorrent.flood.image}:${var.qbittorrent.flood.version}"
       port                 = local.flood_port
       env_from_config_maps = [local.flood_env_cm_name]
       env_from_secrets     = [local.flood_secret_name]

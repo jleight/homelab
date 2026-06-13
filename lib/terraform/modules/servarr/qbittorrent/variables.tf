@@ -38,21 +38,18 @@ variable "gateway_domain" {
   type        = string
 }
 
-variable "flood" {
-  description = "Flood configuration."
+variable "qbittorrent" {
+  description = "qBittorrent configuration."
   type = object({
     image   = string
     version = string
 
     subdomain = optional(string, "media")
     path      = optional(string, "/qbittorrent")
-  })
-}
 
-variable "qbittorrent" {
-  description = "qBittorrent configuration."
-  type = object({
-    image   = string
-    version = string
+    flood = object({
+      image   = string
+      version = string
+    })
   })
 }

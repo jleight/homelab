@@ -34,12 +34,12 @@ inputs = {
     renovate = "docker"
     image    = "lscr.io/linuxserver/qbittorrent"
     version  = "5.2.1-libtorrentv1"
-  }
 
-  flood = {
-    renovate = "docker"
-    image    = "jesec/flood"
-    version  = "4.14.2"
+    flood = {
+      renovate = "docker"
+      image    = "jesec/flood"
+      version  = "4.14.2"
+    }
   }
 
   audiobookshelf = {
