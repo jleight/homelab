@@ -109,6 +109,39 @@ resource "kubernetes_deployment_v1" "this" {
           }
         }
 
+        # Streams the SQLite WAL to the NAS-backed backup PVC. Run as a native
+        # sidecar (init_container + restart_policy Always) so it starts before the
+        # app and is terminated only after the app exits — capturing the final WAL
+        # writes from a graceful shutdown before stopping.
+        init_container {
+          name = "litestream"
+
+          image             = "${var.pymc.litestream.image}:${var.pymc.litestream.version}"
+          image_pull_policy = "IfNotPresent"
+
+          restart_policy = "Always"
+
+          args = ["replicate", "-config", "/etc/litestream.yml"]
+
+          volume_mount {
+            name       = "data"
+            mount_path = "/var/lib/pymc_repeater"
+          }
+
+          volume_mount {
+            name       = "share"
+            mount_path = "/backup"
+            sub_path   = "backup"
+          }
+
+          volume_mount {
+            name       = "litestream-config"
+            mount_path = "/etc/litestream.yml"
+            sub_path   = "litestream.yml"
+            read_only  = true
+          }
+        }
+
         container {
           name = local.name
 
@@ -145,34 +178,6 @@ resource "kubernetes_deployment_v1" "this" {
           volume_mount {
             name       = "data"
             mount_path = "/var/lib/pymc_repeater"
-          }
-        }
-
-        # Streams the SQLite WAL to the NAS-backed backup PVC.
-        container {
-          name = "litestream"
-
-          image             = "${var.pymc.litestream.image}:${var.pymc.litestream.version}"
-          image_pull_policy = "IfNotPresent"
-
-          args = ["replicate", "-config", "/etc/litestream.yml"]
-
-          volume_mount {
-            name       = "data"
-            mount_path = "/var/lib/pymc_repeater"
-          }
-
-          volume_mount {
-            name       = "share"
-            mount_path = "/backup"
-            sub_path   = "backup"
-          }
-
-          volume_mount {
-            name       = "litestream-config"
-            mount_path = "/etc/litestream.yml"
-            sub_path   = "litestream.yml"
-            read_only  = true
           }
         }
 
