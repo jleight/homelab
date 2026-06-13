@@ -78,6 +78,6 @@ output "postgres_port" {
 
 output "postgres_url" {
   description = "A full postgres:// connection URL."
-  value       = local.enabled && var.postgres_enabled ? (var.use_postgresql_url ? local.postgresql_url : local.postgres_url) : null
+  value       = local.enabled && var.postgres_enabled ? local.postgres_url : null
   sensitive   = true
 }

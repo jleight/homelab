@@ -28,8 +28,7 @@ locals {
   postgres_password    = local.enabled && var.postgres_enabled ? random_password.postgres_password[0].result : null
   postgres_secret_name = local.enabled && var.postgres_enabled ? kubernetes_secret_v1.postgres[0].metadata[0].name : null
   postgres_host        = var.postgres_enabled ? "${local.name}-db-rw.${var.namespace}.svc.cluster.local" : null
-  postgres_url         = var.postgres_enabled ? "postgres://${local.postgres_username}:${local.postgres_password}@${local.postgres_host}/app" : null
-  postgresql_url       = var.postgres_enabled ? "postgresql://${local.postgres_username}:${local.postgres_password}@${local.postgres_host}/app" : null
+  postgres_url         = var.postgres_enabled ? "${var.postgres_url_scheme}://${local.postgres_username}:${local.postgres_password}@${local.postgres_host}/app" : null
 
   postgres_field_values = {
     host     = local.postgres_host

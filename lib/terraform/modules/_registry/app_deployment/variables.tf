@@ -355,8 +355,8 @@ variable "postgres_database" {
   default     = "app"
 }
 
-variable "use_postgresql_url" {
-  description = "Use postgresql:// in the URL instead of postgres://."
-  type        = bool
-  default     = false
+variable "postgres_url_scheme" {
+  description = "URL scheme for the generated connection string (e.g. \"postgresql\", or \"postgresql+psycopg\" for SQLAlchemy psycopg3 apps)."
+  type        = string
+  default     = "postgres"
 }

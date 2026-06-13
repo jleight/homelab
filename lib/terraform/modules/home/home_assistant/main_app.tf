@@ -66,7 +66,7 @@ module "app" {
   postgres_enabled       = true
   postgres_storage_class = var.data_storage_class
   postgres_storage_size  = "10Gi"
-  use_postgresql_url     = true
+  postgres_url_scheme    = "postgresql"
 
   postgres_secret_env_vars = {
     HASS_RECORDER_DB_URL = "url"
