@@ -15,7 +15,7 @@ module "app" {
   # into a pod annotation so editing the settings in stack.hcl rolls the pod
   # (Recreate tears the old one down first, freeing the device) and re-merges.
   pod_annotations = {
-    "leightha.us/settings-seed-hash" = sha256(jsonencode(local.settings_seed))
+    "checksum/settings-seed" = sha256(jsonencode(local.settings_seed))
   }
 
   subdomain = var.openwebrx.subdomain

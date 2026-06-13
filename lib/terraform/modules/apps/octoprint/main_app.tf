@@ -4,13 +4,9 @@ module "app" {
 
   namespace = local.namespace
 
-  # The printer is a single generic-device-plugin device. Recreate the pod on
-  # update (tear down old before new) so the device frees up — a RollingUpdate
-  # surge pod could never acquire the still-held device and would deadlock.
+  image               = var.octoprint.image
+  image_version       = var.octoprint.version
   deployment_strategy = "Recreate"
-
-  image         = var.octoprint.image
-  image_version = var.octoprint.version
 
   port = 5000
 

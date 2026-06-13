@@ -13,7 +13,7 @@ module "app" {
   ingress_enabled = false
 
   pod_annotations = {
-    "config-hash" = sha256(kubernetes_config_map_v1.nginx[0].data["nginx.conf"])
+    "checksum/config" = sha256(kubernetes_config_map_v1.nginx[0].data["nginx.conf"])
   }
 
   volumes_from_config_maps = {

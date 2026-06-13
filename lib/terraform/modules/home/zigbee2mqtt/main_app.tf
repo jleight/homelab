@@ -4,11 +4,9 @@ module "app" {
 
   namespace = local.namespace
 
-  # Holds the USB stick exclusively — tear down before bringing up.
+  image               = var.zigbee2mqtt.image
+  image_version       = var.zigbee2mqtt.version
   deployment_strategy = "Recreate"
-
-  image         = var.zigbee2mqtt.image
-  image_version = var.zigbee2mqtt.version
 
   port = 8080
 

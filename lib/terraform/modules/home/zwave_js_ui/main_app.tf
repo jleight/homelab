@@ -4,12 +4,9 @@ module "app" {
 
   namespace = local.namespace
 
-  # Holds the USB stick exclusively — a RollingUpdate surge pod could never
-  # acquire the still-held device, so tear down before bringing up.
+  image               = var.zwave_js_ui.image
+  image_version       = var.zwave_js_ui.version
   deployment_strategy = "Recreate"
-
-  image         = var.zwave_js_ui.image
-  image_version = var.zwave_js_ui.version
 
   port = 8091
 
