@@ -50,6 +50,7 @@ variable "pymc" {
   type = object({
     image   = string
     version = string
+    digest  = string
 
     # Extended resource advertised by the generic-device-plugin for the KISS
     # modem. Requesting it makes the scheduler place the pod on the node that has

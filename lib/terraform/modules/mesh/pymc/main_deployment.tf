@@ -79,7 +79,7 @@ resource "kubernetes_deployment_v1" "this" {
         init_container {
           name = "config-merge"
 
-          image             = "${var.pymc.image}:${var.pymc.version}"
+          image             = "${var.pymc.image}:${var.pymc.version}@${var.pymc.digest}"
           image_pull_policy = "IfNotPresent"
 
           command = ["/bin/sh", "-c"]
@@ -145,7 +145,7 @@ resource "kubernetes_deployment_v1" "this" {
         container {
           name = local.name
 
-          image             = "${var.pymc.image}:${var.pymc.version}"
+          image             = "${var.pymc.image}:${var.pymc.version}@${var.pymc.digest}"
           image_pull_policy = "IfNotPresent"
 
           # Running as root, so point HOME at the repeater user's home where the
