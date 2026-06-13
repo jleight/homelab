@@ -69,6 +69,6 @@ inputs = {
   romm = {
     renovate = "docker"
     image    = "rommapp/romm"
-    version  = "4.8.1"
+    version  = "4.9.0"
   }
 }
