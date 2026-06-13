@@ -65,6 +65,7 @@ module "app" {
   # container below guarantees configuration.yaml references it (see locals).
   postgres_enabled       = true
   postgres_storage_class = var.data_storage_class
+  postgres_storage_size  = "10Gi"
   use_postgresql_url     = true
 
   postgres_secret_env_vars = {
