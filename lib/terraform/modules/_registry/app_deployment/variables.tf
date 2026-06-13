@@ -83,6 +83,29 @@ variable "enable_service_links" {
   default     = true
 }
 
+# Pod-level securityContext. All default to null, which omits the block entirely
+# (no change for existing apps). Set fs_group for non-root images that write to a
+# PVC: the kubelet chowns the volume to that group on mount and makes it
+# group-writable, so the process can write without an in-image or init-container
+# chown.
+variable "fs_group" {
+  description = "Pod securityContext fsGroup. Set for non-root apps that write to a mounted volume."
+  type        = number
+  default     = null
+}
+
+variable "run_as_user" {
+  description = "Pod securityContext runAsUser."
+  type        = number
+  default     = null
+}
+
+variable "run_as_non_root" {
+  description = "Pod securityContext runAsNonRoot."
+  type        = bool
+  default     = null
+}
+
 variable "args" {
   description = "Args for the main container. Overrides (fully replaces) the image's default CMD, leaving the entrypoint intact. Include any image defaults you still need."
   type        = list(string)

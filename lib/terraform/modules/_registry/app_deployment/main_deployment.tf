@@ -44,6 +44,16 @@ resource "kubernetes_deployment_v1" "this" {
         # it whenever host networking is on; overridable via dns_policy.
         dns_policy = coalesce(var.dns_policy, var.host_network ? "ClusterFirstWithHostNet" : "ClusterFirst")
 
+        dynamic "security_context" {
+          for_each = var.fs_group != null || var.run_as_user != null || var.run_as_non_root != null ? [1] : []
+
+          content {
+            fs_group        = var.fs_group
+            run_as_user     = var.run_as_user
+            run_as_non_root = var.run_as_non_root
+          }
+        }
+
         dynamic "init_container" {
           for_each = var.init_containers
 

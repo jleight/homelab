@@ -262,4 +262,19 @@ inputs = {
     image    = "ghcr.io/jleight/trakr"
     version  = "sha-f794e63"
   }
+
+  turnstone = {
+    renovate = "docker"
+    image    = "ghcr.io/turnstonelabs/turnstone"
+    version  = "1.6.4"
+
+    llm_base_url = "https://lemonade.leightha.us/api/v1"
+    server_count = 3
+
+    searxng = {
+      renovate = "docker"
+      image    = "docker.io/searxng/searxng"
+      version  = "2026.6.13-a29cda858"
+    }
+  }
 }
