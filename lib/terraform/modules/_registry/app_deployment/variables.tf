@@ -33,6 +33,12 @@ variable "image_version" {
   type        = string
 }
 
+variable "image_digest" {
+  description = "Optional image digest (e.g. sha256:...) to pin alongside the tag. The tag is still used for the version label."
+  type        = string
+  default     = null
+}
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Deployment
 # ──────────────────────────────────────────────────────────────────────────────

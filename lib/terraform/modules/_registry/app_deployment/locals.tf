@@ -1,6 +1,6 @@
 locals {
   name  = coalesce(var.name, local.component)
-  image = "${var.image}:${var.image_version}"
+  image = "${var.image}:${var.image_version}${var.image_digest == null ? "" : "@${var.image_digest}"}"
 
   match_labels = {
     "app.kubernetes.io/name"     = local.name
