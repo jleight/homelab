@@ -70,5 +70,12 @@ inputs = {
     renovate = "docker"
     image    = "rommapp/romm"
     version  = "4.9.0"
+
+    bridge = {
+      renovate = "docker"
+      image    = "ghcr.io/jleight/retroarch-romm-bridge"
+      version  = "latest"
+      digest   = "sha256:cfe5ae37e37eca3f9c34dfd291860d529a7ca100199832db82f4479fbfe027f1"
+    }
   }
 }

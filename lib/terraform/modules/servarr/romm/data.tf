@@ -24,3 +24,10 @@ data "onepassword_item" "retroachievements" {
   vault = local.vault_uuid
   title = "RetroAchievements - API Key"
 }
+
+data "onepassword_item" "romm_api_token" {
+  count = local.enabled ? 1 : 0
+
+  vault = local.vault_uuid
+  title = "RomM - API Token"
+}

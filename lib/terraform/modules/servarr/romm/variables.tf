@@ -19,6 +19,11 @@ variable "media_storage_class" {
   type        = string
 }
 
+variable "data_storage_class" {
+  description = "StorageClass for the bridge pairings data volume."
+  type        = string
+}
+
 variable "gateway_namespace" {
   description = "Namespace for the gateway for private ingress."
   type        = string
@@ -68,5 +73,20 @@ variable "romm" {
 
     subdomain = optional(string, "roms")
     path      = optional(string, "/")
+
+    bridge = object({
+      image   = string
+      version = string
+      digest  = string
+
+      # Served under this path on RomM's own hostname (not a separate
+      # subdomain). The gateway strips the prefix before forwarding, since the
+      # bridge routes on root-relative paths.
+      path = optional(string, "/_ra")
+
+      index_refresh_interval = optional(string, "1h")
+      platform_map           = optional(string)
+      log_level              = optional(string, "info")
+    })
   })
 }
