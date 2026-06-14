@@ -172,7 +172,7 @@ resource "kubectl_manifest" "load_balancer_private" {
             hostname = "*.${local.load_balancer_domain}"
             allowedRoutes = {
               namespaces = {
-                from = local.cert_manager_enabled ? "Same" : "All"
+                from = "All"
               }
             }
           }
