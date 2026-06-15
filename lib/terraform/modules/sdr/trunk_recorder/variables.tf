@@ -29,41 +29,34 @@ variable "trunk_recorder" {
     image   = string
     version = string
 
-    # The RF window one RTL-SDR samples. Every channel Trunk Recorder records
-    # must fall within center ± rate/2, and rate is capped by what rtl_tcp can
-    # stream (~2.4 MS/s for an RTL-SDR). All user-specific, from RadioReference +
-    # your dongle. digital_recorders must be >= the number of conventional
-    # channels (each gets a dedicated always-on recorder).
+    # The RF window one RTL-SDR samples. Every channel across all systems must
+    # fall within center ± rate/2, and rate is capped by what rtl_tcp can stream
+    # (~2.4 MS/s for an RTL-SDR). The recorder counts are derived from the
+    # channel CSVs, so they don't need setting here.
     source = object({
-      center            = number # Hz, midpoint of the channels you need
-      rate              = optional(number, 2400000)
-      gain              = optional(number, 39)
-      error             = optional(number, 0) # ppm/freq correction for the dongle
-      digital_recorders = optional(number, 4)
+      center = number # Hz, midpoint of the channels you want
+      rate   = optional(number, 2400000)
+      gain   = optional(number, 39)
+
+      # Over rtl_tcp, gr-osmosdr can't enumerate the tuner's discrete gain steps,
+      # so a fixed `gain` gets clamped to 0 (deaf). AGC lets the tuner auto-gain
+      # instead — the mode OpenWebRX uses successfully against this rtl_tcp server.
+      agc   = optional(bool, false)
+      error = optional(number, 0) # ppm/freq correction for the dongle
     })
 
-    # The system to follow, from its RadioReference page.
-    #
-    # type: "conventionalP25" (fixed channels, "RM"/"RF" rows) or "p25" (trunked,
-    # with a control channel). modulation: "fsk4" for Phase 1 C4FM (most
-    # conventional), "qpsk" for P25 Phase 2 / LSM simulcast.
-    #
-    # Conventional uses `channels` + `squelch` (channels aren't always keyed up,
-    # so squelch gates recording to actual activity). Trunked uses
-    # `control_channels`. Set whichever pair matches `type`.
-    system = object({
-      short_name = string
-      type       = optional(string, "conventionalP25")
-      modulation = optional(string, "fsk4")
-
-      channels = optional(list(number), []) # conventional: fixed freqs (Hz)
-      squelch  = optional(number, -60)      # conventional: dBm threshold
-
-      control_channels = optional(list(number), []) # trunked: control freqs (Hz)
-    })
-
-    # Optional RadioReference talkgroup CSV (raw contents). Empty = record all
-    # talkgroups and leave them unlabelled.
-    talkgroups_csv = optional(string, "")
+    # One or more conventional systems sharing the source. `type` is
+    # "conventionalP25" (set modulation "fsk4"/"qpsk") or "conventional" (analog
+    # FM, no modulation). `channel_csv` is a Trunk Recorder channelFile: a header
+    # row (TG Number,Frequency,Tone,Alpha Tag,Description,Tag) then one row per
+    # channel. The number of always-on recorders the source needs is derived from
+    # the total rows per system type.
+    systems = list(object({
+      short_name  = string
+      type        = string
+      modulation  = optional(string)
+      squelch     = optional(number, -60)
+      channel_csv = string
+    }))
   })
 }

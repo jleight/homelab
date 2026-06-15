@@ -20,10 +20,11 @@ module "app" {
   # briefly running two pods that both try to grab the one dongle.
   deployment_strategy = "Recreate"
 
-  # ConfigMap content changes don't alter the pod template; hash it into an
-  # annotation so editing config (or talkgroups) in stack.hcl rolls the pod.
+  # ConfigMap content changes don't alter the pod template; hash all config files
+  # (config.json + channelFiles) into an annotation so editing any of them in
+  # stack.hcl rolls the pod.
   pod_annotations = {
-    "checksum/config" = sha256(jsonencode(local.config))
+    "checksum/config" = sha256(jsonencode(local.config_files))
   }
 
   volumes_from_config_maps = {
@@ -50,11 +51,11 @@ module "app" {
       }
     ],
     [
-      for f in(local.has_talkgroups ? ["talkgroups.csv"] : []) :
+      for s in var.trunk_recorder.systems :
       {
         name       = "config"
-        mount_path = "/app/${f}"
-        sub_path   = f
+        mount_path = "/app/${s.short_name}.csv"
+        sub_path   = "${s.short_name}.csv"
         read_only  = true
       }
     ],

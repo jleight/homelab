@@ -12,20 +12,59 @@ inputs = {
     image    = "robotastic/trunk-recorder"
     version  = "5.2.1"
 
-    # Kenmore PD — conventional P25 (RadioReference: 460.500 MHz, P25, NAC 0xB23).
-    # center sits on the one channel for now; the 2.4 MHz window has room to add
-    # nearby UHF channels (Fire/DPW/etc.) to `channels` later without retuning.
+    # Erie County conventional P25 — every non-encrypted P25 channel that fits in
+    # one RTL-SDR's 2.4 MHz window centered on 460.5 MHz (see channels below).
     source = {
-      center = 460500000
+      center = 460500000 # window 459.3–461.7 MHz at 2.4 MS/s covers every channel below
+      agc    = true      # rtl_tcp can't set a fixed tuner gain; let the tuner auto-gain
     }
 
-    system = {
-      short_name = "kenpd"
-      type       = "conventionalP25"
-      modulation = "fsk4"      # conventional P25 is C4FM
-      channels   = [460500000] # 460.500 MHz — Police Ch. 1
-      squelch    = -60         # dBm; raise toward -50 if it records noise, lower if it misses calls
-    }
+    # Two conventional systems sharing the one RTL-SDR window: P25 (digital) and
+    # analog FM. Each channel_csv is the in-window, non-encrypted set extracted
+    # from the Erie County RadioReference dump; recorder counts are derived from
+    # the rows. Disable a channel by setting its Enable column to false, or delete
+    # the row, if the 2-core node can't keep up.
+    systems = [
+      {
+        short_name = "ecp25"
+        type       = "conventionalP25"
+        modulation = "fsk4" # conventional P25 is C4FM
+        squelch    = -60    # dBm; raise toward -50 if it records noise, lower if it misses calls
+
+        channel_csv = <<-CSV
+        TG Number,Frequency,Tone,Alpha Tag,Description,Tag
+        1,460075000,,EC Shrf Patrol,Sheriff Patrol Dispatch,Law Dispatch
+        2,460450000,,EC Shrf Ch 2,Sheriff Ch. 2 Jail Transport,Law Tac
+        3,460325000,,BPD 1 Car-Car,Police Ch 1 Car to Car,Law Talk
+        4,460350000,,BPD 2 Dists B/D,Police Ch 2 Districts B/D,Law Dispatch
+        5,460425000,,BPD 3 Dists C/E,Police Ch 3 Districts C/E,Law Dispatch
+        6,460475000,,BPD 4 Dist A,Police Ch 4 District A,Law Dispatch
+        7,460025000,,BPD 5 Warrants,Police Ch 5 Information and Warrant Checks,Law Tac
+        8,460437500,,T/Hamburg PD Dsp,Police Dispatch,Law Dispatch
+        9,460500000,,Kenmore PD,Police Ch. 1,Law Dispatch
+        10,460225000,,TPD 1 Disp,City Police Dispatch,Law Dispatch
+        11,460100000,,Tonawanda PD,Police Dispatch,Law Dispatch
+        CSV
+      },
+      {
+        short_name = "ecfm"
+        type       = "conventional" # analog FM
+        squelch    = -60
+
+        channel_csv = <<-CSV
+        TG Number,Frequency,Tone,Alpha Tag,Description,Tag
+        1,460275000,,EC CW Police UHF,Countywide Police UHF,Law Dispatch
+        2,460050000,,EC Holding Cntr,Holding Center,Corrections
+        3,460400000,,EC CW Fire,Countywide Fire,Fire Dispatch
+        6,461412500,,M-T FD 461,Main-Transit Fire Department,Fire-Tac
+        22,460012500,,TPD 2 Sp Ops,Police Special Operations,Law Tac
+        23,460600000,,TonwndaFDisp,City Fire Dispatch,Fire Dispatch
+        24,460087500,,TonawandaCh2,City Fire Ch. 2,Fire-Tac
+        25,460975000,,Tonawnda FD 1,Fire Ch 1,Fire Dispatch
+        26,460900000,,Tonawnda FD 2,Fire Ch 2,Fire-Tac
+        CSV
+      }
+    ]
   }
 
   openwebrx = {
