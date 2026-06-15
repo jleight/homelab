@@ -56,8 +56,15 @@ variable "replicas" {
 }
 
 variable "port" {
-  description = "Primary container port."
+  description = "Primary container port. Null for outbound-only workloads with no listener (also set create_service = false)."
   type        = number
+  default     = null
+}
+
+variable "create_service" {
+  description = "Whether to create a ClusterIP Service. Disable for purely outbound daemons (e.g. a recorder) that expose no port."
+  type        = bool
+  default     = true
 }
 
 variable "host_network" {

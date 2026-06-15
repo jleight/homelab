@@ -7,6 +7,27 @@ inputs = {
     version  = "latest"
   }
 
+  trunk_recorder = {
+    renovate = "docker"
+    image    = "robotastic/trunk-recorder"
+    version  = "5.2.1"
+
+    # Kenmore PD — conventional P25 (RadioReference: 460.500 MHz, P25, NAC 0xB23).
+    # center sits on the one channel for now; the 2.4 MHz window has room to add
+    # nearby UHF channels (Fire/DPW/etc.) to `channels` later without retuning.
+    source = {
+      center = 460500000
+    }
+
+    system = {
+      short_name = "kenpd"
+      type       = "conventionalP25"
+      modulation = "fsk4"      # conventional P25 is C4FM
+      channels   = [460500000] # 460.500 MHz — Police Ch. 1
+      squelch    = -60         # dBm; raise toward -50 if it records noise, lower if it misses calls
+    }
+  }
+
   openwebrx = {
     renovate = "docker"
     image    = "docker.io/slechev/openwebrxplus-softmbe"

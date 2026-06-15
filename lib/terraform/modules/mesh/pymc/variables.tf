@@ -52,9 +52,6 @@ variable "pymc" {
     version = string
     digest  = string
 
-    # Extended resource advertised by the generic-device-plugin for the KISS
-    # modem. Requesting it makes the scheduler place the pod on the node that has
-    # the modem (and injects the device).
     device_resource = optional(string, "devices.k8s.leightha.us/meshcore")
 
     # In-container serial device path. Must match the device-plugin mountPath.

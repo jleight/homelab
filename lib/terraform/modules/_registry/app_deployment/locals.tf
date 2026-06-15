@@ -22,7 +22,7 @@ locals {
   ) : null
 
   service_account_name = local.enabled ? kubernetes_service_account_v1.this[0].metadata[0].name : null
-  service_name         = local.enabled ? kubernetes_service_v1.this[0].metadata[0].name : null
+  service_name         = length(kubernetes_service_v1.this) > 0 ? kubernetes_service_v1.this[0].metadata[0].name : null
 
   postgres_username    = local.enabled && var.postgres_enabled ? random_pet.postgres_username[0].id : null
   postgres_password    = local.enabled && var.postgres_enabled ? random_password.postgres_password[0].result : null

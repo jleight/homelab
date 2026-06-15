@@ -8,7 +8,7 @@ resource "kubernetes_service_account_v1" "this" {
 }
 
 resource "kubernetes_service_v1" "this" {
-  count = local.enabled ? 1 : 0
+  count = local.enabled && var.create_service ? 1 : 0
 
   metadata {
     namespace = var.namespace

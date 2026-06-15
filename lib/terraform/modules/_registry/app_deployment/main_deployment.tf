@@ -177,8 +177,12 @@ resource "kubernetes_deployment_v1" "this" {
             }
           }
 
-          port {
-            container_port = var.port
+          dynamic "port" {
+            for_each = var.port != null ? [var.port] : []
+
+            content {
+              container_port = port.value
+            }
           }
 
           dynamic "volume_mount" {
