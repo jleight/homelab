@@ -92,6 +92,9 @@ resource "kubernetes_deployment_v1" "this" {
           image             = local.image
           image_pull_policy = "IfNotPresent"
 
+          # Overrides the image ENTRYPOINT. Null leaves it intact.
+          command = length(var.command) > 0 ? var.command : null
+
           # Overrides the image CMD (not the entrypoint). When set, it fully
           # replaces the image's default args, so callers must include any
           # defaults they still need. Null leaves the image CMD intact.

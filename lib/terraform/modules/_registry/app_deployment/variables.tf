@@ -112,6 +112,12 @@ variable "run_as_non_root" {
   default     = null
 }
 
+variable "command" {
+  description = "Command (entrypoint) for the main container. Overrides (fully replaces) the image's ENTRYPOINT. Empty leaves the image entrypoint intact."
+  type        = list(string)
+  default     = []
+}
+
 variable "args" {
   description = "Args for the main container. Overrides (fully replaces) the image's default CMD, leaving the entrypoint intact. Include any image defaults you still need."
   type        = list(string)
