@@ -12,8 +12,8 @@ module "app" {
 
   # A ConfigMap content change doesn't alter the pod template, so it wouldn't
   # roll the pod or re-run the seed init container on its own. Hash the seed
-  # into a pod annotation so editing the settings in stack.hcl rolls the pod
-  # (Recreate tears the old one down first, freeing the device) and re-merges.
+  # into a pod annotation so editing the settings in stack.hcl rolls the pod and
+  # re-merges them into settings.json.
   pod_annotations = {
     "checksum/settings-seed" = sha256(jsonencode(local.settings_seed))
   }
@@ -39,14 +39,6 @@ module "app" {
       secret_name = local.admin_user_secret
       key         = "password"
     }
-  }
-
-  # Requesting the device-plugin resource is what makes the scheduler place this
-  # pod on the node with the RTL-SDR attached, and what mounts the matching
-  # /dev/bus/usb node into the container with the right cgroup permissions.
-  # Kubernetes mirrors extended-resource limits into requests automatically.
-  resource_limits = {
-    (var.openwebrx.device_resource) = "1"
   }
 
   # A single PVC holds both the config and data trees, each under its own

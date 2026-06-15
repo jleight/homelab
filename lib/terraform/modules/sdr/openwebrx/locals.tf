@@ -2,9 +2,31 @@ locals {
   kubeconfig_file = "${var.env_directory}/${local.environment}/.kubeconfig"
 
   name      = local.component
-  namespace = local.enabled ? kubernetes_namespace_v1.this[0].metadata[0].name : null
+  namespace = var.namespace
 
   hostname = "${var.openwebrx.subdomain}.${var.gateway_domain}"
+
+  # OpenWebRX reaches the dongle over the network now, via the shared rtl_tcp
+  # server, rather than claiming the USB device directly. Inject the rtl_tcp
+  # service address (threaded in from the rtl_tcp component) as the mandatory
+  # `remote` key on each rtl_tcp SDR device, so stack.hcl never hardcodes the
+  # in-cluster service DNS.
+  #
+  # Built as a separate override map + try()-guarded merge rather than a
+  # `cond ? merge(...) : dev` ternary: the ternary fails type-checking because
+  # its branches are objects with differing attributes (one has `remote`, one
+  # doesn't), which OpenTofu won't unify. try() sidesteps that — a missing key
+  # just falls through to {}.
+  sdr_remotes = {
+    for k, dev in var.openwebrx.sdrs :
+    k => { remote = "${var.rtl_tcp_host}:${var.rtl_tcp_port}" }
+    if try(dev.type, "") == "rtl_tcp"
+  }
+
+  sdrs = {
+    for k, dev in var.openwebrx.sdrs :
+    k => merge(dev, try(local.sdr_remotes[k], {}))
+  }
 
   vault_uuid          = local.enabled ? data.onepassword_vault.terraform[0].uuid : null
   admin_user_username = local.enabled ? random_pet.admin_user[0].id : null
@@ -32,6 +54,6 @@ locals {
       lon = var.openwebrx.receiver.gps.lon
     }
 
-    sdrs = var.openwebrx.sdrs
+    sdrs = local.sdrs
   }
 }

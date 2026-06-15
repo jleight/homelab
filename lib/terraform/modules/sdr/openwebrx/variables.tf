@@ -3,9 +3,24 @@ variable "env_directory" {
   type        = string
 }
 
+variable "namespace" {
+  description = "Namespace to deploy into."
+  type        = string
+}
+
 variable "data_storage_class" {
   description = "StorageClass for the data volumes."
   type        = string
+}
+
+variable "rtl_tcp_host" {
+  description = "In-cluster hostname of the rtl_tcp server OpenWebRX connects to."
+  type        = string
+}
+
+variable "rtl_tcp_port" {
+  description = "Port of the rtl_tcp server OpenWebRX connects to."
+  type        = number
 }
 
 variable "gateway_namespace" {
@@ -44,8 +59,6 @@ variable "openwebrx" {
     path      = optional(string, "/")
 
     timezone = optional(string, "America/New_York")
-
-    device_resource = optional(string, "devices.k8s.leightha.us/rtl-sdr")
 
     # Receiver identity, seeded into settings.json by the init container.
     receiver = object({
