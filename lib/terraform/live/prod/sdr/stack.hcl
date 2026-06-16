@@ -1,12 +1,6 @@
 inputs = {
   stack = "sdr"
 
-  rtl_tcp = {
-    renovate = "docker"
-    image    = "ghcr.io/lizenzfass78851/docker-rtl-tcp"
-    version  = "latest"
-  }
-
   audioplayer = {
     renovate = "docker"
     image    = "php"
@@ -15,41 +9,10 @@ inputs = {
     timezone = "UTC"
   }
 
-  trunk_recorder = {
+  dump978 = {
     renovate = "docker"
-    image    = "robotastic/trunk-recorder"
-    version  = "5.2.1"
-
-    timezone = "UTC"
-
-    source = {
-      center = 460500000
-      agc    = true
-    }
-
-    systems = [
-      {
-        short_name = "ecp25"
-        type       = "conventionalP25"
-        modulation = "fsk4"
-        squelch    = -60
-
-        channel_csv = <<-CSV
-        TG Number,Frequency,Tone,Alpha Tag,Description,Tag
-        1,460075000,,EC Shrf Patrol,Sheriff Patrol Dispatch,Law Dispatch
-        2,460450000,,EC Shrf Ch 2,Sheriff Ch. 2 Jail Transport,Law Tac
-        3,460325000,,BPD 1 Car-Car,Police Ch 1 Car to Car,Law Talk
-        4,460350000,,BPD 2 Dists B/D,Police Ch 2 Districts B/D,Law Dispatch
-        5,460425000,,BPD 3 Dists C/E,Police Ch 3 Districts C/E,Law Dispatch
-        6,460475000,,BPD 4 Dist A,Police Ch 4 District A,Law Dispatch
-        7,460025000,,BPD 5 Warrants,Police Ch 5 Information and Warrant Checks,Law Tac
-        8,460437500,,T/Hamburg PD Dsp,Police Dispatch,Law Dispatch
-        9,460500000,,Kenmore PD,Police Ch. 1,Law Dispatch
-        10,460225000,,TPD 1 Disp,City Police Dispatch,Law Dispatch
-        11,460100000,,Tonawanda PD,Police Dispatch,Law Dispatch
-        CSV
-      }
-    ]
+    image    = "ghcr.io/sdr-enthusiasts/docker-dump978"
+    version  = "latest"
   }
 
   openwebrx = {
@@ -130,5 +93,70 @@ inputs = {
         }
       }
     }
+  }
+
+  readsb = {
+    renovate = "docker"
+    image    = "ghcr.io/sdr-enthusiasts/docker-readsb-protobuf"
+    version  = "latest"
+
+    latitude  = 42.9615
+    longitude = -78.8646
+
+    gain = "autogain"
+  }
+
+  rtl_tcp = {
+    renovate = "docker"
+    image    = "ghcr.io/lizenzfass78851/docker-rtl-tcp"
+    version  = "latest"
+  }
+
+  tar1090 = {
+    renovate = "docker"
+    image    = "ghcr.io/sdr-enthusiasts/docker-tar1090"
+    version  = "latest"
+
+    subdomain = "adsb"
+
+    latitude  = 42.9615
+    longitude = -78.8646
+  }
+
+  trunk_recorder = {
+    renovate = "docker"
+    image    = "robotastic/trunk-recorder"
+    version  = "5.2.1"
+
+    timezone = "UTC"
+
+    source = {
+      center = 460500000
+      agc    = true
+    }
+
+    systems = [
+      {
+        short_name = "ecp25"
+        type       = "conventionalP25"
+        modulation = "fsk4"
+        squelch    = -60
+
+        channel_csv = <<-CSV
+          TG Number,Frequency,Tone,Alpha Tag,Description,Tag
+          1,460075000,,EC Shrf Patrol,Sheriff Patrol Dispatch,Law Dispatch
+          2,460450000,,EC Shrf Ch 2,Sheriff Ch. 2 Jail Transport,Law Tac
+          3,460325000,,BPD 1 Car-Car,Police Ch 1 Car to Car,Law Talk
+          4,460350000,,BPD 2 Dists B/D,Police Ch 2 Districts B/D,Law Dispatch
+          5,460425000,,BPD 3 Dists C/E,Police Ch 3 Districts C/E,Law Dispatch
+          6,460475000,,BPD 4 Dist A,Police Ch 4 District A,Law Dispatch
+          7,460025000,,BPD 5 Warrants,Police Ch 5 Information and Warrant Checks,Law Tac
+          8,460437500,,T/Hamburg PD Dsp,Police Dispatch,Law Dispatch
+          9,460500000,,Kenmore PD,Police Ch. 1,Law Dispatch
+          10,460225000,,TPD 1 Disp,City Police Dispatch,Law Dispatch
+          11,460100000,,Tonawanda PD,Police Dispatch,Law Dispatch
+        CSV
+      }
+    ]
   }
 }
