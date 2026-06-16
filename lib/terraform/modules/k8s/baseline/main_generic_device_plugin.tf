@@ -58,9 +58,8 @@ resource "helm_release" "generic_device_plugin" {
               ]
             },
             {
-              # Home Assistant Connect ZBT-1 (Nabu Casa SkyConnect) combo radio,
-              # dedicated to Zigbee for the `home` stack's Zigbee2MQTT (plugged
-              # into prod-03). → devices.k8s.leightha.us/zigbee
+              # Home Assistant Connect ZBT-1 (Nabu Casa SkyConnect) combo radio.
+              # → devices.k8s.leightha.us/zigbee
               name = "zigbee"
               groups = [
                 {
@@ -74,8 +73,7 @@ resource "helm_release" "generic_device_plugin" {
               ]
             },
             {
-              # Home Assistant Connect ZWA-2 (Nabu Casa ZWA-2) Z-Wave radio for
-              # the `home` stack's zwave-js-ui (plugged into prod-03).
+              # Home Assistant Connect ZWA-2 (Nabu Casa ZWA-2) Z-Wave radio.
               # → devices.k8s.leightha.us/zwave
               name = "zwave"
               groups = [
@@ -90,11 +88,7 @@ resource "helm_release" "generic_device_plugin" {
               ]
             },
             {
-              # RTL-SDR Blog V4 (Realtek RTL2832U) software-defined radio for
-              # OpenWebRX (plugged into prod-02). It's a raw libusb device with
-              # no serial tty, so it's matched by USB vendor/product rather than
-              # a /dev/serial/by-id symlink; the plugin mounts the matching
-              # /dev/bus/usb node into the pod.
+              # RTL-SDR Blog V4 (Realtek RTL2832U) software-defined radio.
               # → devices.k8s.leightha.us/rtl-sdr
               name = "rtl-sdr"
               groups = [
@@ -103,6 +97,39 @@ resource "helm_release" "generic_device_plugin" {
                     {
                       vendor  = "0bda"
                       product = "2838"
+                      serial  = "00000001"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              # Nooelec NESDR Nano 3 (RTL2832U) on the 1090 MHz antenna for ADS-B.
+              # → devices.k8s.leightha.us/sdr-adsb
+              name = "sdr-adsb"
+              groups = [
+                {
+                  usb = [
+                    {
+                      vendor  = "0bda"
+                      product = "2838"
+                      serial  = "stx:1090:0"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              # Nooelec NESDR Nano 3 (RTL2832U) on the 978 MHz antenna for UAT.
+              # → devices.k8s.leightha.us/sdr-uat
+              name = "sdr-uat"
+              groups = [
+                {
+                  usb = [
+                    {
+                      vendor  = "0bda"
+                      product = "2838"
+                      serial  = "stx:978:0"
                     }
                   ]
                 }
