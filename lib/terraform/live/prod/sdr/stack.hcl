@@ -10,7 +10,7 @@ inputs = {
   audioplayer = {
     renovate = "docker"
     image    = "php"
-    version  = "8.3-apache"
+    version  = "8.5-apache"
 
     timezone = "UTC"
   }
