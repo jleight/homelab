@@ -11,6 +11,12 @@ module "app" {
   image         = var.trunk_recorder.image
   image_version = var.trunk_recorder.version
 
+  # Local time so the date-based recording folders match the audio player's
+  # (and your) timezone instead of UTC.
+  env = {
+    TZ = var.trunk_recorder.timezone
+  }
+
   # Outbound-only daemon: it dials the rtl_tcp server and (later) an uploader; it
   # listens on nothing, so no container port and no Service.
   create_service  = false

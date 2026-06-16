@@ -7,10 +7,20 @@ inputs = {
     version  = "latest"
   }
 
+  audioplayer = {
+    renovate = "docker"
+    image    = "php"
+    version  = "8.3-apache"
+
+    timezone = "UTC"
+  }
+
   trunk_recorder = {
     renovate = "docker"
     image    = "robotastic/trunk-recorder"
     version  = "5.2.1"
+
+    timezone = "UTC"
 
     # Erie County conventional P25 — every non-encrypted P25 channel that fits in
     # one RTL-SDR's 2.4 MHz window centered on 460.5 MHz (see channels below).

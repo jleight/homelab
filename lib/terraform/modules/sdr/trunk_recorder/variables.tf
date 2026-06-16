@@ -29,6 +29,8 @@ variable "trunk_recorder" {
     image   = string
     version = string
 
+    timezone = optional(string, "UTC")
+
     # The RF window one RTL-SDR samples. Every channel across all systems must
     # fall within center ± rate/2, and rate is capped by what rtl_tcp can stream
     # (~2.4 MS/s for an RTL-SDR). The recorder counts are derived from the
