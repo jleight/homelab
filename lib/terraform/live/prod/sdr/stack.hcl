@@ -22,24 +22,17 @@ inputs = {
 
     timezone = "UTC"
 
-    # Erie County conventional P25 — every non-encrypted P25 channel that fits in
-    # one RTL-SDR's 2.4 MHz window centered on 460.5 MHz (see channels below).
     source = {
-      center = 460500000 # window 459.3–461.7 MHz at 2.4 MS/s covers every channel below
-      agc    = true      # rtl_tcp can't set a fixed tuner gain; let the tuner auto-gain
+      center = 460500000
+      agc    = true
     }
 
-    # Two conventional systems sharing the one RTL-SDR window: P25 (digital) and
-    # analog FM. Each channel_csv is the in-window, non-encrypted set extracted
-    # from the Erie County RadioReference dump; recorder counts are derived from
-    # the rows. Disable a channel by setting its Enable column to false, or delete
-    # the row, if the 2-core node can't keep up.
     systems = [
       {
         short_name = "ecp25"
         type       = "conventionalP25"
-        modulation = "fsk4" # conventional P25 is C4FM
-        squelch    = -60    # dBm; raise toward -50 if it records noise, lower if it misses calls
+        modulation = "fsk4"
+        squelch    = -60
 
         channel_csv = <<-CSV
         TG Number,Frequency,Tone,Alpha Tag,Description,Tag
@@ -54,24 +47,6 @@ inputs = {
         9,460500000,,Kenmore PD,Police Ch. 1,Law Dispatch
         10,460225000,,TPD 1 Disp,City Police Dispatch,Law Dispatch
         11,460100000,,Tonawanda PD,Police Dispatch,Law Dispatch
-        CSV
-      },
-      {
-        short_name = "ecfm"
-        type       = "conventional" # analog FM
-        squelch    = -60
-
-        channel_csv = <<-CSV
-        TG Number,Frequency,Tone,Alpha Tag,Description,Tag
-        1,460275000,,EC CW Police UHF,Countywide Police UHF,Law Dispatch
-        2,460050000,,EC Holding Cntr,Holding Center,Corrections
-        3,460400000,,EC CW Fire,Countywide Fire,Fire Dispatch
-        6,461412500,,M-T FD 461,Main-Transit Fire Department,Fire-Tac
-        22,460012500,,TPD 2 Sp Ops,Police Special Operations,Law Tac
-        23,460600000,,TonwndaFDisp,City Fire Dispatch,Fire Dispatch
-        24,460087500,,TonawandaCh2,City Fire Ch. 2,Fire-Tac
-        25,460975000,,Tonawnda FD 1,Fire Ch 1,Fire Dispatch
-        26,460900000,,Tonawnda FD 2,Fire Ch 2,Fire-Tac
         CSV
       }
     ]
