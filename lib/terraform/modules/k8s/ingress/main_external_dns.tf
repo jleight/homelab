@@ -35,6 +35,7 @@ resource "helm_release" "external_dns" {
   set = [
     for k, v in {
       "provider.name"                      = "cloudflare"
+      "policy"                             = "sync"
       "env[0].name"                        = "CF_API_TOKEN"
       "env[0].valueFrom.secretKeyRef.name" = "cloudflare-api-token"
       "env[0].valueFrom.secretKeyRef.key"  = "api_token"
