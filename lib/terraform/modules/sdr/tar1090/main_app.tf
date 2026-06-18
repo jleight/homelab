@@ -22,8 +22,8 @@ module "app" {
   gateway_domain    = var.gateway_domain
 
   env = {
-    BEASTHOST = var.readsb_host
-    BEASTPORT = tostring(var.readsb_port)
+    BEASTHOST = local.beast_host
+    BEASTPORT = tostring(local.beast_port)
 
     READSB_NET_CONNECTOR = local.uat_connector
     MAX_GLOBE_HISTORY    = tostring(var.tar1090.history_retention_days)

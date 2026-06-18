@@ -13,6 +13,8 @@ inputs = {
     renovate = "docker"
     image    = "ghcr.io/sdr-enthusiasts/docker-dump978"
     version  = "latest"
+
+    replicas = 0
   }
 
   openwebrx = {
@@ -30,8 +32,8 @@ inputs = {
 
       asl = 187
       gps = {
-        lat = 42.9615
-        lon = -78.8646
+        lat = 42.961356
+        lon = -78.868374
       }
     }
 
@@ -100,8 +102,10 @@ inputs = {
     image    = "ghcr.io/sdr-enthusiasts/docker-readsb-protobuf"
     version  = "latest"
 
-    latitude  = 42.9615
-    longitude = -78.8646
+    replicas = 0
+
+    latitude  = 42.961356
+    longitude = -78.868374
 
     gain = "autogain"
   }
@@ -119,8 +123,11 @@ inputs = {
 
     subdomain = "adsb"
 
-    latitude  = 42.9615
-    longitude = -78.8646
+    beast_host = "readsb.leightha.us"
+    uat_host   = "readsb.leightha.us"
+
+    latitude  = 42.961356
+    longitude = -78.868374
   }
 
   trunk_recorder = {

@@ -93,8 +93,8 @@ inputs = {
     room_servers = [
       {
         name      = "Leighthaus"
-        latitude  = 42.96136
-        longitude = -78.86831
+        latitude  = 42.961356
+        longitude = -78.868374
       }
     ]
 

@@ -14,6 +14,8 @@ variable "dump978" {
     image   = string
     version = string
 
+    replicas = optional(number, 1)
+
     device_resource = optional(string, "devices.k8s.leightha.us/sdr-uat")
   })
 }

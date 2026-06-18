@@ -14,6 +14,8 @@ variable "readsb" {
     image   = string
     version = string
 
+    replicas = optional(number, 1)
+
     latitude  = number
     longitude = number
 

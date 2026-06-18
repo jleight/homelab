@@ -62,6 +62,11 @@ variable "tar1090" {
     subdomain = optional(string, "adsb")
     path      = optional(string, "/")
 
+    beast_host = optional(string)
+    beast_port = optional(number, 30005)
+    uat_host   = optional(string)
+    uat_port   = optional(number, 30978)
+
     history_retention_days = optional(number, 365)
     storage_size           = optional(string, "5Gi")
 

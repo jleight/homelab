@@ -7,6 +7,7 @@ module "app" {
   context = local.context
 
   namespace = var.namespace
+  replicas  = var.dump978.replicas
 
   image               = var.dump978.image
   image_version       = var.dump978.version
