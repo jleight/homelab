@@ -185,7 +185,7 @@ inputs = {
   turnstone = {
     renovate = "docker"
     image    = "ghcr.io/turnstonelabs/turnstone"
-    version  = "1.6.8"
+    version  = "1.6.9"
 
     llm_base_url = "https://lemonade.leightha.us/api/v1"
     server_count = 3
