@@ -196,4 +196,14 @@ inputs = {
       version  = "2026.6.13-a29cda858"
     }
   }
+
+  woodpecker_ci = {
+    renovate = "docker"
+    image    = "ghcr.io/woodpecker-ci/helm/woodpecker"
+    version  = "3.6.4"
+
+    # ^ hack for renovate to support oci://
+    repository = "oci://ghcr.io/woodpecker-ci/helm"
+    chart      = "woodpecker"
+  }
 }

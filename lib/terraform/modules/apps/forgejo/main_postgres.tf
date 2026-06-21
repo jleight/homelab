@@ -53,6 +53,19 @@ resource "kubectl_manifest" "postgres" {
           }
         }
       }
+
+      managed = {
+        roles = [
+          {
+            name   = local.woodpecker_postgres_username
+            ensure = "present"
+            login  = true
+            passwordSecret = {
+              name = local.woodpecker_postgres_secret
+            }
+          }
+        ]
+      }
     }
   })
 }

@@ -23,6 +23,7 @@ resource "helm_release" "this" {
       "gitea.config.repository.ENABLE_PUSH_CREATE_ORG"                = true
       "gitea.config.server.DOMAIN"                                    = local.hostname
       "gitea.config.server.ROOT_URL"                                  = "https://${local.hostname}"
+      "gitea.config.webhook.ALLOWED_HOST_LIST"                        = "ci.leightha.us"
       "persistence.storageClass"                                      = var.data_storage_class
       "persistence.accessModes[0]"                                    = "ReadWriteMany"
       "postgresql-ha.enabled"                                         = false

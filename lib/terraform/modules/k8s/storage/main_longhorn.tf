@@ -112,6 +112,43 @@ resource "kubernetes_storage_class_v1" "longhorn_appdata_local" {
   depends_on = [helm_release.longhorn]
 }
 
+# Single-replica, strict-local Longhorn storage class for throwaway scratch
+# space (e.g. CI pipeline workspaces). Unlike the other classes this reclaims on
+# delete, so dynamically-provisioned volumes are cleaned up when their PVC goes
+# away rather than piling up as Released PVs.
+resource "kubernetes_storage_class_v1" "longhorn_ephemeral" {
+  count = local.longhorn_enabled ? 1 : 0
+
+  metadata {
+    name = "longhorn-ephemeral"
+  }
+
+  storage_provisioner = "driver.longhorn.io"
+
+  volume_binding_mode    = "WaitForFirstConsumer"
+  reclaim_policy         = "Delete"
+  allow_volume_expansion = true
+
+  parameters = {
+    "numberOfReplicas"    = "1"
+    "staleReplicaTimeout" = "30"
+    "dataLocality"        = "strict-local"
+
+    # Assign these volumes to a dedicated "ephemeral" group, which no recurring
+    # job targets. Carrying any recurring-job label excludes a volume from the
+    # implicit "default" group that the daily/monthly backup jobs run against, so
+    # scratch data is never backed up (and nothing else is scheduled against it).
+    "recurringJobSelector" = jsonencode([
+      {
+        name    = "ephemeral"
+        isGroup = true
+      }
+    ])
+  }
+
+  depends_on = [helm_release.longhorn]
+}
+
 resource "kubectl_manifest" "longhorn_backup_daily" {
   count = local.longhorn_enabled ? 1 : 0
 
