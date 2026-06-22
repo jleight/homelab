@@ -36,12 +36,28 @@ locals {
     },
   ] : []
 
+  # MeshTender lives on its own apex domain (not a leightha.us subdomain), so it
+  # needs dedicated listeners + certs, separate from the CoreScope app listeners.
+  # The apex is the canonical origin (WebAuthn RP) and must stay first; the
+  # wildcard covers per-organization subdomains (which redirect to the apex).
+  public_lb_meshtender_listeners = local.load_balancer_enabled ? [
+    {
+      section  = "https-meshtender"
+      hostname = "meshtender.com"
+    },
+    {
+      section  = "https-meshtender-wildcard"
+      hostname = "*.meshtender.com"
+    },
+  ] : []
+
   # All explicit-host listeners that need to be added to the public-lb spec
   # (the wildcard `https` listener already exists separately).
   public_lb_extra_listeners = [
     for l in concat(
       local.public_lb_app_listeners,
-      local.public_lb_mqtt_listeners
+      local.public_lb_mqtt_listeners,
+      local.public_lb_meshtender_listeners
     ) : l if l.section != "https"
   ]
 }
@@ -292,7 +308,12 @@ resource "kubectl_manifest" "load_balancer_public" {
                 certificateRefs = [
                   {
                     kind = "Secret"
-                    name = replace(l.hostname, ".", "-")
+                    # Strip any leading "*." so an apex listener and its wildcard
+                    # share one Secret. The gateway-shim then issues a single cert
+                    # with both SANs (e.g. meshtender.com + *.meshtender.com),
+                    # avoiding two separate DNS-01 challenges deadlocking on the
+                    # same _acme-challenge record. Also keeps "*" out of the name.
+                    name = replace(trimprefix(l.hostname, "*."), ".", "-")
                   }
                 ]
               }

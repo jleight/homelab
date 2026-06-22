@@ -29,6 +29,11 @@ output "public_load_balancer_mqtt_listeners" {
   value       = local.public_lb_mqtt_listeners
 }
 
+output "public_load_balancer_meshtender_listeners" {
+  description = "List of {section, hostname} pairs the MeshTender app HTTPRoute should attach to."
+  value       = local.public_lb_meshtender_listeners
+}
+
 output "load_balancer_section" {
   value = local.load_balancer_section
 }
