@@ -9,7 +9,7 @@ resource "kubernetes_deployment_v1" "this" {
   }
 
   spec {
-    replicas = 1
+    replicas = var.meshtender.replicas
 
     selector {
       match_labels = local.match_labels

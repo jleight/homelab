@@ -106,13 +106,11 @@ inputs = {
   }
 
   meshtender = {
-    # Self-built image; CI owns the running tag via `kubectl set image`, so this
-    # is not Renovate-tracked. Must match the repo the .woodpecker pipeline pushes.
     image  = "git.leightha.us/ci/jleight/meshtender"
     commit = "bf0a907fcc82574f84051ab91f2b9158943c9c00"
 
-    # Host roles served by the one binary. `root` is the WebAuthn RP (apex);
-    # www defaults to www.meshtender.com. The HTTPRoute serves all of them.
+    replicas = 2
+
     hosts = {
       root    = "meshtender.com"
       www     = "www.meshtender.com"

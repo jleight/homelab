@@ -63,20 +63,15 @@ variable "meshtender" {
     image  = string
     commit = string
 
+    replicas = optional(number, 1)
+
+    rp_name = optional(string, "MeshTender")
+
     hosts = object({
       root    = string
       www     = string
       auth    = string
       primary = string
     })
-
-    rp_name = optional(string, "MeshTender")
-
-    radio = optional(object({
-      freq_hz = optional(string, "910525000")
-      bw_hz   = optional(string, "62500")
-      sf      = optional(string, "7")
-      cr      = optional(string, "5")
-    }), {})
   })
 }

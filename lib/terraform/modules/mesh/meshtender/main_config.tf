@@ -23,11 +23,5 @@ resource "kubernetes_config_map_v1" "app" {
     MESHTENDER_WWW_HOST     = var.meshtender.hosts.www
     MESHTENDER_AUTH_HOST    = var.meshtender.hosts.auth
     MESHTENDER_PRIMARY_HOST = var.meshtender.hosts.primary
-
-    # Default LoRa radio params suggested when adding a repeater.
-    MESHTENDER_RADIO_FREQ_HZ = var.meshtender.radio.freq_hz
-    MESHTENDER_RADIO_BW_HZ   = var.meshtender.radio.bw_hz
-    MESHTENDER_RADIO_SF      = var.meshtender.radio.sf
-    MESHTENDER_RADIO_CR      = var.meshtender.radio.cr
   }
 }
