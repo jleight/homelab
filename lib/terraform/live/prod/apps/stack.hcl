@@ -52,7 +52,7 @@ inputs = {
   octoprint = {
     renovate = "docker"
     image    = "docker.io/octoprint/octoprint"
-    version  = "1.11.7"
+    version  = "1.11.8"
   }
 
   open_webui = {
