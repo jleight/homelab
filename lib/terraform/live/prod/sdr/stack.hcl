@@ -20,7 +20,7 @@ inputs = {
   openwebrx = {
     renovate = "docker"
     image    = "docker.io/slechev/openwebrxplus-softmbe"
-    version  = "1.2.116"
+    version  = "1.2.117"
 
     receiver = {
       name  = "Leighthaus"
