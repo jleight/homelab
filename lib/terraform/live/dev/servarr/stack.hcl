@@ -38,7 +38,7 @@ inputs = {
     flood = {
       renovate = "docker"
       image    = "jesec/flood"
-      version  = "4.14.2"
+      version  = "4.14.3"
     }
   }
 
