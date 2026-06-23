@@ -47,7 +47,7 @@ inputs = {
   zwave_js_ui = {
     renovate = "docker"
     image    = "ghcr.io/zwave-js/zwave-js-ui"
-    version  = "11.20.0"
+    version  = "11.21.1"
 
     yq = {
       renovate = "docker"
