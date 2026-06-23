@@ -77,7 +77,7 @@ inputs = {
     renovate = "docker"
     image    = "pymcdev/pymc-repeater"
     version  = "dev"
-    digest   = "sha256:d2da66bb461e2ab08578adbed74543b0aff3b9572e412b6fab32e7f28ae6f4d0"
+    digest   = "sha256:68c30bcf3f8618e88654072e9f5fa4a0377bfb7a7da05a6df9b86ee4ee7295b9"
 
     subdomain = "pymc"
 
