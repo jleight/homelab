@@ -271,26 +271,18 @@ variable "ingress_enabled" {
   default     = true
 }
 
-variable "gateway_namespace" {
-  description = "Namespace for the gateway for private ingress."
-  type        = string
-  default     = null
-}
-
-variable "gateway_name" {
-  description = "Name of the gateway for private ingress."
-  type        = string
-  default     = null
-}
-
-variable "gateway_section" {
-  description = "Name of the gateway section for private ingress."
-  type        = string
-  default     = null
+variable "gateway_refs" {
+  description = "Gateway API parentRefs the HTTPRoute attaches to. Splatted straight into spec.parentRefs; sourced from a k8s/ingress *_refs output."
+  type = list(object({
+    namespace   = string
+    name        = string
+    sectionName = string
+  }))
+  default = []
 }
 
 variable "gateway_domain" {
-  description = "Domain for the gateway for private ingress."
+  description = "Domain for the gateway ingress hostname."
   type        = string
   default     = null
 }

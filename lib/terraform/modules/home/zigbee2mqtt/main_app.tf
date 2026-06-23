@@ -13,10 +13,8 @@ module "app" {
   subdomain = var.zigbee2mqtt.subdomain
   path      = var.zigbee2mqtt.path
 
-  gateway_namespace = var.gateway_namespace
-  gateway_name      = var.gateway_name
-  gateway_section   = var.gateway_section
-  gateway_domain    = var.gateway_domain
+  gateway_refs   = var.gateway_refs
+  gateway_domain = var.gateway_domain
 
   # Roll the pod (re-running the merge init) whenever the managed config changes.
   pod_annotations = {

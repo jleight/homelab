@@ -13,9 +13,7 @@ module "app" {
   port         = 32400
   service_port = 32400
 
-  gateway_namespace = var.gateway_namespace
-  gateway_name      = var.gateway_name
-  gateway_section   = var.gateway_section
+  gateway_refs = var.gateway_refs
 
   env = {
     VERSION = "latest"
@@ -33,10 +31,10 @@ module "app" {
   }
 
   persistent_volume_claims = {
-    data = {
-      storage_class = var.data_storage_class
-      storage_size  = "100Gi"
-    }
+    # data = {
+    #   storage_class = var.data_storage_class
+    #   storage_size  = "100Gi"
+    # }
     media = {
       storage_class = var.media_storage_class
       storage_size  = "10Ti"
@@ -48,10 +46,10 @@ module "app" {
   ]
 
   volume_mounts = [
-    {
-      name       = "data"
-      mount_path = "/config"
-    },
+    # {
+    #   name       = "data"
+    #   mount_path = "/config"
+    # },
     {
       name       = "transcode"
       mount_path = "/transcode"

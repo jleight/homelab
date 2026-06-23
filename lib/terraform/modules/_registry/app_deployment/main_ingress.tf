@@ -11,16 +11,8 @@ resource "kubectl_manifest" "ingress" {
     }
 
     spec = {
-      parentRefs = [
-        {
-          namespace   = var.gateway_namespace
-          name        = var.gateway_name
-          sectionName = var.gateway_section
-        }
-      ]
-      hostnames = var.subdomain == null ? [] : [
-        local.hostname
-      ]
+      parentRefs = var.gateway_refs
+      hostnames  = var.subdomain == null ? [] : [local.hostname]
       rules = concat(
         [
           {

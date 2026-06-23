@@ -30,22 +30,20 @@ variable "backup_storage_size" {
   default     = "100Gi"
 }
 
-variable "gateway_namespace" {
-  description = "Namespace for the gateway for ingress."
-  type        = string
-}
-
-variable "gateway_name" {
-  description = "Name of the gateway for ingress."
-  type        = string
-}
-
-variable "gateway_listeners" {
-  description = "Listener (section, hostname) pairs the app HTTPRoute attaches to. The HTTPRoute serves every hostname listed."
+variable "gateway_refs" {
+  description = "Gateway API parentRefs the HTTPRoute attaches to."
   type = list(object({
-    section  = string
-    hostname = string
+    namespace   = string
+    name        = string
+    sectionName = string
   }))
+  default = []
+}
+
+variable "gateway_hostnames" {
+  description = "Hostnames the HTTPRoute serves."
+  type        = list(string)
+  default     = []
 }
 
 variable "vernemq_host" {

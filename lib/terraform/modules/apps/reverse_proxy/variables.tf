@@ -3,24 +3,24 @@ variable "env_directory" {
   type        = string
 }
 
-variable "gateway_namespace" {
-  description = "Namespace for the gateway."
-  type        = string
+variable "public_https_refs" {
+  description = "Gateway API parentRefs for public proxied routes."
+  type = list(object({
+    namespace   = string
+    name        = string
+    sectionName = string
+  }))
+  default = []
 }
 
-variable "private_gateway_name" {
-  description = "Name of the private gateway."
-  type        = string
-}
-
-variable "public_gateway_name" {
-  description = "Name of the public gateway."
-  type        = string
-}
-
-variable "gateway_section" {
-  description = "Name of the gateway section."
-  type        = string
+variable "private_https_refs" {
+  description = "Gateway API parentRefs for private (LAN-only) proxied routes."
+  type = list(object({
+    namespace   = string
+    name        = string
+    sectionName = string
+  }))
+  default = []
 }
 
 variable "gateway_domain" {

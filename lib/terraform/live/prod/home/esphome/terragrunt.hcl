@@ -25,8 +25,6 @@ inputs = {
 
   data_storage_class = dependency.k8s_storage.outputs.app_data_storage_class_name
 
-  gateway_namespace = dependency.k8s_ingress.outputs.load_balancer_namespace
-  gateway_name      = dependency.k8s_ingress.outputs.private_load_balancer_name
-  gateway_section   = "https"
-  gateway_domain    = dependency.k8s_ingress.outputs.load_balancer_domain
+  gateway_refs   = dependency.k8s_ingress.outputs.private_https_refs
+  gateway_domain = dependency.k8s_ingress.outputs.load_balancer_domain
 }

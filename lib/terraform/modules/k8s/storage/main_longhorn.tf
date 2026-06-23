@@ -226,16 +226,8 @@ resource "kubectl_manifest" "longhorn_ingress" {
     }
 
     spec = {
-      parentRefs = [
-        {
-          namespace   = var.gateway_namespace
-          name        = var.gateway_name
-          sectionName = var.gateway_section
-        }
-      ]
-      hostnames = [
-        "longhorn.${var.gateway_domain}"
-      ]
+      parentRefs = var.gateway_refs
+      hostnames  = ["longhorn.${var.gateway_domain}"]
       rules = [
         {
           matches = [

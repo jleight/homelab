@@ -57,8 +57,6 @@ locals {
     }
   )
 
-  hostnames = [for l in var.gateway_listeners : l.hostname]
-
   # Litestream replicates WAL segments to /backup/meshcore on the NAS share.
   # The same path is used by the restore initContainer at startup so a fresh
   # PVC seeds from the most recent replica — that's how this module survives

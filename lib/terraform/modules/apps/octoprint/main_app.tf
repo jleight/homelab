@@ -13,10 +13,8 @@ module "app" {
   subdomain = var.octoprint.subdomain
   path      = var.octoprint.path
 
-  gateway_namespace = var.gateway_namespace
-  gateway_name      = var.gateway_name
-  gateway_section   = var.gateway_section
-  gateway_domain    = var.gateway_domain
+  gateway_refs   = var.gateway_refs
+  gateway_domain = var.gateway_domain
 
   # OctoPrint's entrypoint reads OCTOPRINT_PORT for its --port flag, which
   # collides with the Service-link env var Kubernetes injects for the

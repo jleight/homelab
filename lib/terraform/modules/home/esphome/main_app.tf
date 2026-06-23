@@ -13,10 +13,8 @@ module "app" {
   subdomain = var.esphome.subdomain
   path      = var.esphome.path
 
-  gateway_namespace = var.gateway_namespace
-  gateway_name      = var.gateway_name
-  gateway_section   = var.gateway_section
-  gateway_domain    = var.gateway_domain
+  gateway_refs   = var.gateway_refs
+  gateway_domain = var.gateway_domain
 
   persistent_volume_claims = {
     config = {

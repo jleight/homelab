@@ -16,5 +16,5 @@ output "users" {
 
 output "public_hostnames" {
   description = "Public hostnames the broker serves via the LB."
-  value       = local.public_hostnames
+  value       = var.gateway_hostnames
 }

@@ -8,11 +8,6 @@ variable "namespace" {
   type        = string
 }
 
-variable "gateway_domain" {
-  description = "Domain the LAN LoadBalancer's hostname is built under (<stack>.<domain>)."
-  type        = string
-}
-
 variable "rtl_tcp" {
   description = "rtl_tcp server configuration."
   type = object({

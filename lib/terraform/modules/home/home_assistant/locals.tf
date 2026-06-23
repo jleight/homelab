@@ -7,14 +7,17 @@ locals {
   # HA runs host-networked behind the Cilium gateway, which forwards requests
   # via the node — so HA treats them as proxied and rejects them unless the
   # source is trusted. Trust the node network (any node HA lands on) and the
-  # cluster pod/service/LB CIDRs, all sourced from the IPAM module rather than
-  # hardcoded. Mirrors the trusted-internal-ranges set in k8s/ingress.
+  # cluster pod/service CIDRs, all sourced from the IPAM module rather than
+  # hardcoded. Mirrors the trusted-internal-ranges set in k8s/ingress. (The
+  # proxy source is envoy/the node — in pod/node ranges — not the LB VIP.)
   trusted_proxies = concat(
-    [module.ipam.nodes.v4_cidr, module.ipam.nodes.v6_cidr],
+    [
+      module.ipam.nodes.v4_cidr,
+      module.ipam.nodes.v6_cidr
+    ],
     [
       module.ipam.resources.pods,
-      module.ipam.resources.services,
-      module.ipam.resources.load_balancers
+      module.ipam.resources.services
     ]
   )
 

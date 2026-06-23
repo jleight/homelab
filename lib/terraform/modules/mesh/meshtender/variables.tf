@@ -13,22 +13,14 @@ variable "data_storage_class" {
   type        = string
 }
 
-variable "gateway_namespace" {
-  description = "Namespace for the gateway for ingress."
-  type        = string
-}
-
-variable "gateway_name" {
-  description = "Name of the gateway for ingress."
-  type        = string
-}
-
-variable "gateway_listeners" {
-  description = "Listener (section, hostname) pairs the app HTTPRoute attaches to. The first hostname is used as the WebAuthn relying-party ID/origin."
+variable "gateway_refs" {
+  description = "Gateway API parentRefs the HTTPRoute attaches to."
   type = list(object({
-    section  = string
-    hostname = string
+    namespace   = string
+    name        = string
+    sectionName = string
   }))
+  default = []
 }
 
 variable "registry_host" {

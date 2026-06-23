@@ -8,22 +8,20 @@ variable "namespace" {
   type        = string
 }
 
-variable "gateway_namespace" {
-  description = "Namespace for the gateway for public ingress."
-  type        = string
-}
-
-variable "gateway_name" {
-  description = "Name of the gateway for public ingress."
-  type        = string
-}
-
-variable "mqtt_gateway_listeners" {
-  description = "Listener (section, hostname) pairs the public MQTT WSS HTTPRoute attaches to."
+variable "gateway_refs" {
+  description = "Gateway API parentRefs the public MQTT WSS HTTPRoute attaches to."
   type = list(object({
-    section  = string
-    hostname = string
+    namespace   = string
+    name        = string
+    sectionName = string
   }))
+  default = []
+}
+
+variable "gateway_hostnames" {
+  description = "Hostnames the public MQTT WSS HTTPRoute serves."
+  type        = list(string)
+  default     = []
 }
 
 variable "internal_users" {

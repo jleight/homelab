@@ -9,8 +9,3 @@ output "service_port" {
   description = "Port the rtl_tcp server listens on."
   value       = local.port
 }
-
-output "hostname" {
-  description = "LAN hostname for the rtl_tcp LoadBalancer VIP."
-  value       = local.hostname
-}

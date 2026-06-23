@@ -34,15 +34,13 @@ locals {
 
   resources = {
     dev = {
-      pods           = cidrsubnet(local.resources_base, 4, 0)
-      services       = cidrsubnet(local.resources_base, 4, 1)
-      load_balancers = cidrsubnet(local.resources_base, 4, 2)
+      pods     = cidrsubnet(local.resources_base, 4, 0)
+      services = cidrsubnet(local.resources_base, 4, 1)
     }
 
     prod = {
-      pods           = cidrsubnet(local.resources_base, 4, 4)
-      services       = cidrsubnet(local.resources_base, 4, 5)
-      load_balancers = cidrsubnet(local.resources_base, 4, 6)
+      pods     = cidrsubnet(local.resources_base, 4, 4)
+      services = cidrsubnet(local.resources_base, 4, 5)
     }
   }
 }
@@ -57,4 +55,10 @@ output "nodes" {
 
 output "resources" {
   value = lookup(local.resources, var.environment, {})
+}
+
+output "load_balancers" {
+  value = {
+    v4_cidr = cidrsubnet(lookup(local.nodes, var.environment, {}).v4_cidr, 4, 15)
+  }
 }

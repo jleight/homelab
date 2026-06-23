@@ -19,7 +19,7 @@ resource "kubectl_manifest" "tailscale_exit" {
           module.ipam.lan.v6_cidr,
           module.ipam.resources.pods,
           module.ipam.resources.services,
-          module.ipam.resources.load_balancers,
+          module.ipam.load_balancers.v4_cidr,
         ]
       }
     }

@@ -24,8 +24,6 @@ inputs = {
   smb_nas02_username = dependency.secrets.outputs.smb_nas02_username
   smb_nas02_password = dependency.secrets.outputs.smb_nas02_password
 
-  gateway_namespace = dependency.k8s_ingress.outputs.load_balancer_namespace
-  gateway_name      = dependency.k8s_ingress.outputs.private_load_balancer_name
-  gateway_section   = "https"
-  gateway_domain    = dependency.k8s_ingress.outputs.load_balancer_domain
+  gateway_refs   = dependency.k8s_ingress.outputs.private_https_refs
+  gateway_domain = dependency.k8s_ingress.outputs.load_balancer_domain
 }

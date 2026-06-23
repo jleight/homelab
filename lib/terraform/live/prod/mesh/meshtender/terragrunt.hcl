@@ -29,9 +29,7 @@ inputs = {
 
   data_storage_class = dependency.k8s_storage.outputs.app_data_storage_class_name
 
-  gateway_namespace = dependency.k8s_ingress.outputs.load_balancer_namespace
-  gateway_name      = dependency.k8s_ingress.outputs.public_load_balancer_name
-  gateway_listeners = dependency.k8s_ingress.outputs.public_load_balancer_meshtender_listeners
+  gateway_refs = dependency.k8s_ingress.outputs.public_meshtender_refs
 
   registry_host     = dependency.woodpecker_ci.outputs.registry_host
   registry_username = dependency.woodpecker_ci.outputs.registry_username

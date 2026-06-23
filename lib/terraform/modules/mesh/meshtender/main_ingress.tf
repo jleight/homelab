@@ -11,14 +11,8 @@ resource "kubectl_manifest" "ingress" {
     }
 
     spec = {
-      parentRefs = [
-        for l in var.gateway_listeners : {
-          namespace   = var.gateway_namespace
-          name        = var.gateway_name
-          sectionName = l.section
-        }
-      ]
-      hostnames = local.hostnames
+      parentRefs = var.gateway_refs
+      hostnames  = local.hostnames
       rules = [
         {
           matches = [

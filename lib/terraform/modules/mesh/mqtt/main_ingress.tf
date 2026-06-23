@@ -13,14 +13,8 @@ resource "kubectl_manifest" "http_route" {
     }
 
     spec = {
-      parentRefs = [
-        for l in var.mqtt_gateway_listeners : {
-          namespace   = var.gateway_namespace
-          name        = var.gateway_name
-          sectionName = l.section
-        }
-      ]
-      hostnames = local.public_hostnames
+      parentRefs = var.gateway_refs
+      hostnames  = var.gateway_hostnames
       rules = [
         {
           matches = [
@@ -57,43 +51,4 @@ resource "kubectl_manifest" "http_route" {
   })
 
   depends_on = [helm_release.this]
-}
-
-# Plain MQTT TCP exposed via a private LAN VIP — for clients (Home
-# Assistant, IoT devices) that don't speak MQTT-over-WSS. JWT auth still
-# applies; the auth webhook runs on every CONNECT regardless of which
-# listener the client arrived on.
-#
-# This lives outside the Gateway API because Cilium's gateway controller
-# doesn't implement TCPRoute. Cilium LB-IPAM allocates a fresh IP from the
-# same pool as the gateways; the IP is BGP-advertised to the LAN but has no
-# router port-forward, so it's reachable only on the home network.
-resource "kubernetes_service_v1" "mqtt_lb" {
-  count = local.enabled ? 1 : 0
-
-  metadata {
-    namespace = local.namespace
-    name      = "${local.vernemq_name}-lb"
-
-    labels = local.labels
-  }
-
-  spec {
-    type = "LoadBalancer"
-
-    # Selectors match the chart's pod labels, not local.vernemq_name — the
-    # chart's `app.kubernetes.io/name` is always the chart name, only the
-    # `instance` label tracks the release name.
-    selector = {
-      "app.kubernetes.io/name"     = var.mqtt.chart
-      "app.kubernetes.io/instance" = local.vernemq_name
-    }
-
-    port {
-      name        = "mqtt"
-      port        = local.vernemq_mqtt_port
-      target_port = local.vernemq_mqtt_port
-      protocol    = "TCP"
-    }
-  }
 }

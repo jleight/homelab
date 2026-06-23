@@ -90,7 +90,7 @@ resource "kubernetes_deployment_v1" "auth" {
 
           env {
             name  = "EXPECTED_AUDIENCES"
-            value = join(",", local.public_hostnames)
+            value = join(",", var.gateway_hostnames)
           }
 
           volume_mount {

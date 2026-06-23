@@ -46,15 +46,9 @@ resource "kubectl_manifest" "bridge_https_ingress" {
     }
 
     spec = {
-      parentRefs = [
-        {
-          namespace   = var.gateway_namespace
-          name        = var.gateway_name
-          sectionName = var.gateway_section
-        }
-      ]
-      hostnames = [module.app.hostname]
-      rules     = [local.bridge_route_rule]
+      parentRefs = var.gateway_refs
+      hostnames  = [module.app.hostname]
+      rules      = [local.bridge_route_rule]
     }
   })
 }
@@ -75,14 +69,8 @@ resource "kubectl_manifest" "bridge_http_ingress" {
     }
 
     spec = {
-      parentRefs = [
-        {
-          namespace   = var.gateway_namespace
-          name        = var.gateway_name
-          sectionName = "http"
-        }
-      ]
-      hostnames = [module.app.hostname]
+      parentRefs = [for r in var.gateway_refs : merge(r, { sectionName = "http" })]
+      hostnames  = [module.app.hostname]
       rules = [
         local.bridge_route_rule,
         {

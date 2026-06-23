@@ -21,6 +21,17 @@ resource "helm_release" "cilium" {
       "gatewayAPI.enableAppProtocol" = true
       "bgpControlPlane.enabled"      = true
       "socketLB.hostNamespaceOnly"   = true
+
+      # L2 announcements (ARP) let a service VIP that lives inside the node VLAN
+      # be answered directly on the wire, so the router treats it as a local
+      # host. Used by the node-VLAN load balancer pool (see k8s/ingress). The
+      # feature leans on Lease objects for per-IP leader election, so Cilium
+      # asks that the client rate limit be sized up to absorb the extra API
+      # traffic; the values below are generous headroom for the handful of
+      # L2 services we run.
+      "l2announcements.enabled"  = true
+      "k8sClientRateLimit.qps"   = 30
+      "k8sClientRateLimit.burst" = 60
     } : { name = k, value = v }
   ]
 

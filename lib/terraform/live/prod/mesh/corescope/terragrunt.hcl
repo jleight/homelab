@@ -30,9 +30,8 @@ inputs = {
   data_storage_class   = dependency.k8s_storage.outputs.app_data_local_storage_class_name
   backup_storage_class = dependency.k8s_storage.outputs.backups_storage_class_name
 
-  gateway_namespace = dependency.k8s_ingress.outputs.load_balancer_namespace
-  gateway_name      = dependency.k8s_ingress.outputs.public_load_balancer_name
-  gateway_listeners = dependency.k8s_ingress.outputs.public_load_balancer_app_listeners
+  gateway_refs      = dependency.k8s_ingress.outputs.public_corescope_refs
+  gateway_hostnames = dependency.k8s_ingress.outputs.public_corescope_hostnames
 
   vernemq_host     = dependency.mqtt.outputs.host
   vernemq_username = dependency.mqtt.outputs.users.core_scope.username

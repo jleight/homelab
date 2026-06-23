@@ -19,7 +19,6 @@ inputs = {
 
   namespace = dependency.namespace.outputs.namespace
 
-  gateway_namespace      = dependency.k8s_ingress.outputs.load_balancer_namespace
-  gateway_name           = dependency.k8s_ingress.outputs.public_load_balancer_name
-  mqtt_gateway_listeners = dependency.k8s_ingress.outputs.public_load_balancer_mqtt_listeners
+  gateway_refs      = dependency.k8s_ingress.outputs.public_mqtt_refs
+  gateway_hostnames = dependency.k8s_ingress.outputs.public_mqtt_hostnames
 }

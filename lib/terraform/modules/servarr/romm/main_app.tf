@@ -12,10 +12,8 @@ module "app" {
   subdomain = var.romm.subdomain
   path      = var.romm.path
 
-  gateway_namespace = var.gateway_namespace
-  gateway_name      = var.gateway_name
-  gateway_section   = var.gateway_section
-  gateway_domain    = var.gateway_domain
+  gateway_refs   = var.gateway_refs
+  gateway_domain = var.gateway_domain
 
   env = {
     ROMM_DB_DRIVER = "postgresql"
