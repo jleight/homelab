@@ -6,18 +6,6 @@ locals {
 
   port = 8080
 
-  # Host roles. The HTTPRoute serves all of them (apex via its own listener, the
-  # subdomains via the wildcard listener).
-  hostnames = [
-    var.meshtender.hosts.root,
-    var.meshtender.hosts.www,
-    var.meshtender.hosts.auth,
-    var.meshtender.hosts.primary
-  ]
-
-  # WebAuthn ceremonies run on the auth and app hosts (comma-separated origins).
-  rp_origins = "https://${var.meshtender.hosts.auth},https://${var.meshtender.hosts.primary}"
-
   match_labels = {
     "app.kubernetes.io/name"     = local.name
     "app.kubernetes.io/instance" = local.name
@@ -44,4 +32,32 @@ locals {
   postgres_datasource = local.enabled ? "postgres://${local.postgres_username}:${local.postgres_password}@${local.name}-db-rw.${local.namespace}.svc.cluster.local:5432/app?sslmode=require" : null
 
   master_key = local.enabled ? random_id.master_key[0].hex : null
+
+  # Host roles. The HTTPRoute serves all of them (apex via its own listener, the
+  # subdomains via the wildcard listener).
+  hostnames = [
+    var.meshtender.hosts.root,
+    var.meshtender.hosts.www,
+    var.meshtender.hosts.auth,
+    var.meshtender.hosts.primary
+  ]
+
+  # WebAuthn ceremonies run on the auth and app hosts (comma-separated origins).
+  rp_origins = "https://${var.meshtender.hosts.auth},https://${var.meshtender.hosts.primary}"
+
+  # MeshTender sits behind the Cilium gateway, which proxies requests in via its
+  # per-node Envoy ingress endpoint — an address in the pod CIDR. MeshTender only
+  # honors X-Forwarded-For from a trusted source, so trust the node network (any
+  # node it lands on) and the cluster pod/service CIDRs, all sourced from the IPAM
+  # module rather than hardcoded. Mirrors home_assistant's trusted_proxies.
+  trusted_proxies = join(",", concat(
+    [
+      module.ipam.nodes.v4_cidr,
+      module.ipam.nodes.v6_cidr
+    ],
+    [
+      module.ipam.resources.pods,
+      module.ipam.resources.services
+    ]
+  ))
 }
