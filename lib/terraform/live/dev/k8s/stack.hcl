@@ -117,7 +117,7 @@ inputs = {
       renovate   = "helm"
       repository = "https://charts.jetstack.io"
       chart      = "cert-manager"
-      version    = "v1.20.2"
+      version    = "v1.20.3"
     }
 
     cert_manager_test = {
