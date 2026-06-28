@@ -49,6 +49,12 @@ resource "helm_release" "this" {
       # since this is a single-tenant instance running only our own repos.
       "agent.env.WOODPECKER_BACKEND_K8S_ALLOW_NATIVE_SECRETS" = "true"
 
+      # Allow steps to set serviceAccountName via backend_options so CD steps can
+      # run as the per-app deployer ServiceAccount (scoped patch rights in the
+      # app's namespace). Disabled by default since v3.16.0 for security; safe
+      # here since this is a single-tenant instance running only our own repos.
+      "agent.env.WOODPECKER_BACKEND_K8S_SERVICE_ACCOUNT_NAME_ALLOW_FROM_STEP" = "true"
+
       # Attach the Forgejo registry secret as an imagePullSecret on every step pod
       # so pipelines can use private images (e.g. their own pushed images) without
       # the UI "registries" feature (which has no Terraform support).
