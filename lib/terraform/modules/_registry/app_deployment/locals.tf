@@ -10,10 +10,16 @@ locals {
   labels = merge(
     local.match_labels,
     {
-      "app.kubernetes.io/version"    = var.image_version
       "app.kubernetes.io/component"  = coalesce(var.app_component, local.name)
       "app.kubernetes.io/part-of"    = local.stack
       "app.kubernetes.io/managed-by" = "Terraform"
+    }
+  )
+
+  workload_labels = merge(
+    local.labels,
+    {
+      "app.kubernetes.io/version" = var.image_version
     }
   )
 

@@ -5,7 +5,7 @@ resource "kubernetes_deployment_v1" "this" {
     namespace = var.namespace
     name      = local.name
 
-    labels = local.labels
+    labels = local.workload_labels
   }
 
   spec {
@@ -29,7 +29,7 @@ resource "kubernetes_deployment_v1" "this" {
 
     template {
       metadata {
-        labels      = local.labels
+        labels      = local.workload_labels
         annotations = var.pod_annotations
       }
 
