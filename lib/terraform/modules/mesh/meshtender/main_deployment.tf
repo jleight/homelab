@@ -49,7 +49,7 @@ resource "kubernetes_deployment_v1" "this" {
 
           readiness_probe {
             http_get {
-              path = "/"
+              path = "/healthz"
               port = local.port
             }
 
@@ -59,7 +59,7 @@ resource "kubernetes_deployment_v1" "this" {
 
           liveness_probe {
             http_get {
-              path = "/"
+              path = "/healthz"
               port = local.port
             }
 
