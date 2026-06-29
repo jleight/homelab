@@ -28,6 +28,12 @@ resource "helm_release" "this" {
       "agent.replicaCount"        = 1
       "agent.persistence.enabled" = false
 
+      # Number of workflows the (single) agent dispatches concurrently. Default
+      # is 1, which serializes all pipelines. The agent only schedules work
+      # (each step runs as its own pod via the k8s backend), so a single agent
+      # can fan out many workflows without itself becoming a bottleneck.
+      "agent.env.WOODPECKER_MAX_WORKFLOWS" = 4
+
       # Stateless agent: with an empty config-file path the agent does not persist
       # its assigned ID and unregisters itself on shutdown, so restarts don't leave
       # stale agent records behind (no PVC/ConfigMap needed for the ID).
