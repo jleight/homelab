@@ -13,16 +13,6 @@ variable "media_storage_class" {
   type        = string
 }
 
-variable "rtl_tcp_host" {
-  description = "In-cluster hostname of the rtl_tcp server Trunk Recorder pulls IQ from."
-  type        = string
-}
-
-variable "rtl_tcp_port" {
-  description = "Port of the rtl_tcp server."
-  type        = number
-}
-
 variable "trunk_recorder" {
   description = "Trunk Recorder configuration."
   type = object({
@@ -31,18 +21,24 @@ variable "trunk_recorder" {
 
     timezone = optional(string, "UTC")
 
-    # The RF window one RTL-SDR samples. Every channel across all systems must
-    # fall within center ± rate/2, and rate is capped by what rtl_tcp can stream
-    # (~2.4 MS/s for an RTL-SDR). The recorder counts are derived from the
-    # channel CSVs, so they don't need setting here.
+    # Generic-device-plugin resource for the dongle Trunk Recorder claims
+    # exclusively (a NooElec SMArt XTR v5 dedicated to scanning). Requesting it
+    # pins the pod to the node with that dongle and mounts only its /dev/bus/usb
+    # node in, so osmosdr finds it as the sole rtl device.
+    device_resource = optional(string, "devices.k8s.leightha.us/sdr-trunk")
+
+    # The RF window the RTL-SDR samples. Every channel across all systems must
+    # fall within center ± rate/2, and rate is capped by what an RTL-SDR can
+    # sustain (~2.4 MS/s). The recorder counts are derived from the channel CSVs,
+    # so they don't need setting here.
     source = object({
       center = number # Hz, midpoint of the channels you want
       rate   = optional(number, 2400000)
       gain   = optional(number, 39)
 
-      # Over rtl_tcp, gr-osmosdr can't enumerate the tuner's discrete gain steps,
-      # so a fixed `gain` gets clamped to 0 (deaf). AGC lets the tuner auto-gain
-      # instead — the mode OpenWebRX uses successfully against this rtl_tcp server.
+      # The dongle is claimed directly over USB (not via rtl_tcp), so osmosdr can
+      # enumerate the tuner's discrete gain steps and a fixed `gain` works as
+      # expected. AGC is available as an alternative but off by default.
       agc   = optional(bool, false)
       error = optional(number, 0) # ppm/freq correction for the dongle
     })

@@ -88,9 +88,10 @@ resource "helm_release" "generic_device_plugin" {
               ]
             },
             {
-              # RTL-SDR Blog V4 (Realtek RTL2832U) software-defined radio.
-              # → devices.k8s.leightha.us/rtl-sdr
-              name = "rtl-sdr"
+              # RTL-SDR Blog V4 (Realtek RTL2832U) on the shortwave antenna,
+              # fronted by rtl_tcp for OpenWebRX.
+              # → devices.k8s.leightha.us/sdr-shortwave
+              name = "sdr-shortwave"
               groups = [
                 {
                   usb = [
@@ -130,6 +131,24 @@ resource "helm_release" "generic_device_plugin" {
                       vendor  = "0bda"
                       product = "2838"
                       serial  = "stx:978:0"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              # Nooelec SMArt XTR v5 (RTL2832U) dedicated to P25 police scanning
+              # via trunk_recorder, plugged into prod-01. Still on its factory
+              # serial (unlike the stx:* dongles, which were reflashed).
+              # → devices.k8s.leightha.us/sdr-trunk
+              name = "sdr-trunk"
+              groups = [
+                {
+                  usb = [
+                    {
+                      vendor  = "0bda"
+                      product = "2838"
+                      serial  = "14658255"
                     }
                   ]
                 }

@@ -139,7 +139,7 @@ inputs = {
 
     source = {
       center = 460500000
-      agc    = true
+      gain   = 39
     }
 
     systems = [

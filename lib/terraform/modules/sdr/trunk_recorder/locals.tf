@@ -19,8 +19,9 @@ locals {
     for s in var.trunk_recorder.systems : local.system_channel_counts[s.short_name] if s.type == "conventional"
   ]))
 
-  # Trunk Recorder's config.json (format ver 2). The rtl_tcp device string is
-  # threaded in from the rtl_tcp component, never hardcoded here.
+  # Trunk Recorder's config.json (format ver 2). The dongle is claimed directly
+  # off USB via the device plugin, which mounts only the sdr-trunk dongle into
+  # the pod, so it's always the sole rtl device (index 0).
   config = {
     ver             = 2
     captureDir      = "/app/media"
@@ -39,7 +40,7 @@ locals {
         digitalRecorders = local.digital_recorders
         analogRecorders  = local.analog_recorders
         driver           = "osmosdr"
-        device           = "rtl_tcp=${var.rtl_tcp_host}:${var.rtl_tcp_port}"
+        device           = "rtl=0"
       }
     ]
 

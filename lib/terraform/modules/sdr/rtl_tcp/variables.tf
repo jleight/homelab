@@ -16,6 +16,6 @@ variable "rtl_tcp" {
 
     subdomain = optional(string, "sdr")
 
-    device_resource = optional(string, "devices.k8s.leightha.us/rtl-sdr")
+    device_resource = optional(string, "devices.k8s.leightha.us/sdr-shortwave")
   })
 }
