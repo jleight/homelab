@@ -25,7 +25,8 @@ module "app" {
   ]
 
   # No HTTP app; just a raw TCP server. The app_deployment ClusterIP Service
-  # carries this port for in-cluster clients; the LAN LoadBalancer is separate.
+  # carries this port for the in-cluster client (OpenWebRX); the off-cluster
+  # tailnet LoadBalancer is a separate Service (main_lb.tf).
   port            = local.port
   service_port    = local.port
   ingress_enabled = false
