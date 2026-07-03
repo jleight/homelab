@@ -59,7 +59,7 @@ inputs = {
     renovate   = "helm"
     repository = "https://helm.openwebui.com"
     chart      = "open-webui"
-    version    = "14.11.0"
+    version    = "15.2.0"
   }
 
   plex = {
