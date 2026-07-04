@@ -11,7 +11,7 @@ locals {
   # SQLite lives in the data dir; Litestream streams its WAL to the NAS-backed
   # backup PVC. The restore initContainer reads the same path so a fresh PVC
   # (e.g. after recreating it on another node) seeds from the latest replica.
-  sqlite_path = "/var/lib/pymc_repeater/repeater.db"
+  sqlite_path = "/var/lib/openhop_repeater/repeater.db"
   backup_path = "/backup/pymc"
 
   litestream_config = yamlencode({
@@ -118,6 +118,7 @@ locals {
       baud_rate        = var.pymc.baud_rate
       admin_password   = local.admin_password
       identity_key_b64 = local.identity_key_b64
+      storage_dir      = dirname(local.sqlite_path)
     }),
     local.identities_yaml,
   ]))

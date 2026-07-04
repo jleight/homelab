@@ -61,7 +61,7 @@ resource "kubernetes_deployment_v1" "this" {
 
           volume_mount {
             name       = "data"
-            mount_path = "/var/lib/pymc_repeater"
+            mount_path = "/var/lib/openhop_repeater"
           }
 
           volume_mount {
@@ -85,7 +85,7 @@ resource "kubernetes_deployment_v1" "this" {
           command = ["/bin/sh", "-c"]
           args = [<<-EOT
             set -eu
-            config=/etc/pymc_repeater/config.yaml
+            config=/etc/openhop_repeater/config.yaml
             if [ -s "$config" ]; then
               yq eval-all 'select(fileIndex == 0) * select(fileIndex == 1)' \
                 "$config" /overrides/overrides.yaml > /tmp/config.yaml
@@ -98,7 +98,7 @@ resource "kubernetes_deployment_v1" "this" {
 
           volume_mount {
             name       = "share"
-            mount_path = "/etc/pymc_repeater"
+            mount_path = "/etc/openhop_repeater"
             sub_path   = "config"
           }
 
@@ -125,7 +125,7 @@ resource "kubernetes_deployment_v1" "this" {
 
           volume_mount {
             name       = "data"
-            mount_path = "/var/lib/pymc_repeater"
+            mount_path = "/var/lib/openhop_repeater"
           }
 
           volume_mount {
@@ -171,13 +171,13 @@ resource "kubernetes_deployment_v1" "this" {
 
           volume_mount {
             name       = "share"
-            mount_path = "/etc/pymc_repeater"
+            mount_path = "/etc/openhop_repeater"
             sub_path   = "config"
           }
 
           volume_mount {
             name       = "data"
-            mount_path = "/var/lib/pymc_repeater"
+            mount_path = "/var/lib/openhop_repeater"
           }
         }
 

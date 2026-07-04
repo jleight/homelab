@@ -2,6 +2,12 @@ radio_type: kiss
 kiss:
   port: ${jsonencode(serial_port)}
   baud_rate: ${baud_rate}
+# storage_dir must track our data mount, so TF owns it as an override. The
+# config is persisted on the NAS share and deep-merged (persisted keys survive
+# if not in overrides), so relying on the image default lets a stale persisted
+# value win and split-brain the DB onto ephemeral storage. Pin it explicitly.
+storage:
+  storage_dir: ${jsonencode(storage_dir)}
 %{ if identity_key_b64 != "" || admin_password != "" ~}
 repeater:
 %{ endif ~}
