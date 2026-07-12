@@ -4,18 +4,11 @@ locals {
   name     = local.component
   hostname = "${var.audioplayer.subdomain}.${var.gateway_domain}"
 
-  # Upstream audioplayer.php, patched for our container: serve from /var/www/html
-  # (so file paths become Apache URLs), read config.json from an absolute path
-  # (mod_php CWD is unreliable), and swap the removed-in-PHP-9 strftime for date.
-  script_raw = local.enabled ? data.http.audioplayer[0].response_body : ""
-  script = replace(replace(replace(replace(replace(
-    local.script_raw,
-    "date_default_timezone_set('America/New_York')", "date_default_timezone_set('${var.audioplayer.timezone}')"),
-    "$base_directory_name = '/home/trunkrecorder';", "$base_directory_name = '/var/www/html';"),
-    "'./../configs/config.json'", "'/var/www/configs/config.json'"),
-    "strftime('%F', $TIME)", "date('Y-m-d', $TIME)"),
-    "strftime('%F')", "date('Y-m-d')"
-  )
+  # Our own audioplayer.php (a fork of upstream, vendored in files/). It scans one
+  # day's recording directory at a time instead of the whole capture tree, and
+  # caches completed days as per-day JSON summaries on the share — far faster over
+  # SMB. See the header comment in the script. Timezone comes from the TZ env var.
+  script = file("${path.module}/files/audioplayer.php")
 
   # A talkgroup file per system so calls show friendly names instead of bare TG
   # numbers. Emitted in the script's "standard" (non-RadioReference) layout —
@@ -42,10 +35,16 @@ locals {
     ])
   }
 
-  # audioplayer.php reads this for captureDir + the systems to scan, and each
-  # system's talkgroupsFile for the names.
+  # audioplayer.php reads this for the capture dir + systems to scan, each
+  # system's talkgroupsFile for the names, baseDir (stripped from on-disk paths to
+  # form Apache URLs, since recordings live under the docroot), and indexDir (the
+  # writable share subfolder where per-day summaries are cached).
   config = {
-    captureDir = "/var/www/html/media"
+    captureDir   = "/var/www/html/media"
+    baseDir      = "/var/www/html"
+    indexDir     = "/var/www/index"
+    logLevel     = var.audioplayer.log_level
+    initialLimit = var.audioplayer.initial_limit
     systems = [
       for s in var.systems : {
         shortName      = s.short_name

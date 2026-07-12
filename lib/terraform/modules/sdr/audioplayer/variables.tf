@@ -34,12 +34,24 @@ variable "audioplayer" {
     image   = string
     version = string
 
-    script_url = optional(string, "https://raw.githubusercontent.com/TrunkRecorder/trunk-recorder/master/utils/audioplayer.php")
-
     timezone = optional(string, "UTC")
 
     subdomain = optional(string, "scanner")
+
+    # Filesystem-activity logging to the container log: "quiet" (warnings only),
+    # "info" (per-day summary builds), or "debug" (also every live scan/request).
+    log_level = optional(string, "info")
+
+    # Row cap for the initial "today" All-Calls load (bounds stat() work on the
+    # live day). Past days are served in full from their summaries regardless.
+    # 0 disables the cap.
+    initial_limit = optional(number, 100)
   })
+
+  validation {
+    condition     = contains(["quiet", "info", "debug"], var.audioplayer.log_level)
+    error_message = "audioplayer.log_level must be one of: quiet, info, debug."
+  }
 }
 
 variable "systems" {
