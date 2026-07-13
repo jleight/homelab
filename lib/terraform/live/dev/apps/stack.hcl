@@ -14,7 +14,7 @@ inputs = {
   isponsorblocktv = {
     renovate = "docker"
     image    = "ghcr.io/dmunozv04/isponsorblocktv"
-    version  = "v2.9.0"
+    version  = "v2.10.0"
 
     devices = [
       {
