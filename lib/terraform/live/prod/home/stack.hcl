@@ -10,7 +10,7 @@ inputs = {
   home_assistant = {
     renovate = "docker"
     image    = "ghcr.io/home-assistant/home-assistant"
-    version  = "2026.7.1"
+    version  = "2026.7.3"
 
     yq = {
       renovate = "docker"
