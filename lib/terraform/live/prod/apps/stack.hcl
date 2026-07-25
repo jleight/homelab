@@ -176,12 +176,6 @@ inputs = {
     }
   }
 
-  trakr = {
-    renovate = "docker"
-    image    = "ghcr.io/jleight/trakr"
-    version  = "sha-f794e63"
-  }
-
   turnstone = {
     renovate = "docker"
     image    = "ghcr.io/turnstonelabs/turnstone"
