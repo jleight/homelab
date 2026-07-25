@@ -160,7 +160,7 @@ inputs = {
     }
 
     cert_manager_test = {
-      enabled = true
+      enabled = false
     }
 
     load_balancer = {
