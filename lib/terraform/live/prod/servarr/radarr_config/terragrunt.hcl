@@ -22,10 +22,6 @@ dependency "qbittorrent" {
   config_path = "../qbittorrent"
 }
 
-dependency "plex" {
-  config_path = "../../apps/plex"
-}
-
 inputs = {
   component = "radarr-config"
 
@@ -40,8 +36,4 @@ inputs = {
   qbittorrent_service_name = dependency.qbittorrent.outputs.service_name
   qbittorrent_username     = dependency.qbittorrent.outputs.username
   qbittorrent_password     = dependency.qbittorrent.outputs.password
-
-  plex_namespace    = dependency.plex.outputs.namespace
-  plex_service_name = dependency.plex.outputs.service_name
-  plex_port         = dependency.plex.outputs.port
 }

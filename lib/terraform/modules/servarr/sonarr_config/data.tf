@@ -19,10 +19,3 @@ data "onepassword_item" "nzbfinder" {
   vault = local.vault_uuid
   title = "Usenet - NZBFinder"
 }
-
-data "onepassword_item" "plex" {
-  count = local.enabled ? 1 : 0
-
-  vault = local.vault_uuid
-  title = "Plex - OAuth Token"
-}

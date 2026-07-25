@@ -22,11 +22,6 @@ output "public_https_refs" {
   value       = local.public_refs_by_role.https
 }
 
-output "public_plex_refs" {
-  description = "Public Plex listener (HTTP :32400)."
-  value       = local.public_refs_by_role.plex
-}
-
 output "public_corescope_refs" {
   description = "Public CoreScope app listeners (mesh.<domain> + map.wnymeshcore.org)."
   value       = local.public_refs_by_role.corescope

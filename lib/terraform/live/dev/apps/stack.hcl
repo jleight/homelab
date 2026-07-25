@@ -24,12 +24,6 @@ inputs = {
     ]
   }
 
-  plex = {
-    renovate = "docker"
-    image    = "lscr.io/linuxserver/plex"
-    version  = "1.43.3"
-  }
-
   postgres = {
     renovate   = "helm"
     repository = "https://cloudnative-pg.github.io/charts"

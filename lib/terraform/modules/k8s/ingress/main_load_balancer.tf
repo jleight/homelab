@@ -77,7 +77,6 @@ locals {
   public_refs_by_role = {
     for role, sections in {
       https      = [local.load_balancer_section]
-      plex       = ["plex"]
       corescope  = [for l in local.public_lb_app_listeners : l.section]
       mqtt       = [for l in local.public_lb_mqtt_listeners : l.section]
       meshtender = [for l in local.public_lb_meshtender_listeners : l.section]
@@ -111,16 +110,6 @@ locals {
         allowedRoutes = {
           namespaces = {
             from = local.cert_manager_enabled ? "Same" : "All"
-          }
-        }
-      },
-      {
-        name     = "plex"
-        protocol = "HTTP"
-        port     = 32400
-        allowedRoutes = {
-          namespaces = {
-            from = "All"
           }
         }
       }
