@@ -46,7 +46,7 @@ inputs = {
   mealie = {
     renovate = "docker"
     image    = "ghcr.io/mealie-recipes/mealie"
-    version  = "v3.21.0"
+    version  = "v3.22.0"
   }
 
   octoprint = {
