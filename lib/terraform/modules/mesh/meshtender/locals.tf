@@ -33,6 +33,8 @@ locals {
 
   master_key = local.enabled ? random_id.master_key[0].hex : null
 
+  resend_api_key = local.enabled ? data.onepassword_item.resend[0].credential : null
+
   # Host roles. The HTTPRoute serves all of them (apex via its own listener, the
   # subdomains via the wildcard listener).
   hostnames = [

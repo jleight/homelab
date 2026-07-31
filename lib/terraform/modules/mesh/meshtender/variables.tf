@@ -3,6 +3,12 @@ variable "env_directory" {
   type        = string
 }
 
+variable "vault" {
+  description = "The name of the 1Password vault."
+  type        = string
+  default     = "Terraform"
+}
+
 variable "namespace" {
   description = "Namespace for MeshTender. Provided by the namespace module."
   type        = string
@@ -64,6 +70,11 @@ variable "meshtender" {
       www     = string
       auth    = string
       primary = string
+    })
+
+    mail = object({
+      from     = string
+      reply_to = string
     })
   })
 }

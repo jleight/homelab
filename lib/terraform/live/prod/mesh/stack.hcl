@@ -117,6 +117,11 @@ inputs = {
       auth    = "auth.meshtender.com"
       primary = "app.meshtender.com"
     }
+
+    mail = {
+      from     = "MeshTender <noreply@mail.meshtender.com>"
+      reply_to = "support@meshtender.com"
+    }
   }
 
   pgtt = {

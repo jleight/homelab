@@ -24,6 +24,10 @@ resource "kubernetes_config_map_v1" "app" {
     MESHTENDER_AUTH_HOST    = var.meshtender.hosts.auth
     MESHTENDER_PRIMARY_HOST = var.meshtender.hosts.primary
 
+    # Transactional mail sent through Resend; the API key lives in the secret.
+    MESHTENDER_MAIL_FROM     = var.meshtender.mail.from
+    MESHTENDER_MAIL_REPLY_TO = var.meshtender.mail.reply_to
+
     # The gateway's Envoy ingress endpoint (in the pod CIDR) is the connecting
     # peer; trust it (plus the node/service ranges) so X-Forwarded-For is honored.
     MESHTENDER_TRUSTED_PROXIES = local.trusted_proxies
