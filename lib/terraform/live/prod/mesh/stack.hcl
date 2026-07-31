@@ -119,8 +119,8 @@ inputs = {
     }
 
     mail = {
-      from     = "MeshTender <noreply@mail.meshtender.com>"
-      reply_to = "support@meshtender.com"
+      from     = "MeshTender <support@mail.meshtender.com>"
+      reply_to = "MeshTender Support <support@meshtender.com>"
     }
   }
 
