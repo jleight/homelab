@@ -93,6 +93,12 @@ inputs = {
         backend_port       = 7000
         public             = false
       }
+      sdr = {
+        frontend_subdomain = "sdr"
+        backend_host       = "192.168.1.245"
+        backend_port       = 8073
+        public             = true
+      }
     }
   }
 
