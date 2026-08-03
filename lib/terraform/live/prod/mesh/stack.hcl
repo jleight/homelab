@@ -77,7 +77,7 @@ inputs = {
     renovate = "docker"
     image    = "openhop/openhop-repeater"
     version  = "dev"
-    digest   = "sha256:f8e36ce0360549b0950fc9df2569c924c644292810e30854788cc14ef4e195c8"
+    digest   = "sha256:14e4ab29acea8006146487a4e2d437e13c699a91712d5b26c3282ba0e5b6810c"
 
     subdomain = "pymc"
 
