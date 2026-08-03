@@ -59,7 +59,7 @@ inputs = {
     renovate   = "helm"
     repository = "https://helm.openwebui.com"
     chart      = "open-webui"
-    version    = "15.2.0"
+    version    = "15.2.1"
   }
 
   postgres = {
