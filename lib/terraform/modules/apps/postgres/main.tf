@@ -19,10 +19,4 @@ resource "helm_release" "this" {
   repository = var.postgres.repository
   chart      = var.postgres.chart
   version    = var.postgres.version
-
-  set = [
-    for k, v in {
-      "monitoring.grafanaDashboard.create" = true
-    } : { name = k, value = v }
-  ]
 }

@@ -18,7 +18,22 @@ variable "k8s_monitoring" {
       enabled    = optional(bool, true)
     })
 
-    prometheus = object({
+    victoria_metrics = object({
+      repository       = string
+      chart            = string
+      version          = string
+      enabled          = optional(bool, true)
+      retention_period = optional(string, "1d")
+    })
+
+    node_exporter = object({
+      repository = string
+      chart      = string
+      version    = string
+      enabled    = optional(bool, true)
+    })
+
+    kube_state_metrics = object({
       repository = string
       chart      = string
       version    = string

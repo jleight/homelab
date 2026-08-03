@@ -106,11 +106,25 @@ inputs = {
       version    = "3.13.1"
     }
 
-    prometheus = {
+    victoria_metrics = {
+      renovate   = "helm"
+      repository = "https://victoriametrics.github.io/helm-charts"
+      chart      = "victoria-metrics-single"
+      version    = "0.43.0"
+    }
+
+    node_exporter = {
       renovate   = "helm"
       repository = "https://prometheus-community.github.io/helm-charts"
-      chart      = "kube-prometheus-stack"
-      version    = "88.1.3"
+      chart      = "prometheus-node-exporter"
+      version    = "4.56.1"
+    }
+
+    kube_state_metrics = {
+      renovate   = "helm"
+      repository = "https://prometheus-community.github.io/helm-charts"
+      chart      = "kube-state-metrics"
+      version    = "8.1.3"
     }
   }
 
