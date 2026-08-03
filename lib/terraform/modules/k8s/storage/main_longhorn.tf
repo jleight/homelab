@@ -58,6 +58,11 @@ resource "helm_release" "longhorn" {
       type  = "string"
     },
     {
+      name  = "defaultSettings.engineReplicaTimeout"
+      value = "20"
+      type  = "string"
+    },
+    {
       name  = "metrics.serviceMonitor.enabled"
       value = "true"
     }
