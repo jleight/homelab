@@ -131,6 +131,13 @@ variable "beacon" {
     telemetry_resolution = optional(string, "1h")
     packet_retention     = optional(string, "720h")
 
+    # Node pruning. delete_after defaults to 30 days upstream — the same as the
+    # default packet retention — so it has to be raised alongside
+    # packet_retention or nodes only seen in the backfilled history get pruned
+    # out from under their packets. Null leaves Beacon's own default.
+    node_delete_after    = optional(string, null)
+    node_stale_threshold = optional(string, null)
+
     max_connections_per_ip = optional(number, 5)
 
     # Optional second ingest broker. Beacon has exactly two broker slots; slot 1

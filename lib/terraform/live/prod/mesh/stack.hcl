@@ -19,6 +19,14 @@ inputs = {
     map_center = [43.01, -78.77]
     map_zoom   = 7
 
+    # Effectively "keep everything". Beacon treats 0 as "unset, use the default"
+    # rather than "disabled", so there's no way to switch the cleanup task off —
+    # a 100-year window puts every cutoff in 1926 and prunes nothing. Growth is
+    # roughly 11 MB/day; the db PVC gets resized when it approaches full.
+    packet_retention    = "876000h"
+    telemetry_retention = "876000h"
+    node_delete_after   = "876000h"
+
     iatas = {
       "BUF" = {
         name = "Buffalo"

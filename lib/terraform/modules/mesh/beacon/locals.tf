@@ -50,7 +50,19 @@ locals {
     )
   ]
 
-  config_yaml = yamlencode({
+  # Only emitted when set, so anything left null keeps Beacon's own default.
+  config_nodes = merge(
+    var.beacon.node_delete_after == null ? {} : {
+      delete_after = var.beacon.node_delete_after
+    },
+    var.beacon.node_stale_threshold == null ? {} : {
+      stale_threshold = var.beacon.node_stale_threshold
+    }
+  )
+
+  config_yaml = yamlencode(merge(length(local.config_nodes) == 0 ? {} : {
+    nodes = local.config_nodes
+    }, {
     iatas = {
       for iata, details in var.beacon.iatas : iata => {
         name = details.name
@@ -85,7 +97,7 @@ locals {
     websocket = {
       max_connections_per_ip = var.beacon.max_connections_per_ip
     }
-  })
+  }))
 
   # The browser — not the pod — is what calls these, so they're absolute URLs on
   # the frontend's own hostname. Routing /api/v1 and /ws there to the server (see
