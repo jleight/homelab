@@ -1,6 +1,138 @@
 inputs = {
   stack = "mesh"
 
+  beacon = {
+    beacon_server = {
+      renovate = "docker"
+      image    = "ghcr.io/meshcore-beacon/beacon-server"
+      version  = "1.6.0"
+    }
+
+    beacon_web = {
+      renovate = "docker"
+      image    = "ghcr.io/meshcore-beacon/beacon-web"
+      version  = "1.3.0"
+    }
+
+    subdomain = "beacon"
+
+    map_center = [43.01, -78.77]
+    map_zoom   = 7
+
+    iatas = {
+      "BUF" = {
+        name = "Buffalo"
+        lat  = 42.940498
+        lng  = -78.732201
+      }
+      "ROC" = {
+        name = "Rochester"
+        lat  = 43.1189
+        lng  = -77.672401
+      }
+      "SYR" = {
+        name = "Syracuse"
+        lat  = 43.111198
+        lng  = -76.106300
+      }
+      "YKF" = {
+        name = "Breslau"
+        lat  = 43.4608
+        lng  = -80.378601
+      }
+      "YLK" = {
+        name = "Barrie"
+        lat  = 44.485056
+        lng  = -79.554663
+      }
+      "YTR" = {
+        name = "Trenton"
+        lat  = 44.1189
+        lng  = -77.528099
+      }
+      "YYZ" = {
+        name = "Toronto"
+        lat  = 43.675935
+        lng  = -79.629421
+      }
+    }
+
+    regions = [
+      {
+        slug          = "western-new-york"
+        name          = "Western New York"
+        display_order = 1
+        center_lat    = 43.01
+        center_lng    = -78.77
+        zoom_level    = 10
+        iatas         = ["BUF", "ROC"]
+      },
+      {
+        slug          = "central-new-york"
+        name          = "Central New York"
+        display_order = 2
+        center_lat    = 43.11
+        center_lng    = -76.11
+        zoom_level    = 9
+        iatas         = ["SYR"]
+      },
+      {
+        slug          = "southern-ontario"
+        name          = "Southern Ontario"
+        display_order = 3
+        center_lat    = 43.9
+        center_lng    = -79.4
+        zoom_level    = 7
+        iatas         = ["YKF", "YLK", "YTR", "YYZ"]
+      }
+    ]
+
+    # Channel hash (first byte of SHA256 of the key, hex) => key. Beacon can't
+    # derive these the way it does hashtag channels, so the hash is explicit.
+    channel_keys = {
+      "11" = {
+        name = "Public"
+        key  = "8b3387e9c5cdea6ac9e5edbaa115cd72"
+      }
+      "4d" = {
+        name = "Meshcore716"
+        key  = "096a7faa51e9076040a9d4175ec53afc"
+      }
+    }
+
+    hashtag_channels = [
+      "bbq",
+      "bot",
+      "bots",
+      "camping",
+      "chat",
+      "emergency",
+      "games",
+      "help",
+      "hidden",
+      "meshcore",
+      "montreal",
+      "music",
+      "queer",
+      "socal",
+      "test",
+      "toronto",
+      "wardriving",
+      "weather",
+      "wny",
+      "xerobot"
+    ]
+
+    scopes = [
+      "us",
+      "us-ny",
+      "us-ny-buf",
+      "us-ny-cny",
+      "us-ny-syr",
+      "us-ny-wny"
+    ]
+  }
+
   core_scope = {
     renovate = "docker"
     image    = "ghcr.io/kpa-clawbot/corescope"

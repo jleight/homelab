@@ -27,7 +27,7 @@ variable "gateway_hostnames" {
 variable "internal_users" {
   description = "List of usernames that bypass the JWT path via username/password. One password is generated per name and surfaced via outputs."
   type        = list(string)
-  default     = ["core_scope", "mesh_bug"]
+  default     = ["core_scope", "mesh_bug", "beacon"]
 }
 
 variable "mqtt" {

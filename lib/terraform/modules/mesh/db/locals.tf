@@ -11,4 +11,8 @@ locals {
   pgtt_secret   = local.enabled ? kubernetes_secret_v1.pgtt_user[0].metadata[0].name : null
   pgtt_username = local.enabled ? "pgtt" : null
   pgtt_password = local.enabled ? random_password.pgtt_user[0].result : null
+
+  beacon_secret   = local.enabled ? kubernetes_secret_v1.beacon_user[0].metadata[0].name : null
+  beacon_username = local.enabled ? "beacon" : null
+  beacon_password = local.enabled ? random_password.beacon_user[0].result : null
 }
