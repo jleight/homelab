@@ -5,6 +5,19 @@ resource "random_id" "master_key" {
   byte_length = 32
 }
 
+# Losing the master key means losing everything it wraps, and the only other copy
+# lives in Terraform state, so mirror it into 1Password for the human to recover.
+resource "onepassword_item" "master_key" {
+  count = local.enabled ? 1 : 0
+
+  title    = "MeshTender - Master Key"
+  category = "password"
+  vault    = local.vault_uuid
+
+  password = local.master_key
+  url      = "https://${var.meshtender.hosts.primary}"
+}
+
 resource "kubernetes_secret_v1" "app" {
   count = local.enabled ? 1 : 0
 

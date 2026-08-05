@@ -31,6 +31,8 @@ locals {
 
   postgres_datasource = local.enabled ? "postgres://${local.postgres_username}:${local.postgres_password}@${local.name}-db-rw.${local.namespace}.svc.cluster.local:5432/app?sslmode=require" : null
 
+  vault_uuid = local.enabled ? data.onepassword_vault.terraform[0].uuid : null
+
   master_key = local.enabled ? random_id.master_key[0].hex : null
 
   resend_api_key = local.enabled ? data.onepassword_item.resend[0].credential : null
