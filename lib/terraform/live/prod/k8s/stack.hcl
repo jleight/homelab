@@ -110,7 +110,7 @@ inputs = {
       renovate   = "helm"
       repository = "https://victoriametrics.github.io/helm-charts"
       chart      = "victoria-metrics-single"
-      version    = "0.43.0"
+      version    = "0.44.0"
     }
 
     node_exporter = {
