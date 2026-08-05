@@ -186,7 +186,7 @@ inputs = {
     litestream = {
       renovate = "docker"
       image    = "litestream/litestream"
-      version  = "0.5.15"
+      version  = "0.5.16"
     }
   }
 
@@ -241,7 +241,7 @@ inputs = {
     litestream = {
       renovate = "docker"
       image    = "litestream/litestream"
-      version  = "0.5.15"
+      version  = "0.5.16"
     }
   }
 
