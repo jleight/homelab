@@ -29,37 +29,21 @@ variable "gateway_refs" {
   default = []
 }
 
-variable "registry_host" {
-  description = "Host of the OCI registry images are pulled from."
+variable "ghcr_deploy_service_account_name" {
+  description = "Name of the GHCR webhook ServiceAccount granted patch rights on the Deployment."
   type        = string
 }
 
-variable "registry_username" {
-  description = "Username for pulling images from the registry."
-  type        = string
-}
-
-variable "registry_password" {
-  description = "Password for pulling images from the registry."
-  type        = string
-  sensitive   = true
-}
-
-variable "deployer_service_account_name" {
-  description = "Name of the Woodpecker deployer ServiceAccount granted patch rights on the Deployment."
-  type        = string
-}
-
-variable "deployer_service_account_namespace" {
-  description = "Namespace of the Woodpecker deployer ServiceAccount."
+variable "ghcr_deploy_service_account_namespace" {
+  description = "Namespace of the GHCR webhook ServiceAccount."
   type        = string
 }
 
 variable "meshtender" {
   description = "MeshTender configuration."
   type = object({
-    image  = string
-    commit = string
+    image = string
+    tag   = string
 
     replicas = optional(number, 1)
 

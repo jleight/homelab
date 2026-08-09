@@ -18,6 +18,25 @@ inputs = {
     chart      = "forgejo"
   }
 
+  ghcr_deploy = {
+    renovate = "docker"
+    image    = "python"
+    version  = "3.13-slim"
+
+    targets = {
+      "meshtender/meshtender" = {
+        repository = "meshtender/meshtender"
+        tag        = "main"
+
+        namespace  = "mesh"
+        deployment = "meshtender"
+        container  = "meshtender"
+
+        digest_env_var = "MESHTENDER_IMAGE_DIGEST"
+      }
+    }
+  }
+
   immich = {
     renovate = "docker"
     image    = "ghcr.io/immich-app/immich-charts/immich"

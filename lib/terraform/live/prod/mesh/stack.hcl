@@ -246,8 +246,8 @@ inputs = {
   }
 
   meshtender = {
-    image  = "git.leightha.us/ci/jleight/meshtender"
-    commit = "bf0a907fcc82574f84051ab91f2b9158943c9c00"
+    image = "ghcr.io/meshtender/meshtender"
+    tag   = "main"
 
     replicas = 2
 

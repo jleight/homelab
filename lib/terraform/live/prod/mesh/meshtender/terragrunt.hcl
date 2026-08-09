@@ -18,8 +18,8 @@ dependency "k8s_ingress" {
   config_path = "../../k8s/ingress"
 }
 
-dependency "woodpecker_ci" {
-  config_path = "../../apps/woodpecker_ci"
+dependency "ghcr_deploy" {
+  config_path = "../../apps/ghcr_deploy"
 }
 
 inputs = {
@@ -31,10 +31,6 @@ inputs = {
 
   gateway_refs = dependency.k8s_ingress.outputs.public_meshtender_refs
 
-  registry_host     = dependency.woodpecker_ci.outputs.registry_host
-  registry_username = dependency.woodpecker_ci.outputs.registry_username
-  registry_password = dependency.woodpecker_ci.outputs.registry_password
-
-  deployer_service_account_name      = dependency.woodpecker_ci.outputs.deployer_service_account_name
-  deployer_service_account_namespace = dependency.woodpecker_ci.outputs.namespace
+  ghcr_deploy_service_account_name      = dependency.ghcr_deploy.outputs.service_account_name
+  ghcr_deploy_service_account_namespace = dependency.ghcr_deploy.outputs.service_account_namespace
 }

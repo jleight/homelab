@@ -21,10 +21,6 @@ resource "kubernetes_deployment_v1" "this" {
       }
 
       spec {
-        image_pull_secrets {
-          name = kubernetes_secret_v1.registry[0].metadata[0].name
-        }
-
         container {
           name = local.name
 
@@ -82,11 +78,20 @@ resource "kubernetes_deployment_v1" "this" {
     }
   }
 
-  # CI owns the running image tag via `kubectl set image`; Terraform only sets
-  # the bootstrap image at creation and never reconciles it afterwards.
+  # CI owns the running image tag; Terraform only sets the bootstrap image at
+  # creation and never reconciles it afterwards.
+  #
+  # `env` is ignored for the same reason: the GHCR deploy webhook stamps
+  # MESHTENDER_IMAGE_DIGEST onto the container alongside each image patch, and
+  # Terraform declares no env entries here (everything comes in via env_from),
+  # so without this it would strip that variable back off on the next apply.
+  # Ignoring the whole list is safe precisely because the list is entirely
+  # CI-owned — adding a Terraform-managed env entry to this container later
+  # would require narrowing this, or moving the value into the ConfigMap.
   lifecycle {
     ignore_changes = [
-      spec[0].template[0].spec[0].container[0].image
+      spec[0].template[0].spec[0].container[0].image,
+      spec[0].template[0].spec[0].container[0].env
     ]
   }
 }

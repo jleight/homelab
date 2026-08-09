@@ -20,10 +20,10 @@ locals {
     }
   )
 
-  # Bootstrap image used only at Deployment creation. CI owns the running tag
-  # thereafter via `kubectl set image` (the image field is ignore_changes'd), so
-  # this must match the repo the .woodpecker pipeline pushes to.
-  bootstrap_image = "${var.meshtender.image}:${var.meshtender.commit}"
+  # Bootstrap image used only at Deployment creation. The GHCR deploy webhook
+  # owns the running image thereafter (the image field is ignore_changes'd), so
+  # this must match the package and tag it tracks.
+  bootstrap_image = "${var.meshtender.image}:${var.meshtender.tag}"
 
   postgres_secret   = local.enabled ? kubernetes_secret_v1.postgres[0].metadata[0].name : null
   postgres_username = local.enabled ? random_pet.postgres_user[0].id : null
