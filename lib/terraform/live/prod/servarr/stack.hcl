@@ -48,22 +48,22 @@ inputs = {
     version  = "2.36.0"
   }
 
-  radarr = {
+  chaptarr = {
     renovate = "docker"
-    image    = "lscr.io/linuxserver/radarr"
-    version  = "6.3.0"
-  }
-
-  sonarr = {
-    renovate = "docker"
-    image    = "lscr.io/linuxserver/sonarr"
-    version  = "4.0.19"
+    image    = "chaptarr/chaptarr"
+    version  = "0.9.925"
   }
 
   overseerr = {
     renovate = "docker"
     image    = "ghcr.io/sct/overseerr"
     version  = "1.35.0"
+  }
+
+  radarr = {
+    renovate = "docker"
+    image    = "lscr.io/linuxserver/radarr"
+    version  = "6.3.0"
   }
 
   romm = {
@@ -77,5 +77,11 @@ inputs = {
       version  = "latest"
       digest   = "sha256:06ffa380dd3653f8ca1059f84ab99b381da6357257ad75e366d5a50006c1a559"
     }
+  }
+
+  sonarr = {
+    renovate = "docker"
+    image    = "lscr.io/linuxserver/sonarr"
+    version  = "4.0.19"
   }
 }

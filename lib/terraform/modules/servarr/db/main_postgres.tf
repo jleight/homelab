@@ -48,6 +48,14 @@ resource "kubectl_manifest" "this" {
             }
           },
           {
+            name   = local.chaptarr_username
+            ensure = "present"
+            login  = true
+            passwordSecret = {
+              name = local.chaptarr_secret
+            }
+          },
+          {
             name   = local.romm_username
             ensure = "present"
             login  = true

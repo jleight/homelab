@@ -16,6 +16,14 @@ locals {
   radarr_username = local.enabled ? "radarr" : null
   radarr_password = local.enabled ? random_password.radarr_user[0].result : null
 
+  chaptarr_secret   = local.enabled ? kubernetes_secret_v1.chaptarr_user[0].metadata[0].name : null
+  chaptarr_username = local.enabled ? "chaptarr" : null
+  chaptarr_password = local.enabled ? random_password.chaptarr_user[0].result : null
+
+  chaptarr_main_db  = "chaptarr-main"
+  chaptarr_log_db   = "chaptarr-log"
+  chaptarr_cache_db = "chaptarr-cache"
+
   romm_secret   = local.enabled ? kubernetes_secret_v1.romm_user[0].metadata[0].name : null
   romm_username = local.enabled ? "romm" : null
   romm_password = local.enabled ? random_password.romm_user[0].result : null
