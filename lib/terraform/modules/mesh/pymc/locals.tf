@@ -15,16 +15,25 @@ locals {
   backup_path = "/backup/pymc"
 
   litestream_config = yamlencode({
+    snapshot = {
+      interval  = "24h"
+      retention = "168h"
+    }
+
+    levels = [
+      { interval = "1h" },
+      { interval = "6h" },
+      { interval = "24h" }
+    ]
+
     dbs = [
       {
         path = local.sqlite_path
         replicas = [
           {
-            type                     = "file"
-            path                     = local.backup_path
-            retention                = "168h"
-            retention-check-interval = "1h"
-            sync-interval            = "1s"
+            type          = "file"
+            path          = local.backup_path
+            sync-interval = "1s"
           }
         ]
       }

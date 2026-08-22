@@ -62,16 +62,25 @@ locals {
   # PVC seeds from the most recent replica — that's how this module survives
   # the namespace move from `core-scope` to `mesh`.
   litestream_config = yamlencode({
+    snapshot = {
+      interval  = "24h"
+      retention = "168h"
+    }
+
+    levels = [
+      { interval = "1h" },
+      { interval = "6h" },
+      { interval = "24h" }
+    ]
+
     dbs = [
       {
         path = "/app/data/meshcore.db"
         replicas = [
           {
-            type                     = "file"
-            path                     = "/backup/meshcore"
-            retention                = "168h"
-            retention-check-interval = "1h"
-            sync-interval            = "1s"
+            type          = "file"
+            path          = "/backup/meshcore"
+            sync-interval = "1s"
           }
         ]
       }

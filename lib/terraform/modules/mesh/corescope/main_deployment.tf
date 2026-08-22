@@ -29,7 +29,8 @@ resource "kubernetes_deployment_v1" "this" {
         labels = local.labels
 
         annotations = {
-          "checksum/config" = sha256(local.config_json)
+          "checksum/config"     = sha256(local.config_json)
+          "checksum/litestream" = sha256(local.litestream_config)
         }
       }
 
