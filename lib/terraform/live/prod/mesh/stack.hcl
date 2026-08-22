@@ -204,7 +204,7 @@ inputs = {
     renovate   = "helm"
     repository = "https://vernemq.github.io/docker-vernemq"
     chart      = "vernemq"
-    version    = "2.1.2"
+    version    = "2.2.0"
 
     auth = {
       renovate = "docker"
