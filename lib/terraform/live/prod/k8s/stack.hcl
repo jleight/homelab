@@ -63,7 +63,7 @@ inputs = {
       renovate   = "helm"
       repository = "https://helm.cilium.io"
       chart      = "cilium"
-      version    = "1.20.0"
+      version    = "1.20.1"
     }
 
     node_feature_discovery = {
