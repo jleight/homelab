@@ -43,7 +43,7 @@ resource "kubectl_manifest" "postgres" {
 
       storage = {
         storageClass = var.data_storage_class
-        size         = "5Gi"
+        size         = "10Gi"
       }
 
       bootstrap = {
