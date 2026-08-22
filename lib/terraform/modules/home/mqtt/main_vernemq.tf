@@ -24,6 +24,29 @@ resource "helm_release" "this" {
         enabled = false
       }
 
+      # The chart's 90s initialDelaySeconds is sized for a multi-node cluster
+      # negotiating netsplit/queue handoff on boot. At replicaCount = 1 with no
+      # persistent volume this broker is serving in ~11s, so the default left it
+      # marked unready — and every client disconnected — for ~84s of doing
+      # nothing.
+      #
+      # initialDelaySeconds is a hard floor: kubelet will not probe before it
+      # elapses no matter how fast the app is. This chart renders no
+      # startupProbe, so the floor is the only lever. Readiness polls from 5s
+      # every 5s; liveness keeps a 30s floor so a slow start (the entrypoint
+      # retries the API server until cluster DNS answers) can't get the
+      # container killed before it finishes.
+      statefulset = {
+        readinessProbe = {
+          initialDelaySeconds = 5
+          periodSeconds       = 5
+        }
+
+        livenessProbe = {
+          initialDelaySeconds = 30
+        }
+      }
+
       additionalEnv = [
         for k, v in {
           "DOCKER_VERNEMQ_ACCEPT_EULA" = "yes"
