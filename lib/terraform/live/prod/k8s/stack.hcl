@@ -103,14 +103,14 @@ inputs = {
       renovate   = "helm"
       repository = "https://kubernetes-sigs.github.io/metrics-server"
       chart      = "metrics-server"
-      version    = "3.13.1"
+      version    = "3.14.0"
     }
 
     victoria_metrics = {
       renovate   = "helm"
       repository = "https://victoriametrics.github.io/helm-charts"
       chart      = "victoria-metrics-single"
-      version    = "0.44.0"
+      version    = "0.45.0"
     }
 
     node_exporter = {
