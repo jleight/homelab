@@ -29,6 +29,16 @@ module "app" {
     "checksum/config" = sha256(local.config_json)
   }
 
+  # The gateway appends X-Forwarded-For, but Express defaults to
+  # `trust proxy: false`, so express-rate-limit refuses to derive a client IP
+  # from that header and throws ERR_ERL_UNEXPECTED_X_FORWARDED_FOR — leaving
+  # every client sharing one rate-limit bucket keyed on the gateway's IP.
+  # 1 = trust exactly one hop (the gateway). Not `true`, which trusts the whole
+  # chain and lets a client spoof the leftmost XFF entry to evade the limiter.
+  env = {
+    TRUST_PROXY = "1"
+  }
+
   init_containers = [
     {
       name        = "merge-config"
