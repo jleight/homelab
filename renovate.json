@@ -2,7 +2,8 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
-    ":dependencyDashboard"
+    ":dependencyDashboard",
+    ":disableRateLimiting"
   ],
   "customManagers": [
     {
@@ -40,6 +41,18 @@
       "packageNameTemplate": "siderolabs/talos",
       "datasourceTemplate": "github-releases",
       "extractVersionTemplate": "^v(?<version>.*)$"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Batch the monitoring charts into one PR; they are independent components of the same stack and are applied together",
+      "matchDepNames": [
+        "metrics_server",
+        "victoria_metrics",
+        "node_exporter",
+        "kube_state_metrics"
+      ],
+      "groupName": "monitoring charts"
     }
   ]
 }
