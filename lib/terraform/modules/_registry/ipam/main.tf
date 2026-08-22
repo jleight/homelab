@@ -6,27 +6,27 @@ variable "environment" {
 locals {
   lan = {
     v4_cidr    = "192.168.1.0/24"
-    v6_cidr    = "2600:4041:65e8:f900::/64"
-    v6_prefix  = "2600:4041:65e8:f900:"
+    v6_cidr    = "2600:4041:65fc:4a00::/64"
+    v6_prefix  = "2600:4041:65fc:4a00:"
     v4_gateway = "192.168.1.1"
-    v6_gateway = "fe80::76ac:b9ff:fe45:8147"
+    v6_gateway = "fe80::76ac:b9ff:fe45:8146"
   }
 
   nodes = {
     dev = {
       v4_cidr    = "192.168.2.0/24"
-      v6_cidr    = "2600:4041:65e8:f901::/64"
-      v6_prefix  = "2600:4041:65e8:f901:"
+      v6_cidr    = "2600:4041:65fc:4a01::/64"
+      v6_prefix  = "2600:4041:65fc:4a01:"
       v4_gateway = "192.168.2.1"
-      v6_gateway = "fe80::76ac:b9ff:fe45:8147"
+      v6_gateway = "fe80::76ac:b9ff:fe45:8146"
     }
 
     prod = {
       v4_cidr    = "192.168.3.0/24"
-      v6_cidr    = "2600:4041:65e8:f902::/64"
-      v6_prefix  = "2600:4041:65e8:f902:"
+      v6_cidr    = "2600:4041:65fc:4a02::/64"
+      v6_prefix  = "2600:4041:65fc:4a02:"
       v4_gateway = "192.168.3.1"
-      v6_gateway = "fe80::76ac:b9ff:fe45:8147"
+      v6_gateway = "fe80::76ac:b9ff:fe45:8146"
     }
   }
 

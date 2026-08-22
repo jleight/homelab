@@ -24,4 +24,10 @@ locals {
   }
 
   feature_gates = {}
+
+  # Splat `id` off the results rather than `one(result).id`: collapsing the whole
+  # object pulls every attribute into the derived value, including the deprecated
+  # `permissions`, which OpenTofu then flags on each consumer. Projecting the one
+  # attribute we want never touches it. `one()` still enforces a single match.
+  zone_id = try(one(data.cloudflare_zones.cluster[0].result[*].id), null)
 }

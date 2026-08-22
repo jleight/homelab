@@ -1,7 +1,7 @@
 resource "cloudflare_dns_record" "a" {
   for_each = local.node_ips.v4
 
-  zone_id = try(one(data.cloudflare_zones.cluster[0].result).id, null)
+  zone_id = local.zone_id
 
   name    = local.endpoint
   comment = "Kubernetes cluster node (${local.environment}, ${each.key}). Managed by Terraform."
@@ -15,7 +15,7 @@ resource "cloudflare_dns_record" "a" {
 resource "cloudflare_dns_record" "aaaa" {
   for_each = local.node_ips.v6_pd
 
-  zone_id = try(one(data.cloudflare_zones.cluster[0].result).id, null)
+  zone_id = local.zone_id
 
   name    = local.endpoint
   comment = "Kubernetes cluster node (${local.environment}, ${each.key}). Managed by Terraform."
