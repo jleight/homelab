@@ -2,10 +2,6 @@ output "app_data_storage_class_name" {
   value = local.enabled ? kubernetes_storage_class_v1.longhorn_appdata[0].metadata[0].name : ""
 }
 
-output "app_data_local_storage_class_name" {
-  value = local.enabled ? kubernetes_storage_class_v1.longhorn_appdata_local[0].metadata[0].name : ""
-}
-
 output "ephemeral_storage_class_name" {
   value = local.enabled ? kubernetes_storage_class_v1.longhorn_ephemeral[0].metadata[0].name : ""
 }
