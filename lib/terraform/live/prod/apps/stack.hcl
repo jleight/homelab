@@ -56,7 +56,7 @@ inputs = {
   isponsorblocktv = {
     renovate = "docker"
     image    = "ghcr.io/dmunozv04/isponsorblocktv"
-    version  = "v2.10.0"
+    version  = "v2.11.0"
 
     auto_play           = false
     minimum_skip_length = 5
