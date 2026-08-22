@@ -295,6 +295,23 @@ class Handler(BaseHTTPRequestHandler):
         # gateway's, never GitHub's).
         log(f"{self.command} {self.path} {format % args}")
 
+    def drain_body(self, length):
+        """Consume an unread request body so a keep-alive connection stays in sync.
+
+        Any early return that answers before reading rfile leaves the body sitting
+        in the socket, and the next request line is then parsed out of those bytes
+        ("Bad HTTP/0.9 request type"). An oversized body is not worth reading just
+        to discard, so drop the connection instead of draining it.
+        """
+        if length <= 0:
+            return
+
+        if length > MAX_BODY_BYTES:
+            self.close_connection = True
+            return
+
+        self.rfile.read(length)
+
     def respond(self, status, payload):
         body = json.dumps(payload).encode()
 
@@ -311,12 +328,22 @@ class Handler(BaseHTTPRequestHandler):
             self.respond(404, {"error": "not found"})
 
     def do_POST(self):
+        # Parsed before the path check so both early returns below can drain the
+        # body; a header that is not an integer is just a bad length.
+        try:
+            length = int(self.headers.get("Content-Length") or 0)
+        except ValueError:
+            self.close_connection = True
+            self.respond(400, {"error": "bad content-length"})
+            return
+
         if self.path != self.webhook_path:
+            self.drain_body(length)
             self.respond(404, {"error": "not found"})
             return
 
-        length = int(self.headers.get("Content-Length") or 0)
         if length <= 0 or length > MAX_BODY_BYTES:
+            self.drain_body(length)
             self.respond(400, {"error": "bad content-length"})
             return
 
