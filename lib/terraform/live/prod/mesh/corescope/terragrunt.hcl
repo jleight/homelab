@@ -27,7 +27,6 @@ inputs = {
 
   namespace = dependency.namespace.outputs.namespace
 
-  data_storage_class   = dependency.k8s_storage.outputs.app_data_local_storage_class_name
   backup_storage_class = dependency.k8s_storage.outputs.backups_storage_class_name
 
   gateway_refs      = dependency.k8s_ingress.outputs.public_corescope_refs

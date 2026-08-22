@@ -8,20 +8,9 @@ variable "namespace" {
   type        = string
 }
 
-variable "data_storage_class" {
-  description = "StorageClass for the SQLite data PVC. Must be a local / single-replica class — distributed block storage corrupts SQLite."
-  type        = string
-}
-
 variable "backup_storage_class" {
   description = "StorageClass for the Litestream backup PVC (SMB share on the NAS). The same path on this share is read by the restore initContainer and written by the Litestream sidecar — preserves DB across namespace moves."
   type        = string
-}
-
-variable "data_storage_size" {
-  description = "Size of the SQLite data PVC."
-  type        = string
-  default     = "5Gi"
 }
 
 variable "backup_storage_size" {

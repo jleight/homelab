@@ -1,7 +1,6 @@
 resource "kubernetes_deployment_v1" "this" {
   count = local.enabled ? 1 : 0
 
-  # strict-local Longhorn pins the replica; only one pod can mount the DB.
   wait_for_rollout = true
 
   metadata {
@@ -14,8 +13,9 @@ resource "kubernetes_deployment_v1" "this" {
   spec {
     replicas = 1
 
-    # Recreate — the data PVC is RWO and the replica is strict-local to one
-    # node, so a RollingUpdate deadlocks on the old pod holding the volume.
+    # One pod at a time: the DB lives on a per-pod emptyDir and Litestream is
+    # the single writer to the NAS replica, so a RollingUpdate's two concurrent
+    # pods would each restore their own copy and replicate over each other.
     strategy {
       type = "Recreate"
     }
@@ -34,10 +34,9 @@ resource "kubernetes_deployment_v1" "this" {
       }
 
       spec {
-        # Seed the SQLite DB from the Litestream replica on first start in
-        # this namespace. -if-db-not-exists makes every subsequent restart
-        # a no-op; -if-replica-exists prevents failure if the NAS path is
-        # empty (e.g. first-ever deploy).
+        # Restore the SQLite DB from the Litestream replica on every start (the
+        # data dir is an ephemeral emptyDir, so the DB is always absent at boot).
+        # -if-replica-exists avoids failure on the first-ever deploy (empty NAS).
         init_container {
           name = "litestream-restore"
 
@@ -129,12 +128,14 @@ resource "kubernetes_deployment_v1" "this" {
           }
         }
 
+        # SQLite working copy — local only, restored from the NAS replica on
+        # start. SQLite must not run directly on a network filesystem, and a
+        # replicated Longhorn volume corrupts it, so neither of the durable
+        # classes is usable here; durability comes from the Litestream replica.
         volume {
           name = "data"
 
-          persistent_volume_claim {
-            claim_name = kubernetes_persistent_volume_claim_v1.data[0].metadata[0].name
-          }
+          empty_dir {}
         }
 
         volume {
