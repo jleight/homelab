@@ -93,12 +93,6 @@ inputs = {
         backend_port       = 8080
         public             = true
       }
-      lemonade = {
-        frontend_subdomain = "lemonade"
-        backend_host       = "fwd01.leightha.us"
-        backend_port       = 8000
-        public             = false
-      }
       odysseus = {
         frontend_subdomain = "odysseus"
         backend_host       = "fwd01.leightha.us"
