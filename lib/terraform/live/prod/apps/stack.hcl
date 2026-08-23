@@ -198,7 +198,7 @@ inputs = {
     image    = "ghcr.io/turnstonelabs/turnstone"
     version  = "1.8.1"
 
-    llm_base_url = "https://lemonade.leightha.us/api/v1"
+    llm_base_url = "http://fwd01.leightha.us:8000/api/v1"
     server_count = 3
 
     searxng = {
