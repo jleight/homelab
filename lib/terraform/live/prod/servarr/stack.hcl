@@ -54,12 +54,6 @@ inputs = {
     version  = "0.9.929"
   }
 
-  overseerr = {
-    renovate = "docker"
-    image    = "ghcr.io/sct/overseerr"
-    version  = "1.35.0"
-  }
-
   radarr = {
     renovate = "docker"
     image    = "lscr.io/linuxserver/radarr"
