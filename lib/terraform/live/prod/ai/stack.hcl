@@ -1,6 +1,12 @@
 inputs = {
   stack = "ai"
 
+  anything_llm = {
+    renovate = "docker"
+    image    = "mintplexlabs/anythingllm"
+    version  = "pg-1.16.0"
+  }
+
   bifrost = {
     renovate = "docker"
     image    = "maximhq/bifrost"

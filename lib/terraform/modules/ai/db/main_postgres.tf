@@ -38,6 +38,14 @@ resource "kubectl_manifest" "this" {
             passwordSecret = {
               name = local.bifrost_secret
             }
+          },
+          {
+            name   = local.anything_llm_username
+            ensure = "present"
+            login  = true
+            passwordSecret = {
+              name = local.anything_llm_secret
+            }
           }
         ]
       }

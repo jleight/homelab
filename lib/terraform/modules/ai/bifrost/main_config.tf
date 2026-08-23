@@ -66,12 +66,18 @@ locals {
           stream_idle_timeout_in_seconds     = var.bifrost.stream_idle_timeout_seconds
         }
 
-        # Lemonade holds one model resident at a time and swaps on demand, so
-        # concurrency is capped at 1: a second in-flight request would only
-        # thrash the 30GB of weights back out of memory.
+        # No gating here on purpose: Lemonade keeps several models resident and
+        # queues requests itself, so a cap at this layer would just add a second
+        # queue in front of its own.
+        #
+        # These are Bifrost's own defaults, written out rather than omitted. The
+        # config store is Postgres and config.json is merged into it on startup,
+        # so a dropped field leaves whatever is already stored in place -- the
+        # same merge behaviour the governance block below relies on. Spelling
+        # them out is what actually clears the previous cap of 1.
         concurrency_and_buffer_size = {
-          concurrency = 1
-          buffer_size = 16
+          concurrency = var.bifrost.concurrency
+          buffer_size = var.bifrost.buffer_size
         }
 
         keys = [

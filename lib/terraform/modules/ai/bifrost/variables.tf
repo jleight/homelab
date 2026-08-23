@@ -70,6 +70,13 @@ variable "bifrost" {
     request_timeout_seconds     = optional(number, 3600)
     stream_idle_timeout_seconds = optional(number, 3600)
 
+    # Bifrost's own defaults. Concurrency is the number of worker goroutines it
+    # runs per provider and buffer_size the depth of the queue feeding them;
+    # at these values it is effectively pass-through, leaving Lemonade to do
+    # the queuing.
+    concurrency = optional(number, 1000)
+    buffer_size = optional(number, 5000)
+
     lemonade = object({
       url     = string
       api_key = optional(string, "lemonade")
