@@ -74,13 +74,6 @@ inputs = {
     version  = "1.11.8"
   }
 
-  open_webui = {
-    renovate   = "helm"
-    repository = "https://helm.openwebui.com"
-    chart      = "open-webui"
-    version    = "16.0.0"
-  }
-
   postgres = {
     renovate   = "helm"
     repository = "https://cloudnative-pg.github.io/charts"
