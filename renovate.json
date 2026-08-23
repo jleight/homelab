@@ -55,6 +55,13 @@
       "groupName": "monitoring charts"
     },
     {
+      "description": "Keep Bifrost on the `v`-prefixed image tags. The unprefixed `2.x` tags in the same Docker Hub repo are the Helm chart published as an OCI artifact, not a container image, so an ordinary version bump would point the Deployment at something that cannot run. The regex also excludes the `v2.0.0-prereleaseN` tags.",
+      "matchDepNames": [
+        "bifrost"
+      ],
+      "versioning": "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$"
+    },
+    {
       "description": "Keep AnythingLLM on the `pg-` tag series. The unprefixed tags are the SQLite build of the same release, so an ordinary version bump would silently point a Postgres-backed deployment at an image that ignores DATABASE_URL.",
       "matchDepNames": [
         "anythingllm"
