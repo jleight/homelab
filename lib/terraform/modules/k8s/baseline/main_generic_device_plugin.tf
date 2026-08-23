@@ -1,7 +1,7 @@
 # Exposes specific host USB devices to pods as schedulable extended resources.
 # A pod that requests `devices.k8s.leightha.us/<name>` is placed by the scheduler
 # onto whichever node currently has a matching device free — that's what gives
-# the pyMC repeater modem failover across the two nodes it's plugged into.
+# a workload failover across the nodes its device is plugged into.
 #
 # Devices are matched by their stable /dev/serial/by-id symlink (vendor/product/
 # serial) and remapped to a constant in-container path via mountPath, so the app
@@ -43,7 +43,7 @@ resource "helm_release" "generic_device_plugin" {
               ]
             },
             {
-              # Original Prusa i3 MK3 3D printer (CDC-ACM serial, plugged into prod-01).
+              # Original Prusa i3 MK3 3D printer (CDC-ACM serial).
               # → resource devices.k8s.leightha.us/prusa-mk3
               name = "prusa-mk3"
               groups = [
@@ -88,8 +88,7 @@ resource "helm_release" "generic_device_plugin" {
               ]
             },
             {
-              # RTL-SDR Blog V4 (Realtek RTL2832U) on the shortwave antenna,
-              # fronted by rtl_tcp for OpenWebRX.
+              # RTL-SDR Blog V4 (Realtek RTL2832U).
               # → devices.k8s.leightha.us/sdr-shortwave
               name = "sdr-shortwave"
               groups = [
@@ -137,9 +136,7 @@ resource "helm_release" "generic_device_plugin" {
               ]
             },
             {
-              # Nooelec SMArt XTR v5 (RTL2832U) dedicated to P25 police scanning
-              # via trunk_recorder, plugged into prod-01. Still on its factory
-              # serial (unlike the stx:* dongles, which were reflashed).
+              # Nooelec SMArt XTR v5 (RTL2832U).
               # → devices.k8s.leightha.us/sdr-trunk
               name = "sdr-trunk"
               groups = [

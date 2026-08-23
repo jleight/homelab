@@ -213,38 +213,6 @@ inputs = {
     }
   }
 
-  pymc = {
-    renovate = "docker"
-    image    = "openhop/openhop-repeater"
-    version  = "dev"
-    digest   = "sha256:e44dc4b4d9f8231fa59488fada7524a8fa86b20345e2010e105fb24195fe184f"
-
-    subdomain = "pymc"
-
-    serial_port = "/dev/ttyUSB0"
-    baud_rate   = 115200
-
-    companions = [
-      {
-        name = "Xero Base"
-      }
-    ]
-
-    room_servers = [
-      {
-        name      = "Leighthaus"
-        latitude  = 42.961356
-        longitude = -78.868374
-      }
-    ]
-
-    litestream = {
-      renovate = "docker"
-      image    = "litestream/litestream"
-      version  = "0.5.16"
-    }
-  }
-
   meshtender = {
     image = "ghcr.io/meshtender/meshtender"
     tag   = "main"
