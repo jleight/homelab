@@ -32,5 +32,6 @@ resource "kubernetes_secret_v1" "app" {
     MESHTENDER_DATABASE_URL   = local.postgres_datasource
     MESHTENDER_MASTER_KEY     = local.master_key
     MESHTENDER_RESEND_API_KEY = local.resend_api_key
+    MESHTENDER_CARTO_KEY      = local.carto_key
   }
 }

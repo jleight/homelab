@@ -18,6 +18,11 @@ resource "kubernetes_deployment_v1" "this" {
     template {
       metadata {
         labels = local.labels
+
+        annotations = {
+          "checksum/config" = local.config_checksum
+          "checksum/secret" = local.secret_checksum
+        }
       }
 
       spec {

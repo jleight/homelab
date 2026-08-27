@@ -36,6 +36,12 @@ locals {
   master_key = local.enabled ? random_id.master_key[0].hex : null
 
   resend_api_key = local.enabled ? data.onepassword_item.resend[0].credential : null
+  carto_key      = local.enabled ? data.onepassword_item.carto[0].credential : null
+
+  # env_from means a ConfigMap/Secret edit alone never rolls the pods; checksum
+  # both into the pod template so key rotations and host changes take effect.
+  config_checksum = local.enabled ? sha256(jsonencode(kubernetes_config_map_v1.app[0].data)) : null
+  secret_checksum = local.enabled ? nonsensitive(sha256(jsonencode(kubernetes_secret_v1.app[0].data))) : null
 
   # Host roles. The HTTPRoute serves all of them (apex via its own listener, the
   # subdomains via the wildcard listener).
