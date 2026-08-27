@@ -68,6 +68,8 @@ variable "core_scope" {
     regions        = optional(map(string), {})
     hash_regions   = optional(set(string), [])
 
+    carto_key = optional(string, "cb1_2cqc_1_a1221d861884b76e40071515")
+
     map_defaults = optional(object({
       center = tuple([number, number])
       zoom   = optional(number, 9)

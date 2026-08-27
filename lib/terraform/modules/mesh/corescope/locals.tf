@@ -26,6 +26,19 @@ locals {
         }
       ]
 
+      map = {
+        tiles = {
+          darkUrl  = "https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=${var.core_scope.carto_key}"
+          lightUrl = "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=${var.core_scope.carto_key}"
+
+          providers = {
+            carto  = { enabled = false }
+            osm    = { enabled = true }
+            stamen = { enabled = false }
+          }
+        }
+      }
+
       regions      = var.core_scope.regions
       hashRegions  = var.core_scope.hash_regions
       channelKeys  = var.core_scope.channel_keys
