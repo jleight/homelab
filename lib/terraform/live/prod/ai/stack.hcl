@@ -1,12 +1,6 @@
 inputs = {
   stack = "ai"
 
-  anything_llm = {
-    renovate = "docker"
-    image    = "mintplexlabs/anythingllm"
-    version  = "pg-1.16.0"
-  }
-
   bifrost = {
     renovate = "docker"
     image    = "maximhq/bifrost"
@@ -15,5 +9,17 @@ inputs = {
     lemonade = {
       url = "http://fwd01.leightha.us:8000"
     }
+  }
+
+  open_webui = {
+    renovate = "docker"
+    image    = "ghcr.io/open-webui/open-webui"
+    version  = "v0.11.1"
+  }
+
+  searxng = {
+    renovate = "docker"
+    image    = "docker.io/searxng/searxng"
+    version  = "2026.8.29-d226b78bc"
   }
 }

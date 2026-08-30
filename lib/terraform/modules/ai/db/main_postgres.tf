@@ -40,11 +40,11 @@ resource "kubectl_manifest" "this" {
             }
           },
           {
-            name   = local.anything_llm_username
+            name   = local.open_webui_username
             ensure = "present"
             login  = true
             passwordSecret = {
-              name = local.anything_llm_secret
+              name = local.open_webui_secret
             }
           }
         ]
