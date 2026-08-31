@@ -117,7 +117,7 @@ inputs = {
       renovate   = "helm"
       repository = "https://prometheus-community.github.io/helm-charts"
       chart      = "prometheus-node-exporter"
-      version    = "4.56.1"
+      version    = "4.56.3"
     }
 
     kube_state_metrics = {
