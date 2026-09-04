@@ -1,7 +1,7 @@
 inputs = {
   env_directory = get_env("ENV_DIR")
   username      = get_env("USER")
-  k8s_version   = "1.36.4"
+  k8s_version   = "1.37.0"
 
   network = {
     interface = "en0"
