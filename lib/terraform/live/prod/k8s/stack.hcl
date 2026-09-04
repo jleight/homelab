@@ -76,13 +76,6 @@ inputs = {
       chart      = "node-feature-discovery"
     }
 
-    amd_gpu = {
-      renovate   = "helm"
-      repository = "https://rocm.github.io/k8s-device-plugin"
-      chart      = "amd-gpu"
-      version    = "0.21.0"
-    }
-
     intel_gpu = {
       renovate   = "helm"
       repository = "https://intel.github.io/helm-charts"

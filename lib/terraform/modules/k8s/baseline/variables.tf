@@ -30,12 +30,6 @@ variable "k8s_baseline" {
       version    = string
     })
 
-    amd_gpu = object({
-      repository = string
-      chart      = string
-      version    = string
-    })
-
     intel_gpu = object({
       repository = string
       chart      = string
