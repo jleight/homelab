@@ -28,11 +28,12 @@ locals {
 
       map = {
         tiles = {
-          darkUrl  = "https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=${var.core_scope.carto_key}"
-          lightUrl = "https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=${var.core_scope.carto_key}"
-
           providers = {
-            carto  = { enabled = false }
+            carto = {
+              enabled = true
+              key     = var.core_scope.carto_key
+            }
+
             osm    = { enabled = true }
             stamen = { enabled = false }
           }
