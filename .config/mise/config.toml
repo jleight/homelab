@@ -8,6 +8,7 @@ terragrunt = "latest"
 yq = "latest"
 
 [env]
-AWS_ACCESS_KEY_ID = "{{ env.B2_TF_APPLICATION_KEY_ID }}"
-AWS_SECRET_ACCESS_KEY = "{{ env.B2_TF_APPLICATION_KEY }}"
+MISE_LOCAL_CONFIG_FILE = "{{ config_root }}/.config/mise/config.local.toml"
 ENV_DIR = "{{ config_root }}/env"
+B2_TF_BUCKET_ENDPOINT = "s3.us-west-001.backblazeb2.com"
+B2_TF_BUCKET_NAME = "jleight-terraform"
