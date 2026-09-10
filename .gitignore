@@ -1,4 +1,4 @@
-.idea/
+.config/mise/config.local.toml
 .terraform/
 .terragrunt-cache/
 .terraform.lock.hcl
