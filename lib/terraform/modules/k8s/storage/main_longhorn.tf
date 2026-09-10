@@ -61,6 +61,11 @@ resource "helm_release" "longhorn" {
       name  = "defaultSettings.engineReplicaTimeout"
       value = "20"
       type  = "string"
+    },
+    {
+      name  = "defaultSettings.defaultBackupBlockSize"
+      value = "16"
+      type  = "string"
     }
   ]
 }
@@ -112,8 +117,9 @@ resource "kubernetes_storage_class_v1" "longhorn_ephemeral" {
 
     # Assign these volumes to a dedicated "ephemeral" group, which no recurring
     # job targets. Carrying any recurring-job label excludes a volume from the
-    # implicit "default" group that the daily/monthly backup jobs run against, so
-    # scratch data is never backed up (and nothing else is scheduled against it).
+    # implicit "default" group that the daily/weekly/monthly backup jobs run
+    # against, so scratch data is never backed up (and nothing else is scheduled
+    # against it).
     "recurringJobSelector" = jsonencode([
       {
         name    = "ephemeral"
@@ -125,6 +131,21 @@ resource "kubernetes_storage_class_v1" "longhorn_ephemeral" {
   depends_on = [helm_release.longhorn]
 }
 
+# Grandfather-father-son backup tiering: a week of dailies, a month of weeklies,
+# a year of monthlies. Depth is what drives the size of the backupstore -- the
+# high-churn Postgres volumes rewrite ~30% of their blocks every day, so each
+# extra daily restore point costs nearly a full copy of their block set.
+#
+# Crons are UTC -- Longhorn's validating webhook parses exactly 5 fields and
+# rejects a CRON_TZ prefix. Monthly, then weekly, then daily land at
+# 03:00/03:30/04:00 America/New_York in summer and an hour earlier in winter.
+# Coarsest first is deliberate: whatever runs first cannot be blocked by an
+# earlier job overrunning, and a missed monthly leaves a permanent hole in the
+# year of history where a missed daily is replaced tomorrow. They all have to
+# finish before the cloud sync starts (04:30 device-local), or it walks the
+# backupstore while retention deletes blocks underneath it. A sweep takes 5
+# minutes, or 10 on the every-seventh-run full backup below, against 30-minute
+# spacing -- so it holds in both seasons even when all three fire.
 resource "kubectl_manifest" "longhorn_backup_daily" {
   count = local.longhorn_enabled ? 1 : 0
 
@@ -139,10 +160,10 @@ resource "kubectl_manifest" "longhorn_backup_daily" {
 
     spec = {
       name = "daily"
-      cron = "30 8 * * *"
+      cron = "0 8 * * *"
       task = "backup"
 
-      retain      = 28
+      retain      = 7
       concurrency = 2
 
       groups = ["default"]
@@ -150,6 +171,38 @@ resource "kubectl_manifest" "longhorn_backup_daily" {
 
       parameters = {
         full-backup-interval = "7"
+      }
+    }
+  })
+
+  depends_on = [helm_release.longhorn]
+}
+
+resource "kubectl_manifest" "longhorn_backup_weekly" {
+  count = local.longhorn_enabled ? 1 : 0
+
+  yaml_body = yamlencode({
+    apiVersion = "longhorn.io/v1beta2"
+    kind       = "RecurringJob"
+
+    metadata = {
+      namespace = try(one(kubernetes_namespace_v1.longhorn[0].metadata).name, null)
+      name      = "weekly"
+    }
+
+    spec = {
+      name = "weekly"
+      cron = "30 7 * * 0"
+      task = "backup"
+
+      retain      = 4
+      concurrency = 2
+
+      groups = ["default"]
+      labels = { type = "weekly" }
+
+      parameters = {
+        "full-backup-interval" = "0"
       }
     }
   })
@@ -171,7 +224,7 @@ resource "kubectl_manifest" "longhorn_backup_monthly" {
 
     spec = {
       name = "monthly"
-      cron = "30 10 1 * *"
+      cron = "0 7 1 * *"
       task = "backup"
 
       retain      = 12
