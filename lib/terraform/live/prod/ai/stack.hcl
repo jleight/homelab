@@ -4,7 +4,7 @@ inputs = {
   bifrost = {
     renovate = "docker"
     image    = "maximhq/bifrost"
-    version  = "v2.0.0"
+    version  = "v2.2.0"
 
     lemonade = {
       url = "http://fwd01.leightha.us:8000"
