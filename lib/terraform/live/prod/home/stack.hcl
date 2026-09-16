@@ -4,7 +4,7 @@ inputs = {
   esphome = {
     renovate = "docker"
     image    = "ghcr.io/esphome/esphome"
-    version  = "2026.8"
+    version  = "2026.9"
   }
 
   home_assistant = {
