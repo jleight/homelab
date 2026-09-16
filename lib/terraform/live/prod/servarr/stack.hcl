@@ -76,6 +76,6 @@ inputs = {
   sonarr = {
     renovate = "docker"
     image    = "lscr.io/linuxserver/sonarr"
-    version  = "4.0.19"
+    version  = "4.0.20"
   }
 }
