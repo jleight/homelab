@@ -183,9 +183,8 @@ inputs = {
   turnstone = {
     renovate = "docker"
     image    = "ghcr.io/turnstonelabs/turnstone"
-    version  = "1.8.1"
+    version  = "1.8.4"
 
-    llm_base_url = "http://fwd01.leightha.us:8000/api/v1"
     server_count = 3
 
     searxng = {
