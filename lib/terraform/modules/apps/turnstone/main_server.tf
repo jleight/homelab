@@ -73,15 +73,14 @@ resource "kubernetes_stateful_set_v1" "server" {
           name  = "server"
           image = "${var.turnstone.image}:${var.turnstone.version}"
 
-          # LLM backend is a boot-time default passed as CLI flags (real backends
-          # can also be added later in the console Models tab). Lemonade is
-          # keyless, so the api-key is a placeholder.
+          # No LLM backend is passed here: since 1.8.2 the server takes no
+          # bootstrap endpoint, and every model definition carries its own
+          # base_url/api_key. Nodes boot with an empty registry and pick the
+          # definitions up live from the console-owned database (Models tab).
           args = [
             "turnstone-server",
             "--host=0.0.0.0",
-            "--port=8080",
-            "--base-url=${var.turnstone.llm_base_url}",
-            "--api-key=dummy"
+            "--port=8080"
           ]
 
           port {
