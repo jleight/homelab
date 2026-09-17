@@ -34,8 +34,16 @@ resource "helm_release" "external_dns" {
 
   set = [
     for k, v in {
-      "provider.name"                      = "cloudflare"
-      "policy"                             = "sync"
+      "provider.name" = "cloudflare"
+      "policy"        = "sync"
+
+      # external-dns v0.22.0 switched the default annotation prefix to
+      # `external-dns.kubernetes.io/` with no fallback, which silently orphaned
+      # the `external-dns.alpha.kubernetes.io/target` annotation on the public
+      # gateway and republished every public record as the private VIP. Pin the
+      # legacy prefix until the annotations here are migrated.
+      "annotationPrefix" = "external-dns.alpha.kubernetes.io/"
+
       "env[0].name"                        = "CF_API_TOKEN"
       "env[0].valueFrom.secretKeyRef.name" = "cloudflare-api-token"
       "env[0].valueFrom.secretKeyRef.key"  = "api_token"
