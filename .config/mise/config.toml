@@ -12,3 +12,27 @@ MISE_LOCAL_CONFIG_FILE = "{{ config_root }}/.config/mise/config.local.toml"
 ENV_DIR = "{{ config_root }}/env"
 B2_TF_BUCKET_ENDPOINT = "s3.us-west-001.backblazeb2.com"
 B2_TF_BUCKET_NAME = "jleight-terraform"
+
+[tasks.prune-renovate]
+run = """
+set -euo pipefail
+
+git fetch --prune
+
+current="$(git branch --show-current)"
+gone="$(git branch --format '%(refname:short) %(upstream:track)' \
+  | awk '$1 ~ /^renovate\\// && $2 == "[gone]" { print $1 }')"
+
+if [ -z "$gone" ]; then
+  echo "No merged renovate branches to delete."
+  exit 0
+fi
+
+echo "$gone" | while read -r branch; do
+  if [ "$branch" = "$current" ]; then
+    echo "Skipping $branch (currently checked out)."
+  else
+    git branch -D "$branch"
+  fi
+done
+"""
