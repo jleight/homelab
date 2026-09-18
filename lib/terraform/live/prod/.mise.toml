@@ -1,0 +1,2 @@
+[env]
+KUBE_CONFIG_PATH = "{{ env.ENV_DIR }}/prod/.kubeconfig"
