@@ -2,7 +2,7 @@ locals {
   readme_inputs   = yamldecode(trim(regex("---\r?\n(?s:.+)\r?\n---", file(find_in_parent_folders("README.md"))), "---"))
   global_hcl      = read_terragrunt_config(find_in_parent_folders("global.hcl"))
   environment_hcl = read_terragrunt_config(find_in_parent_folders("environment.hcl"))
-  stack_hcl       = read_terragrunt_config(find_in_parent_folders("stack.hcl"))
+  stack_hcl       = try(read_terragrunt_config(find_in_parent_folders("stack.hcl")), { inputs = {} })
 
   state_key = format(
     "%s/%s/%s",
