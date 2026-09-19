@@ -1,4 +1,14 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: social
 resources:
+  - ../_automation
   - prosody.yaml
+patches:
+  - target:
+      kind: ImageUpdateAutomation
+      name: images
+    patch: |-
+      - op: replace
+        path: /spec/update/path
+        value: ./lib/flux/apps/social

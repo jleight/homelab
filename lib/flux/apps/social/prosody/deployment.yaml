@@ -26,7 +26,7 @@ spec:
       enableServiceLinks: false
       initContainers:
         - name: chown-data
-          image: docker.io/prosodyim/prosody:13.0
+          image: docker.io/prosodyim/prosody:13.0 # {"$imagepolicy": "social:prosody"}
           command: ["chown", "-R", "prosody:prosody", "/var/lib/prosody"]
           securityContext:
             runAsUser: 0
@@ -43,7 +43,7 @@ spec:
               mountPath: /var/lib/prosody
       containers:
         - name: prosody
-          image: docker.io/prosodyim/prosody:13.0
+          image: docker.io/prosodyim/prosody:13.0 # {"$imagepolicy": "social:prosody"}
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
