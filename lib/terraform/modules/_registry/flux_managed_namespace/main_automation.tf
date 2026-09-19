@@ -35,7 +35,7 @@ resource "kubectl_manifest" "image_automation" {
           }
 
           messageTemplate = chomp(<<-EOT
-            Update container images
+            Update ${local.stack} container images
 
             {{ range .Changed.Changes -}}
             - {{ .OldValue }} -> {{ .NewValue }}
