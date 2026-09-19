@@ -3,6 +3,12 @@ variable "repository" {
   type        = string
 }
 
+variable "vault" {
+  description = "The name of the 1Password vault containing Terraform secrets."
+  type        = string
+  default     = "Terraform"
+}
+
 variable "k8s_flux" {
   description = "Settings for Flux and the operator that manages it."
   type = object({

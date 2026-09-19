@@ -7,24 +7,18 @@ resource "tls_private_key" "push" {
 resource "github_repository_deploy_key" "push" {
   count = local.push_enabled ? 1 : 0
 
-  repository = var.repository
+  repository = data.github_repository.this[0].name
   title      = "flux-image-automation-${local.environment}"
   key        = tls_private_key.push[0].public_key_openssh
   read_only  = false
-}
-
-data "http" "github_meta" {
-  count = local.push_enabled ? 1 : 0
-
-  url = "https://api.github.com/meta"
 }
 
 resource "kubernetes_secret_v1" "push" {
   count = local.push_enabled ? 1 : 0
 
   metadata {
-    namespace = module.namespace.name
-    name      = "homelab-push"
+    namespace = local.namespace
+    name      = module.git_repository.name
   }
 
   data = {

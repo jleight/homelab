@@ -1,8 +1,20 @@
-module "namespace" {
-  source  = "../../_registry/flux_managed_namespace"
-  context = local.context
+resource "kubernetes_namespace_v1" "this" {
+  count = local.enabled ? 1 : 0
 
-  name     = "flux-system"
-  part_of  = "flux"
-  instance = "flux-system"
+  metadata {
+    name = "flux-system"
+
+    labels = {
+      "app.kubernetes.io/instance"         = "flux-system"
+      "app.kubernetes.io/part-of"          = "flux"
+      "pod-security.kubernetes.io/enforce" = "restricted"
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      metadata[0].labels,
+      metadata[0].annotations
+    ]
+  }
 }
