@@ -13,7 +13,7 @@ resource "kubernetes_config_map_v1" "prosody" {
   count = local.enabled ? 1 : 0
 
   metadata {
-    namespace = local.namespace
+    namespace = module.namespace.name
     name      = "prosody-config"
   }
 
@@ -28,7 +28,7 @@ resource "kubernetes_secret_v1" "prosody_admin" {
   count = local.enabled ? 1 : 0
 
   metadata {
-    namespace = local.namespace
+    namespace = module.namespace.name
     name      = "prosody-admin"
   }
 

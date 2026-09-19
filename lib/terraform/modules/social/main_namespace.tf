@@ -1,17 +1,10 @@
-resource "kubernetes_namespace_v1" "this" {
-  count = local.enabled ? 1 : 0
+module "namespace" {
+  source  = "../_registry/flux_managed_namespace"
+  context = local.context
 
-  metadata {
-    name = local.stack
+  vault = var.vault
 
-    labels = {
-      "app.kubernetes.io/part-of"    = local.stack
-      "app.kubernetes.io/managed-by" = "Terraform"
-
-      # Not `restricted`: the Prosody entrypoint starts as root to usermod the
-      # prosody account to match the data volume's ownership, then drops to it
-      # with runuser before exec'ing the server.
-      "pod-security.kubernetes.io/enforce" = "baseline"
-    }
-  }
+  # Prosody needs "baseline" because it starts as root and then drops to a
+  # non-root user.
+  pod_security_enforcement = "baseline"
 }

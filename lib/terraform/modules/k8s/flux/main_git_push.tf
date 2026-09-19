@@ -23,7 +23,7 @@ resource "kubernetes_secret_v1" "push" {
   count = local.push_enabled ? 1 : 0
 
   metadata {
-    namespace = local.namespace
+    namespace = module.namespace.name
     name      = "homelab-push"
   }
 

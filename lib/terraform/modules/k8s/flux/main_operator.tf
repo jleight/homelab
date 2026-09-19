@@ -1,7 +1,7 @@
 resource "helm_release" "operator" {
   count = local.enabled ? 1 : 0
 
-  namespace  = local.namespace
+  namespace  = module.namespace.name
   name       = "flux-operator"
   repository = var.k8s_flux.operator.repository
   chart      = var.k8s_flux.operator.chart

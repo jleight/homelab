@@ -9,7 +9,7 @@ resource "kubectl_manifest" "instance" {
 
     metadata = {
       name      = "flux"
-      namespace = local.namespace
+      namespace = module.namespace.name
     }
 
     spec = {
