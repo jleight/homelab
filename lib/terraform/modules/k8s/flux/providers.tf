@@ -15,8 +15,15 @@ terraform {
     kubernetes = {
       source = "hashicorp/kubernetes"
     }
+    onepassword = {
+      source = "1Password/onepassword"
+    }
     tls = {
       source = "hashicorp/tls"
     }
   }
+}
+
+provider "onepassword" {
+  account = "my.1password.com"
 }

@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: social
 resources:
   - ../_automation
+  - ../_notifications
   - prosody.yaml
 patches:
   - target:

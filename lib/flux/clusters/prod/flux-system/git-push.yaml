@@ -2,7 +2,6 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
   name: homelab-push
-  namespace: flux-system
 spec:
   interval: 1h
   url: ssh://git@github.com/jleight/homelab.git
