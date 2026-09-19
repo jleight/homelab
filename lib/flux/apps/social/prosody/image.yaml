@@ -36,4 +36,3 @@ spec:
   policy:
     semver:
       range: ">=13.0.0"
-  interval: 1h
