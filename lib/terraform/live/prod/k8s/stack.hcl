@@ -174,4 +174,24 @@ inputs = {
       bgp_asn = 65020
     }
   }
+
+  k8s_flux = {
+    operator = {
+      renovate = "docker"
+      image    = "ghcr.io/controlplaneio-fluxcd/charts/flux-operator"
+      version  = "0.52.0"
+
+      # ^ hack for renovate to support oci://
+      repository = "oci://ghcr.io/controlplaneio-fluxcd/charts"
+      chart      = "flux-operator"
+    }
+
+    distribution = {
+      version = "2.x"
+    }
+
+    sync = {
+      url = "https://github.com/jleight/homelab.git"
+    }
+  }
 }
