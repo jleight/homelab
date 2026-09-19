@@ -24,8 +24,23 @@ spec:
         app.kubernetes.io/part-of: social
     spec:
       enableServiceLinks: false
-      securityContext:
-        fsGroup: 101
+      initContainers:
+        - name: chown-data
+          image: docker.io/prosodyim/prosody:13.0
+          command: ["chown", "-R", "prosody:prosody", "/var/lib/prosody"]
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - CHOWN
+                - DAC_OVERRIDE
+                - FOWNER
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/prosody
       containers:
         - name: prosody
           image: docker.io/prosodyim/prosody:13.0
