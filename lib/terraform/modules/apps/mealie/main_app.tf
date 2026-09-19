@@ -9,8 +9,9 @@ module "app" {
 
   port = 9000
 
-  subdomain = var.mealie.subdomain
-  path      = var.mealie.path
+  ingress_enabled = false
+  subdomain       = var.mealie.subdomain
+  path            = var.mealie.path
 
   gateway_refs   = var.gateway_refs
   gateway_domain = var.gateway_domain
