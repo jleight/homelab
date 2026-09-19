@@ -193,5 +193,9 @@ inputs = {
     sync = {
       url = "https://github.com/jleight/homelab.git"
     }
+
+    push = {
+      url = "ssh://git@github.com/jleight/homelab.git"
+    }
   }
 }

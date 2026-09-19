@@ -22,7 +22,9 @@ resource "kubectl_manifest" "instance" {
         "source-controller",
         "kustomize-controller",
         "helm-controller",
-        "notification-controller"
+        "notification-controller",
+        "image-reflector-controller",
+        "image-automation-controller"
       ]
 
       cluster = {

@@ -1,3 +1,8 @@
+variable "repository" {
+  description = "Name of the GitHub repository, from the README front matter."
+  type        = string
+}
+
 variable "k8s_flux" {
   description = "Settings for Flux and the operator that manages it."
   type = object({
@@ -18,5 +23,9 @@ variable "k8s_flux" {
       path     = optional(string, "lib/flux/clusters/prod")
       interval = optional(string, "1m")
     })
+
+    push = optional(object({
+      url = string
+    }))
   })
 }
