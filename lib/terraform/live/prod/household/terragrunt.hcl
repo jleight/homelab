@@ -19,6 +19,11 @@ inputs = {
 
   database_storage_class = dependency.k8s_storage.outputs.app_data_storage_class_name
 
+  isponsorblocktv = {
+    auto_play           = false
+    minimum_skip_length = 5
+  }
+
   mealie = {
     data_storage_class = dependency.k8s_storage.outputs.app_data_storage_class_name
 

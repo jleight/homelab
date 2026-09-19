@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: isponsorblocktv
+  labels:
+    app.kubernetes.io/name: isponsorblocktv
+    app.kubernetes.io/instance: isponsorblocktv
+    app.kubernetes.io/component: blocker
+    app.kubernetes.io/part-of: household
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: isponsorblocktv
+      app.kubernetes.io/instance: isponsorblocktv
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: isponsorblocktv
+        app.kubernetes.io/instance: isponsorblocktv
+        app.kubernetes.io/component: blocker
+        app.kubernetes.io/part-of: household
+      annotations:
+        checksum/config: ${config_checksum}
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: isponsorblocktv
+          image: ghcr.io/dmunozv04/isponsorblocktv:v2.11.0@sha256:d1e876636754fb2b54490feebe3af4a321f7f2a932a2d57b67b2a667eea40823 # {"$imagepolicy": "household:isponsorblocktv"}
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: config
+              mountPath: /app/data/config.json
+              subPath: config.json
+              readOnly: true
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+      volumes:
+        - name: config
+          secret:
+            secretName: ${config_secret}
