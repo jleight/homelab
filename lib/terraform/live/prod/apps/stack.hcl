@@ -53,15 +53,6 @@ inputs = {
     }
   }
 
-  isponsorblocktv = {
-    renovate = "docker"
-    image    = "ghcr.io/dmunozv04/isponsorblocktv"
-    version  = "v2.11.0"
-
-    auto_play           = false
-    minimum_skip_length = 5
-  }
-
   octoprint = {
     renovate = "docker"
     image    = "docker.io/octoprint/octoprint"
