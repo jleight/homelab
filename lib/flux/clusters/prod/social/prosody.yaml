@@ -1,0 +1,20 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: prosody
+  namespace: social
+spec:
+  interval: 30m
+  retryInterval: 2m
+  timeout: 5m
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  path: ./lib/flux/apps/social/prosody
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: prosody-config

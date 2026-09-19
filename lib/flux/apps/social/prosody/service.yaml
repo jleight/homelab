@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: prosody
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: prosody
+    app.kubernetes.io/instance: prosody
+  ports:
+    - name: c2s
+      port: 5222
+      targetPort: c2s
+      protocol: TCP
+    - name: s2s
+      port: 5269
+      targetPort: s2s
+      protocol: TCP
+    - name: http
+      port: 5280
+      targetPort: http
+      protocol: TCP

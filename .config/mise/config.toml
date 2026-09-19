@@ -1,5 +1,6 @@
 [tools]
 cilium-cli = "latest"
+flux2 = "latest"
 helm = "latest"
 kubectl = "latest"
 opentofu = "latest"
