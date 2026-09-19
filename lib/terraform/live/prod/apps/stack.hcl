@@ -62,12 +62,6 @@ inputs = {
     minimum_skip_length = 5
   }
 
-  mealie = {
-    renovate = "docker"
-    image    = "ghcr.io/mealie-recipes/mealie"
-    version  = "v3.26.0"
-  }
-
   octoprint = {
     renovate = "docker"
     image    = "docker.io/octoprint/octoprint"
