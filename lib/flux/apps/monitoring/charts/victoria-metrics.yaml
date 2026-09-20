@@ -1,0 +1,111 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: victoria-metrics
+spec:
+  releaseName: victoria-metrics
+  interval: 30m
+  chart:
+    spec:
+      chart: victoria-metrics-single
+      version: ">=0.46.0 <1.0.0"
+      interval: 1h
+      sourceRef:
+        kind: HelmRepository
+        name: victoria-metrics
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    server:
+      fullnameOverride: vmsingle
+      retentionPeriod: 1d
+
+      # Metrics here are a live view for FreeLens, not a historical record, so there is
+      # nothing worth putting on Longhorn.
+      persistentVolume:
+        enabled: false
+
+      # The chart defaults to a headless Service; FreeLens reaches it through the API
+      # server's service proxy, which wants a normal ClusterIP.
+      service:
+        clusterIP: ""
+
+      scrape:
+        enabled: true
+
+        # The chart ships a generic annotation-driven scrape config. These four jobs are
+        # all FreeLens actually queries, and pinning them explicitly keeps the label
+        # schema under our control instead of whatever annotations happen to be on a
+        # Service.
+        config:
+          global:
+            scrape_interval: 30s
+
+          scrape_configs:
+            # FreeLens' "Helm" metrics provider matches node-level series on a `node`
+            # label and kubelet/cadvisor series on the node name in `instance`, neither
+            # of which the node and endpoint service discovery roles produce on their
+            # own.
+            - job_name: kubelet
+              scheme: https
+              bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+              tls_config:
+                ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+                insecure_skip_verify: true
+              kubernetes_sd_configs:
+                - role: node
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_node_name]
+                  target_label: node
+                - source_labels: [__meta_kubernetes_node_name]
+                  target_label: instance
+
+            - job_name: cadvisor
+              scheme: https
+              metrics_path: /metrics/cadvisor
+              bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+              tls_config:
+                ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+                insecure_skip_verify: true
+              kubernetes_sd_configs:
+                - role: node
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_node_name]
+                  target_label: node
+                - source_labels: [__meta_kubernetes_node_name]
+                  target_label: instance
+
+            - job_name: node-exporter
+              kubernetes_sd_configs:
+                - role: endpoints
+                  namespaces:
+                    names:
+                      - monitoring
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_service_name]
+                  action: keep
+                  regex: node-exporter
+                - source_labels: [__meta_kubernetes_pod_node_name]
+                  target_label: node
+                - source_labels: [__meta_kubernetes_pod_node_name]
+                  target_label: instance
+
+            # kube-state-metrics emits its own `node` label describing the object it
+            # reports on, not the node it runs on. honor_labels keeps that from being
+            # overwritten by the target label, which would make every object look like
+            # it lives on one node.
+            - job_name: kube-state-metrics
+              honor_labels: true
+              kubernetes_sd_configs:
+                - role: endpoints
+                  namespaces:
+                    names:
+                      - monitoring
+              relabel_configs:
+                - source_labels: [__meta_kubernetes_service_name]
+                  action: keep
+                  regex: kube-state-metrics

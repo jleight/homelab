@@ -45,16 +45,6 @@
   ],
   "packageRules": [
     {
-      "description": "Batch the monitoring charts into one PR; they are independent components of the same stack and are applied together",
-      "matchDepNames": [
-        "metrics_server",
-        "victoria_metrics",
-        "node_exporter",
-        "kube_state_metrics"
-      ],
-      "groupName": "monitoring charts"
-    },
-    {
       "description": "Keep Bifrost on the `v`-prefixed image tags. The unprefixed `2.x` tags in the same Docker Hub repo are the Helm chart published as an OCI artifact, not a container image, so an ordinary version bump would point the Deployment at something that cannot run. The regex also excludes the `v2.0.0-prereleaseN` tags.",
       "matchDepNames": [
         "bifrost"
