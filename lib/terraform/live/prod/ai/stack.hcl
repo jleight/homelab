@@ -14,7 +14,7 @@ inputs = {
   open_webui = {
     renovate = "docker"
     image    = "ghcr.io/open-webui/open-webui"
-    version  = "v0.11.3"
+    version  = "v0.11.4"
   }
 
   searxng = {
