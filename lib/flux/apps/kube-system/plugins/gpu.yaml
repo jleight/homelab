@@ -1,0 +1,10 @@
+apiVersion: deviceplugin.intel.com/v1
+kind: GpuDevicePlugin
+metadata:
+  name: gpudeviceplugin
+spec:
+  sharedDevNum: 1
+  logLevel: 4
+  preferredAllocationPolicy: none
+  nodeSelector:
+    feature.node.kubernetes.io/pci-0300_8086.present: "true"

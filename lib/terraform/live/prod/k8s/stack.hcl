@@ -65,30 +65,6 @@ inputs = {
       chart      = "cilium"
       version    = "1.20.1"
     }
-
-    node_feature_discovery = {
-      renovate = "docker"
-      image    = "registry.k8s.io/nfd/charts/node-feature-discovery"
-      version  = "0.19.0"
-
-      # ^ hack for renovate to support oci://
-      repository = "oci://registry.k8s.io/nfd/charts"
-      chart      = "node-feature-discovery"
-    }
-
-    intel_gpu = {
-      renovate   = "helm"
-      repository = "https://intel.github.io/helm-charts"
-      chart      = "intel-device-plugins-operator"
-      version    = "0.36.0"
-    }
-
-    generic_device_plugin = {
-      renovate   = "helm"
-      repository = "https://charts.gabe565.com"
-      chart      = "generic-device-plugin"
-      version    = "0.1.3"
-    }
   }
 
   k8s_storage = {

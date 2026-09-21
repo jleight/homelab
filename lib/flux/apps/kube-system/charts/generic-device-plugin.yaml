@@ -1,0 +1,91 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: generic-device-plugin
+spec:
+  releaseName: generic-device-plugin
+  interval: 30m
+  chart:
+    spec:
+      chart: generic-device-plugin
+      version: ">=0.1.3 <1.0.0"
+      interval: 1h
+      sourceRef:
+        kind: HelmRepository
+        name: gabe565
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    env:
+      DOMAIN: devices.k8s.leightha.us
+
+    config:
+      enabled: true
+
+      # The chart takes this as an opaque string and writes it out as the
+      # plugin's config file, so it stays a block scalar rather than nested YAML.
+      data: |
+        devices:
+          # MeshCore KISS modem (Silicon Labs CP210x USB-UART bridge).
+          - name: meshcore
+            groups:
+              - paths:
+                  - path: /dev/serial/by-id/usb-Silicon_Labs_CP210*-if00-port0
+                    mountPath: /dev/ttyUSB0
+
+          # Original Prusa i3 MK3 3D printer (CDC-ACM serial).
+          - name: prusa-mk3
+            groups:
+              - paths:
+                  - path: /dev/serial/by-id/usb-Prusa_Research*Original_Prusa_i3_MK3*-if00
+                    mountPath: /dev/ttyACM0
+
+          # Home Assistant Connect ZBT-1 (Nabu Casa SkyConnect) combo radio.
+          - name: zigbee
+            groups:
+              - paths:
+                  - path: /dev/serial/by-id/usb-Nabu_Casa_SkyConnect_v1.0_*-if00-port0
+                    mountPath: /dev/zigbee
+
+          # Home Assistant Connect ZWA-2 (Nabu Casa ZWA-2) Z-Wave radio.
+          - name: zwave
+            groups:
+              - paths:
+                  - path: /dev/serial/by-id/usb-Nabu_Casa_ZWA-2_*-if00
+                    mountPath: /dev/zwave
+
+          # RTL-SDR Blog V4 (Realtek RTL2832U).
+          - name: sdr-shortwave
+            groups:
+              - usb:
+                  - vendor: "0bda"
+                    product: "2838"
+                    serial: "00000001"
+
+          # Nooelec NESDR Nano 3 (RTL2832U) on the 1090 MHz antenna for ADS-B.
+          - name: sdr-adsb
+            groups:
+              - usb:
+                  - vendor: "0bda"
+                    product: "2838"
+                    serial: "stx:1090:0"
+
+          # Nooelec NESDR Nano 3 (RTL2832U) on the 978 MHz antenna for UAT.
+          - name: sdr-uat
+            groups:
+              - usb:
+                  - vendor: "0bda"
+                    product: "2838"
+                    serial: "stx:978:0"
+
+          # Nooelec SMArt XTR v5 (RTL2832U).
+          - name: sdr-trunk
+            groups:
+              - usb:
+                  - vendor: "0bda"
+                    product: "2838"
+                    serial: "14658255"

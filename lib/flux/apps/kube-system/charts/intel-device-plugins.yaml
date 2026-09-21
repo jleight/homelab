@@ -1,0 +1,25 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: intel-device-plugins
+spec:
+  releaseName: intel-device-plugins
+  interval: 30m
+  chart:
+    spec:
+      chart: intel-device-plugins-operator
+      version: ">=0.36.0 <1.0.0"
+      interval: 1h
+      sourceRef:
+        kind: HelmRepository
+        name: intel
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    manager:
+      devices:
+        gpu: true
