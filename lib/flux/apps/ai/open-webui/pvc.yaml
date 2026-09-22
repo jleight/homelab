@@ -4,7 +4,7 @@ metadata:
   name: open-webui-data
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   storageClassName: ${data_storage_class}
   resources:
     requests:
