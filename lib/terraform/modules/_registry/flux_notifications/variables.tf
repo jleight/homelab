@@ -21,6 +21,16 @@ variable "failure_event_sources" {
   ]
 }
 
+variable "failure_exclusions" {
+  description = "Golang regular expressions matched against event messages that the failure alert should not report."
+  type        = list(string)
+
+  default = [
+    "lookup [^ ]+ on [^ ]+:53: .*i/o timeout",
+    "lookup [^ ]+ on [^ ]+:53: .*server misbehaving"
+  ]
+}
+
 variable "image_event_sources" {
   description = "Kinds the info-severity Discord alert watches in the namespace."
   type        = set(string)

@@ -56,6 +56,7 @@ resource "kubectl_manifest" "failures" {
 
       eventSeverity = "error"
       eventSources  = [for kind in var.failure_event_sources : { kind = kind, name = "*" }]
+      exclusionList = var.failure_exclusions
     }
   })
 }
