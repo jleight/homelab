@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: turnstone-server
+  labels:
+    app.kubernetes.io/name: turnstone-server
+    app.kubernetes.io/instance: turnstone-server
+    app.kubernetes.io/component: server
+    app.kubernetes.io/part-of: ai
+spec:
+  replicas: 3
+  serviceName: turnstone-server
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: turnstone-server
+      app.kubernetes.io/instance: turnstone-server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: turnstone-server
+        app.kubernetes.io/instance: turnstone-server
+        app.kubernetes.io/component: server
+        app.kubernetes.io/part-of: ai
+      annotations:
+        checksum/auth: ${auth_checksum}
+    spec:
+      enableServiceLinks: false
+      # /data is the image WORKDIR, where agent file operations land. The
+      # container runs as the unprivileged `turnstone` user (uid 1000), so
+      # fsGroup makes the kubelet chown the scratch volumes.
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: turnstone-server
+          image: ghcr.io/turnstonelabs/turnstone:1.8.4 # {"$imagepolicy": "ai:turnstone"}
+          imagePullPolicy: IfNotPresent
+          args:
+            - turnstone-server
+            - --host=0.0.0.0
+            - --port=8080
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: turnstone-env
+            - secretRef:
+                name: ${auth_secret}
+          env:
+            # Pod name (= the stable StatefulSet ordinal, e.g. turnstone-server-0) drives
+            # both the node identity and the advertised per-pod DNS the console
+            # reaches it at. POD_NAME must precede the vars referencing it.
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: TURNSTONE_NODE_ID
+              value: $(POD_NAME)
+            - name: TURNSTONE_ADVERTISE_URL
+              value: http://$(POD_NAME).turnstone-server.ai.svc.cluster.local:8080
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: workspace
+              mountPath: /workspace
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              memory: 2Gi
+      # Per-pod ephemeral scratch. Turnstone coordinates through Postgres, not
+      # the filesystem, and each workstream is pinned to the node it runs on --
+      # so nodes do not need to share these, and they hold no durable state.
+      # emptyDir avoids both a PVC and the RWX share-manager a genuinely shared
+      # volume would pull in.
+      volumes:
+        - name: data
+          emptyDir:
+            sizeLimit: 5Gi
+        - name: workspace
+          emptyDir:
+            sizeLimit: 5Gi

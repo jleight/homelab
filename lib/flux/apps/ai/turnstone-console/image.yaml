@@ -1,0 +1,23 @@
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: turnstone
+spec:
+  image: ghcr.io/turnstonelabs/turnstone
+  interval: 1h
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: turnstone
+spec:
+  imageRepositoryRef:
+    name: turnstone
+  filterTags:
+    pattern: '^(?P<version>\d+\.\d+\.\d+)$'
+    extract: '$version'
+  policy:
+    semver:
+      range: ">=1.8.0 <2.0.0"
+  digestReflectionPolicy: Always
+  interval: 1h

@@ -1,0 +1,6 @@
+apiVersion: dragonflydb.io/v1alpha1
+kind: Dragonfly
+metadata:
+  name: open-webui-cache
+spec:
+  replicas: 1

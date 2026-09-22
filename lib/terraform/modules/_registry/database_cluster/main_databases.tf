@@ -10,14 +10,24 @@ resource "kubectl_manifest" "database" {
       name      = each.key
     }
 
-    spec = {
-      cluster = {
-        name = kubectl_manifest.this.name
-      }
+    spec = merge(
+      {
+        cluster = {
+          name = kubectl_manifest.this.name
+        }
 
-      name   = each.key
-      ensure = "present"
-      owner  = each.key
-    }
+        name   = each.key
+        ensure = "present"
+        owner  = each.key
+      },
+      length(each.value.extensions) > 0 ? {
+        extensions = [
+          for name in each.value.extensions : {
+            name   = name
+            ensure = "present"
+          }
+        ]
+      } : {}
+    )
   })
 }

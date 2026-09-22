@@ -1,0 +1,19 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: turnstone-console
+spec:
+  interval: 30m
+  retryInterval: 2m
+  timeout: 5m
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  path: ./lib/flux/apps/ai/turnstone-console
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: turnstone-subst

@@ -165,20 +165,6 @@ inputs = {
     }
   }
 
-  turnstone = {
-    renovate = "docker"
-    image    = "ghcr.io/turnstonelabs/turnstone"
-    version  = "1.8.4"
-
-    server_count = 3
-
-    searxng = {
-      renovate = "docker"
-      image    = "docker.io/searxng/searxng"
-      version  = "2026.6.13-a29cda858"
-    }
-  }
-
   woodpecker_ci = {
     renovate = "docker"
     image    = "ghcr.io/woodpecker-ci/helm/woodpecker"

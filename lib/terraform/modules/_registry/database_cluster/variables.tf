@@ -25,6 +25,7 @@ variable "managed_databases" {
   type = map(object({
     password_length  = optional(number, 64)
     password_special = optional(bool, false)
+    extensions       = optional(set(string), [])
   }))
   default = {}
 

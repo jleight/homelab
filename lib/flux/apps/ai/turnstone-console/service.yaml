@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: turnstone-console
+  labels:
+    app.kubernetes.io/name: turnstone-console
+    app.kubernetes.io/instance: turnstone-console
+    app.kubernetes.io/component: console
+    app.kubernetes.io/part-of: ai
+spec:
+  ports:
+    - name: http
+      port: 8090
+      targetPort: http
+  selector:
+    app.kubernetes.io/name: turnstone-console
+    app.kubernetes.io/instance: turnstone-console

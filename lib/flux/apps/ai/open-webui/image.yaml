@@ -1,0 +1,38 @@
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: open-webui
+spec:
+  image: ghcr.io/open-webui/open-webui
+  interval: 1h
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: open-webui
+spec:
+  imageRepositoryRef:
+    name: open-webui
+  filterTags:
+    pattern: '^v(?P<version>\d+\.\d+\.\d+)$'
+    extract: '$version'
+  policy:
+    semver:
+      range: ">=0.11.0 <1.0.0"
+  digestReflectionPolicy: Always
+  interval: 1h
+---
+# Used only as a notification trigger for the 1.0 release.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: open-webui-latest
+spec:
+  imageRepositoryRef:
+    name: open-webui
+  filterTags:
+    pattern: '^v(?P<version>\d+\.\d+\.\d+)$'
+    extract: '$version'
+  policy:
+    semver:
+      range: ">=0.11.0"

@@ -1,0 +1,213 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: open-webui
+  labels:
+    app.kubernetes.io/name: open-webui
+    app.kubernetes.io/instance: open-webui
+    app.kubernetes.io/component: chat
+    app.kubernetes.io/part-of: ai
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: open-webui
+      app.kubernetes.io/instance: open-webui
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: open-webui
+        app.kubernetes.io/instance: open-webui
+        app.kubernetes.io/component: chat
+        app.kubernetes.io/part-of: ai
+      annotations:
+        checksum/secret: ${secret_checksum}
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: open-webui
+          image: ghcr.io/open-webui/open-webui:v0.11.3 # {"$imagepolicy": "ai:open-webui"}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: open-webui-env
+            - secretRef:
+                name: open-webui
+          env:
+            - name: PORT
+              value: "8080"
+            - name: DATA_DIR
+              value: /app/backend/data
+
+            # Upstream defaults ENV to "dev" despite what the hardening page
+            # claims, which serves the Swagger UI and the OpenAPI schema at
+            # /docs.
+            - name: ENV
+              value: prod
+
+            # Signup is on by default and DEFAULT_USER_ROLE only gates what a
+            # new account can do, not whether it can be created. The seeded
+            # admin turns it off in the database on first boot; this makes sure
+            # nothing is open in the window before that happens.
+            - name: ENABLE_SIGNUP
+              value: "false"
+            - name: DEFAULT_USER_ROLE
+              value: pending
+
+            # Served over HTTPS at the gateway, so the cookies can say so.
+            # Upstream defaults to secure=false, samesite=lax.
+            - name: WEBUI_SESSION_COOKIE_SECURE
+              value: "true"
+            - name: WEBUI_SESSION_COOKIE_SAME_SITE
+              value: strict
+
+            # Posting prompts and models to openwebui.com's community hub.
+            - name: ENABLE_COMMUNITY_SHARING
+              value: "false"
+
+            # Installs pip packages named in the frontmatter of imported tools
+            # and functions, at startup, from the public index.
+            - name: ENABLE_PIP_INSTALL_FRONTMATTER_REQUIREMENTS
+              value: "false"
+
+            # Flux owns the version; the app phoning home about it is noise.
+            - name: ENABLE_VERSION_UPDATE_CHECK
+              value: "false"
+
+            - name: ANONYMIZED_TELEMETRY
+              value: "false"
+            - name: SCARF_NO_ANALYTICS
+              value: "true"
+            - name: DO_NOT_TRACK
+              value: "true"
+
+            # The async engine opens a pool per process. Left unset the app
+            # falls back to a plain pool with SQLAlchemy defaults (5/10), which
+            # is thin for an app that holds a connection open for the length of
+            # a streamed completion.
+            - name: DATABASE_POOL_SIZE
+              value: "15"
+            - name: DATABASE_POOL_MAX_OVERFLOW
+              value: "20"
+
+            - name: VECTOR_DB
+              value: pgvector
+
+            # Width of the pgvector column created on first use. It is a
+            # ceiling, not a requirement -- the 384-dim default embedding model
+            # fits fine -- but it is baked into the table at creation, so
+            # raising it later means dropping the collections. Above 2000
+            # pgvector's `vector` type gives out and halfvec is required, which
+            # this does not enable.
+            - name: PGVECTOR_INITIALIZE_MAX_VECTOR_LENGTH
+              value: "1536"
+
+            # The database_cluster module has the operator install pgvector as
+            # superuser, so the app never needs to try; the owning role could
+            # not create it anyway.
+            - name: PGVECTOR_CREATE_EXTENSION
+              value: "false"
+
+            - name: WEBSOCKET_MANAGER
+              value: redis
+            - name: ENABLE_WEBSOCKET_SUPPORT
+              value: "true"
+
+            # Lemonade is the only backend, reached directly on the LAN.
+            - name: ENABLE_OPENAI_API
+              value: "true"
+            - name: ENABLE_OLLAMA_API
+              value: "false"
+
+            # Empty leaves the picker on whatever Lemonade lists rather than
+            # preselecting one, which is the sane default for a chat UI.
+            - name: DEFAULT_MODELS
+              value: ""
+
+            # In MB and in files-per-request. Unset upstream, i.e. unlimited.
+            # Uploads land on the SMB share, which is also where litestream and
+            # the Home Assistant backups live, so an unbounded upload is
+            # somebody else's outage.
+            - name: RAG_FILE_MAX_SIZE
+              value: "100"
+            - name: RAG_FILE_MAX_COUNT
+              value: "10"
+
+            - name: ENABLE_WEB_SEARCH
+              value: "true"
+            - name: WEB_SEARCH_ENGINE
+              value: searxng
+
+            # Pages fetched per search, then embedded and retrieved against.
+            # Upstream defaults to 3. Each one is a page fetch plus a CPU
+            # embedding pass, so this is the knob that decides how long a
+            # searched answer takes to start.
+            - name: WEB_SEARCH_RESULT_COUNT
+              value: "5"
+
+            # 0 means unbounded. Bounded so a single search cannot open a fetch
+            # per result at once against whatever the crawler finds.
+            - name: WEB_SEARCH_CONCURRENT_REQUESTS
+              value: "4"
+
+            # Empty is Open WebUI's built-in SentenceTransformers path:
+            # embeddings run in-process on the CPU, so a bulk document upload
+            # cannot contend with chat for the GPU, and the vectors stay
+            # independent of whatever Lemonade is serving. It costs ~500MB of
+            # RSS per pod and a one-time model download onto the data volume.
+            # Set "openai" to push embeddings through Lemonade instead;
+            # re-embedding existing documents is required either way when this
+            # changes.
+            - name: RAG_EMBEDDING_ENGINE
+              value: ""
+            - name: RAG_EMBEDDING_MODEL
+              value: sentence-transformers/all-MiniLM-L6-v2
+          volumeMounts:
+            # UPLOAD_DIR is hardcoded to DATA_DIR/uploads with no env override,
+            # so the SMB share is nested inside the data volume rather than
+            # pointed at. The kubelet sorts mounts by path depth, so the parent
+            # lands first. Splitting them this way keeps the embedding model
+            # cache on cluster storage -- it is re-read on every start -- while
+            # the user files, which are written once and served back whole, live
+            # on the NAS.
+            #
+            # The local storage provider only ever does open()/read/os.remove on
+            # UUID-named files: no locking, no rename, nothing SMB would
+            # mishandle. That holds only because Postgres and pgvector carry the
+            # database and the vectors; a SQLite webui.db or a Chroma directory
+            # here would be the network-storage corruption the upstream docs
+            # warn about.
+            - name: data
+              mountPath: /app/backend/data
+            - name: uploads
+              mountPath: /app/backend/data/uploads
+          resources:
+            requests:
+              cpu: 200m
+              memory: 1Gi
+            limits:
+              memory: 4Gi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 120
+            periodSeconds: 30
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: open-webui-data
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: open-webui-uploads
