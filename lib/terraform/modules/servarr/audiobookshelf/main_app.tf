@@ -4,6 +4,8 @@ module "app" {
 
   namespace = var.namespace
 
+  replicas = 0
+
   image         = var.audiobookshelf.image
   image_version = var.audiobookshelf.version
 
