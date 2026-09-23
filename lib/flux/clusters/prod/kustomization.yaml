@@ -5,4 +5,3 @@ resources:
   - household
   - kube-system
   - monitoring
-  - social

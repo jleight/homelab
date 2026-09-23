@@ -106,19 +106,6 @@
         "docker.io/searxng/searxng"
       ],
       "extractVersion": "^(?<version>\\d+\\.\\d+\\.\\d+)-"
-    },
-    {
-      "description": "prosody publishes two-part tags (13.0), which need coercing before they compare against a range.",
-      "matchFileNames": [
-        "lib/flux/**"
-      ],
-      "matchDatasources": [
-        "docker"
-      ],
-      "matchPackageNames": [
-        "docker.io/prosodyim/prosody"
-      ],
-      "versioning": "semver-coerced"
     }
   ]
 }
