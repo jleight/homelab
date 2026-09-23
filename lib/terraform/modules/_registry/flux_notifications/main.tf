@@ -82,7 +82,7 @@ resource "kubectl_manifest" "updates" {
 
       eventSeverity = "info"
       eventSources  = [for kind in var.update_event_sources : { kind = kind, name = "*" }]
-      exclusionList = var.failure_exclusions
+      inclusionList = var.update_inclusions
     }
   })
 }
