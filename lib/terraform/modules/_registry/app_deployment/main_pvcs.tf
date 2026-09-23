@@ -19,4 +19,8 @@ resource "kubernetes_persistent_volume_claim_v1" "this" {
 
     access_modes = each.value.access_modes
   }
+
+  # A WaitForFirstConsumer class never binds until the Deployment's pod exists,
+  # and the Deployment depends on this PVC, so waiting would deadlock the apply.
+  wait_until_bound = each.value.wait_until_bound
 }

@@ -315,6 +315,9 @@ variable "persistent_volume_claims" {
     storage_class = string
     storage_size  = optional(string, "1Gi")
     access_modes  = optional(list(string), ["ReadWriteMany"])
+
+    # Set false for WaitForFirstConsumer storage classes.
+    wait_until_bound = optional(bool, true)
   }))
   default = {}
 }

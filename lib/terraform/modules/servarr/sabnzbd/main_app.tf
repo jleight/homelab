@@ -4,6 +4,8 @@ module "app" {
 
   namespace = var.namespace
 
+  deployment_strategy = "Recreate"
+
   image         = var.sabnzbd.image
   image_version = var.sabnzbd.version
 
@@ -22,6 +24,14 @@ module "app" {
     media = {
       storage_class = var.media_storage_class
       storage_size  = "10Ti"
+    }
+    incomplete = {
+      storage_class = var.incomplete_storage_class
+      storage_size  = "300Gi"
+      access_modes  = ["ReadWriteOnce"]
+
+      # longhorn-ephemeral is WaitForFirstConsumer.
+      wait_until_bound = false
     }
   }
 
@@ -44,6 +54,8 @@ module "app" {
     }
   ]
 
+  fs_group = 911
+
   volumes_from_secrets = {
     secret = local.config_secret_name
   }
@@ -63,9 +75,8 @@ module "app" {
       sub_path   = "logs"
     },
     {
-      name       = "temp"
+      name       = "incomplete"
       mount_path = "/downloads/incomplete"
-      sub_path   = "incomplete"
     },
     {
       name       = "media"

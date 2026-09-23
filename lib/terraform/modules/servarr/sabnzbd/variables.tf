@@ -19,6 +19,11 @@ variable "data_storage_class" {
   type        = string
 }
 
+variable "incomplete_storage_class" {
+  description = "StorageClass for the incomplete-downloads scratch volume (non-replicated/local)."
+  type        = string
+}
+
 variable "media_storage_class" {
   description = "StorageClass for the media volume."
   type        = string

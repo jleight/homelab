@@ -23,8 +23,9 @@ inputs = {
 
   namespace = dependency.namespace.outputs.name
 
-  data_storage_class  = dependency.k8s_storage.outputs.app_data_storage_class_name
-  media_storage_class = dependency.k8s_storage.outputs.media_storage_class_name
+  data_storage_class       = dependency.k8s_storage.outputs.app_data_storage_class_name
+  incomplete_storage_class = dependency.k8s_storage.outputs.ephemeral_storage_class_name
+  media_storage_class      = dependency.k8s_storage.outputs.media_storage_class_name
 
   gateway_refs   = dependency.k8s_ingress.outputs.private_https_refs
   gateway_domain = dependency.k8s_ingress.outputs.load_balancer_domain
