@@ -10,19 +10,18 @@ variable "vault" {
 }
 
 variable "failure_event_sources" {
-  description = "Kinds the error-severity Discord alert watches in the namespace."
+  description = "Kinds the error-severity Discord alert watches in the namespace. A kind in update_event_sources already reports its errors there, so it does not belong here too."
   type        = set(string)
   default = [
     "Kustomization",
     "GitRepository",
-    "HelmRelease",
     "ImageRepository",
     "ImageUpdateAutomation"
   ]
 }
 
 variable "failure_exclusions" {
-  description = "Golang regular expressions matched against event messages that the failure alert should not report."
+  description = "Golang regular expressions matched against event messages that neither alert should report."
   type        = list(string)
 
   default = [
@@ -31,8 +30,8 @@ variable "failure_exclusions" {
   ]
 }
 
-variable "image_event_sources" {
-  description = "Kinds the info-severity Discord alert watches in the namespace."
+variable "update_event_sources" {
+  description = "Kinds the info-severity Discord alert watches in the namespace: a new image tag selected, or a chart installed or upgraded. Info severity forwards these kinds' errors as well."
   type        = set(string)
-  default     = ["ImagePolicy"]
+  default     = ["ImagePolicy", "HelmRelease"]
 }

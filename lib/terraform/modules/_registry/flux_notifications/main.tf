@@ -61,7 +61,7 @@ resource "kubectl_manifest" "failures" {
   })
 }
 
-resource "kubectl_manifest" "images" {
+resource "kubectl_manifest" "updates" {
   count = local.enabled ? 1 : 0
 
   server_side_apply = true
@@ -72,7 +72,7 @@ resource "kubectl_manifest" "images" {
 
     metadata = {
       namespace = var.namespace
-      name      = "images"
+      name      = "updates"
     }
 
     spec = {
@@ -81,7 +81,8 @@ resource "kubectl_manifest" "images" {
       }
 
       eventSeverity = "info"
-      eventSources  = [for kind in var.image_event_sources : { kind = kind, name = "*" }]
+      eventSources  = [for kind in var.update_event_sources : { kind = kind, name = "*" }]
+      exclusionList = var.failure_exclusions
     }
   })
 }

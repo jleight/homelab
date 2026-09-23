@@ -41,6 +41,84 @@
       "packageNameTemplate": "siderolabs/talos",
       "datasourceTemplate": "github-releases",
       "extractVersionTemplate": "^v(?<version>.*)$"
+    },
+    {
+      "description": "Flux ImagePolicy semver ranges. The image name lives in the ImageRepository above the policy, so the match spans the two documents.",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^lib/flux/.+/image\\.yaml$/"
+      ],
+      "matchStrings": [
+        "image:\\s+(?<depName>\\S+)[\\s\\S]*?range:\\s+\"(?<currentValue>[^\"]+)\""
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "npm"
+    }
+  ],
+  "flux": {
+    "description": "Flux manifests live under lib/flux; the manager only looks at gotk-components.yaml by default.",
+    "managerFilePatterns": [
+      "/^lib/flux/.+\\.yaml$/"
+    ]
+  },
+  "packageRules": [
+    {
+      "description": "Flux reconciles anything inside the pinned range on its own, so Renovate only opens a PR when the new version falls outside it - in practice, a major.",
+      "matchFileNames": [
+        "lib/flux/**"
+      ],
+      "rangeStrategy": "replace"
+    },
+    {
+      "description": "An OCI HelmRepository resolves through the docker datasource, whose versioning cannot parse a semver range. Every docker dep the flux manager finds today is such a chart; an image pinned inside HelmRelease values would also land here, which is fine while those are exact tags.",
+      "matchManagers": [
+        "flux"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "versioning": "helm"
+    },
+    {
+      "description": "Tags these images publish are v-prefixed; the ranges are not.",
+      "matchFileNames": [
+        "lib/flux/**"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "ghcr.io/mealie-recipes/mealie",
+        "ghcr.io/dmunozv04/isponsorblocktv",
+        "ghcr.io/open-webui/open-webui"
+      ],
+      "extractVersion": "^v(?<version>.+)$"
+    },
+    {
+      "description": "searxng tags are a calver date with a commit suffix.",
+      "matchFileNames": [
+        "lib/flux/**"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "docker.io/searxng/searxng"
+      ],
+      "extractVersion": "^(?<version>\\d+\\.\\d+\\.\\d+)-"
+    },
+    {
+      "description": "prosody publishes two-part tags (13.0), which need coercing before they compare against a range.",
+      "matchFileNames": [
+        "lib/flux/**"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "docker.io/prosodyim/prosody"
+      ],
+      "versioning": "semver-coerced"
     }
   ]
 }

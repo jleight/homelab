@@ -18,21 +18,6 @@ spec:
     extract: '$version'
   policy:
     semver:
-      range: ">=3.0.0 <4.0.0"
+      range: "^3.0.0"
   digestReflectionPolicy: Always
   interval: 1h
----
-# Used only as a notification trigger for major version updates.
-apiVersion: image.toolkit.fluxcd.io/v1
-kind: ImagePolicy
-metadata:
-  name: mealie-latest
-spec:
-  imageRepositoryRef:
-    name: mealie
-  filterTags:
-    pattern: '^v(?P<version>\d+\.\d+\.\d+)$'
-    extract: '$version'
-  policy:
-    semver:
-      range: ">=3.0.0"
