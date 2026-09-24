@@ -3,7 +3,7 @@ kind: HTTPRoute
 metadata:
   name: apex
 spec:
-  parentRefs: ${gateway_parent_refs}
+  parentRefs: ${apex_gateway_parent_refs}
   hostnames:
     - ${domain}
   rules:
