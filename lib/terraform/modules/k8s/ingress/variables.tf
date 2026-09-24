@@ -77,7 +77,6 @@ variable "k8s_ingress" {
       repository = string
       chart      = string
       version    = string
-      enabled    = optional(bool, true)
     })
 
     cert_manager_test = optional(object({

@@ -1,9 +1,5 @@
-locals {
-  cert_manager_enabled = local.enabled && var.k8s_ingress.cert_manager.enabled
-}
-
 resource "kubernetes_namespace_v1" "cert_manager" {
-  count = local.cert_manager_enabled ? 1 : 0
+  count = local.enabled ? 1 : 0
 
   metadata {
     name = "cert-manager"
@@ -11,7 +7,7 @@ resource "kubernetes_namespace_v1" "cert_manager" {
 }
 
 resource "kubernetes_secret_v1" "cert_manager_cloudflare_api_token" {
-  count = local.cert_manager_enabled ? 1 : 0
+  count = local.enabled ? 1 : 0
 
   metadata {
     namespace = try(one(kubernetes_namespace_v1.cert_manager[0].metadata).name, null)
@@ -24,7 +20,7 @@ resource "kubernetes_secret_v1" "cert_manager_cloudflare_api_token" {
 }
 
 resource "kubernetes_secret_v1" "cert_manager_lets_encrypt" {
-  count = local.cert_manager_enabled && var.lets_encrypt_private_key != null ? 1 : 0
+  count = local.enabled && var.lets_encrypt_private_key != null ? 1 : 0
 
   metadata {
     namespace = try(one(kubernetes_namespace_v1.cert_manager[0].metadata).name, null)
@@ -37,7 +33,7 @@ resource "kubernetes_secret_v1" "cert_manager_lets_encrypt" {
 }
 
 resource "helm_release" "cert_manager" {
-  count = local.cert_manager_enabled ? 1 : 0
+  count = local.enabled ? 1 : 0
 
   namespace  = try(one(kubernetes_namespace_v1.cert_manager[0].metadata).name, null)
   name       = "cert-manager"
@@ -68,7 +64,7 @@ resource "helm_release" "cert_manager" {
 }
 
 resource "kubectl_manifest" "cert_manager_issuer_self_signed" {
-  count = local.cert_manager_enabled ? 1 : 0
+  count = local.enabled ? 1 : 0
 
   yaml_body = yamlencode({
     apiVersion = "cert-manager.io/v1"
@@ -88,7 +84,7 @@ resource "kubectl_manifest" "cert_manager_issuer_self_signed" {
 }
 
 resource "kubectl_manifest" "cert_manager_issuer_lets_encrypt" {
-  count = local.cert_manager_enabled ? 1 : 0
+  count = local.enabled ? 1 : 0
 
   yaml_body = yamlencode({
     apiVersion = "cert-manager.io/v1"

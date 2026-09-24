@@ -1,5 +1,5 @@
 locals {
-  cert_manager_test_enabled = local.cert_manager_enabled && try(var.k8s_ingress.cert_manager_test.enabled, false)
+  cert_manager_test_enabled = local.enabled && try(var.k8s_ingress.cert_manager_test.enabled, false)
 }
 
 resource "kubernetes_namespace_v1" "cert_manager_test" {

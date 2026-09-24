@@ -5,168 +5,142 @@ locals {
   private_load_balancer_name = local.load_balancer_enabled ? "private-lb" : ""
   public_load_balancer_name  = local.load_balancer_enabled ? "public-lb" : ""
 
-  load_balancer_section = local.load_balancer_enabled ? (local.cert_manager_enabled ? "https" : "http") : ""
-  load_balancer_domain  = local.load_balancer_enabled ? var.k8s_cluster_domain : ""
+  load_balancer_domain = local.load_balancer_enabled ? var.k8s_cluster_domain : ""
 
-  # Public-facing gateways every public route attaches to. A list so the refs
-  # below fan out cleanly if we ever add another, but today it's just public-lb
-  # (node-VLAN/L2, converted in place — no separate gateway).
-  public_gateway_names = compact([
-    local.public_load_balancer_name
-  ])
+  # One cert for the zone: the bare domain plus `*.<domain>`. Both gateways'
+  # wildcard listeners and public-lb's apex listener share it.
+  zone_certificate_secret = "wildcard-${replace(local.load_balancer_domain, ".", "-")}"
 
-  # Per-host HTTPS listeners on public-lb. The standard `https` listener uses
-  # the `*.leightha.us` wildcard, which only covers one label deep — anything
-  # with more labels (e.g. `mqtt.mesh.leightha.us`) or in a different domain
-  # (e.g. `map.wnymeshcore.org`) needs its own listener with its own cert.
-  # cert-manager-gateway-shim auto-issues a Certificate per listener from the
-  # gateway's `cert-manager.io/cluster-issuer` annotation; delegated domains
-  # rely on `cnameStrategy: Follow` on the issuer (see main_cert_manager.tf).
-  public_lb_app_listeners = local.load_balancer_enabled ? [
+  # Hostnames the `*.<domain>` wildcard listener can't serve, keyed by listener
+  # name: the bare domain, names more than one label deep, and other domains.
+  # Each gets an HTTPS listener, and cert-manager-gateway-shim issues a cert per listener from the gateway's
+  # `cert-manager.io/cluster-issuer` annotation. Delegated domains rely on
+  # `cnameStrategy: Follow` on the issuer (see main_cert_manager.tf).
+  public_lb_hosts = local.load_balancer_enabled ? {
+    "https-apex"                = local.load_balancer_domain
+    "https-map-wny"             = "map.wnymeshcore.org"
+    "https-mqtt"                = "mqtt.mesh.${local.load_balancer_domain}"
+    "https-mqtt-map-wny"        = "mqtt.map.wnymeshcore.org"
+    "https-meshtender"          = "meshtender.com"
+    "https-meshtender-wildcard" = "*.meshtender.com"
+  } : {}
+
+  # The hostnames each app serves on public-lb. Anything not in
+  # public_lb_hosts is served by the wildcard `https` listener.
+  #
+  # MeshTender's apex is its canonical origin (WebAuthn RP) and must stay
+  # first; the wildcard covers per-organization subdomains (which redirect to
+  # the apex).
+  public_lb_apps = {
+    apex       = [local.load_balancer_domain]
+    corescope  = ["mesh.${local.load_balancer_domain}", "map.wnymeshcore.org"]
+    meshtender = ["meshtender.com", "*.meshtender.com"]
+    mqtt       = ["mqtt.mesh.${local.load_balancer_domain}", "mqtt.map.wnymeshcore.org"]
+  }
+
+  public_lb_host_sections = { for section, hostname in local.public_lb_hosts : hostname => section }
+
+  # Fully-formed Gateway API parentRefs per app, plus `https` for the wildcard.
+  # Consumers splat these straight into an HTTPRoute's spec.parentRefs, so
+  # adding/removing a listener is a producer-only change.
+  public_refs_by_role = merge(
     {
-      section  = "https"
-      hostname = "mesh.${local.load_balancer_domain}"
+      https = ["https"]
     },
     {
-      section  = "https-map-wny"
-      hostname = "map.wnymeshcore.org"
-    },
-  ] : []
-
-  public_lb_mqtt_listeners = local.load_balancer_enabled ? [
-    {
-      section  = "https-mqtt"
-      hostname = "mqtt.mesh.${local.load_balancer_domain}"
-    },
-    {
-      section  = "https-mqtt-map-wny"
-      hostname = "mqtt.map.wnymeshcore.org"
-    },
-  ] : []
-
-  # MeshTender lives on its own apex domain (not a leightha.us subdomain), so it
-  # needs dedicated listeners + certs, separate from the CoreScope app listeners.
-  # The apex is the canonical origin (WebAuthn RP) and must stay first; the
-  # wildcard covers per-organization subdomains (which redirect to the apex).
-  public_lb_meshtender_listeners = local.load_balancer_enabled ? [
-    {
-      section  = "https-meshtender"
-      hostname = "meshtender.com"
-    },
-    {
-      section  = "https-meshtender-wildcard"
-      hostname = "*.meshtender.com"
-    },
-  ] : []
-
-  # All explicit-host listeners that need to be added to the public-lb spec
-  # (the wildcard `https` listener already exists separately).
-  public_lb_extra_listeners = [
-    for l in concat(
-      local.public_lb_app_listeners,
-      local.public_lb_mqtt_listeners,
-      local.public_lb_meshtender_listeners
-    ) : l if l.section != "https"
-  ]
-
-  # Fully-formed Gateway API parentRefs, grouped by attachment role and already
-  # fanned out across every public gateway (and, for the per-app groups, every
-  # listener in the group). Consumers splat these straight into an HTTPRoute's
-  # spec.parentRefs and never need to know gateway names or section names — so
-  # adding/removing a gateway or listener is a producer-only change.
-  public_refs_by_role = {
-    for role, sections in {
-      https      = [local.load_balancer_section]
-      corescope  = [for l in local.public_lb_app_listeners : l.section]
-      mqtt       = [for l in local.public_lb_mqtt_listeners : l.section]
-      meshtender = [for l in local.public_lb_meshtender_listeners : l.section]
-      } : role => flatten([
-        for name in local.public_gateway_names : [
-          for section in sections : {
-            namespace   = local.load_balancer_namespace
-            name        = name
-            sectionName = section
-          }
-        ]
-    ])
+      for app, hostnames in local.public_lb_apps : app => [
+        for hostname in hostnames : lookup(local.public_lb_host_sections, hostname, "https")
+      ]
+    }
+  )
+  public_refs = {
+    for role, sections in local.public_refs_by_role : role => [
+      for section in(local.load_balancer_enabled ? sections : []) : {
+        namespace   = local.load_balancer_namespace
+        name        = local.public_load_balancer_name
+        sectionName = section
+      }
+    ]
   }
 
   private_https_refs = local.load_balancer_enabled ? [
     {
       namespace   = local.load_balancer_namespace
       name        = local.private_load_balancer_name
-      sectionName = local.load_balancer_section
+      sectionName = "https"
     }
   ] : []
 
-  # public-lb's listener set, extracted for readability (it's a large block).
+  # public-lb's listener set: a catch-all HTTP listener, the wildcard HTTPS
+  # listener, then an HTTPS listener per host.
   public_lb_listeners = concat(
     [
+      # No hostname, so it matches every host and the https redirect covers
+      # public_lb_hosts too. Only the redirect route (Same namespace) attaches,
+      # and with no hostname on either side external-dns derives no records.
       {
         name     = "http"
         protocol = "HTTP"
         port     = 80
+        allowedRoutes = {
+          namespaces = {
+            from = "Same"
+          }
+        }
+      },
+      {
+        name     = "https"
+        protocol = "HTTPS"
+        port     = 443
         hostname = "*.${local.load_balancer_domain}"
         allowedRoutes = {
           namespaces = {
-            from = local.cert_manager_enabled ? "Same" : "All"
+            from = "All"
           }
+        }
+        tls = {
+          mode = "Terminate"
+          certificateRefs = [
+            {
+              kind = "Secret"
+              name = local.zone_certificate_secret
+            }
+          ]
         }
       }
     ],
-    local.cert_manager_enabled ? concat(
-      [
-        {
-          name     = "https"
-          protocol = "HTTPS"
-          port     = 443
-          hostname = "*.${local.load_balancer_domain}"
-          allowedRoutes = {
-            namespaces = {
-              from = "All"
-            }
-          }
-          tls = {
-            mode = "Terminate"
-            certificateRefs = [
-              {
-                kind = "Secret"
-                name = "wildcard-${replace(local.load_balancer_domain, ".", "-")}"
-              }
-            ]
+    [
+      for section, hostname in local.public_lb_hosts : {
+        name     = section
+        protocol = "HTTPS"
+        port     = 443
+        hostname = hostname
+        allowedRoutes = {
+          namespaces = {
+            from = "All"
           }
         }
-      ],
-      # Explicit-host listeners for names that aren't covered by the
-      # wildcard cert (three-label leightha.us names, delegated domains).
-      [
-        for l in local.public_lb_extra_listeners : {
-          name     = l.section
-          protocol = "HTTPS"
-          port     = 443
-          hostname = l.hostname
-          allowedRoutes = {
-            namespaces = {
-              from = "All"
+        tls = {
+          mode = "Terminate"
+          certificateRefs = [
+            {
+              kind = "Secret"
+              # Strip any leading "*." so an apex listener and its wildcard
+              # share one Secret. The gateway-shim then issues a single cert
+              # with both SANs (e.g. meshtender.com + *.meshtender.com),
+              # avoiding two separate DNS-01 challenges deadlocking on the
+              # same _acme-challenge record. Also keeps "*" out of the name.
+              # Our own zone apex uses the explicit zone cert instead.
+              name = (
+                hostname == local.load_balancer_domain
+                ? local.zone_certificate_secret
+                : replace(trimprefix(hostname, "*."), ".", "-")
+              )
             }
-          }
-          tls = {
-            mode = "Terminate"
-            certificateRefs = [
-              {
-                kind = "Secret"
-                # Strip any leading "*." so an apex listener and its wildcard
-                # share one Secret. The gateway-shim then issues a single cert
-                # with both SANs (e.g. meshtender.com + *.meshtender.com),
-                # avoiding two separate DNS-01 challenges deadlocking on the
-                # same _acme-challenge record. Also keeps "*" out of the name.
-                name = replace(trimprefix(l.hostname, "*."), ".", "-")
-              }
-            ]
-          }
+          ]
         }
-      ]
-    ) : []
+      }
+    ]
   )
 }
 
@@ -176,6 +150,38 @@ resource "kubernetes_namespace_v1" "load_balancer" {
   metadata {
     name = "load-balancer"
   }
+}
+
+# Explicit rather than gateway-shim-issued: the shim builds a Certificate from
+# the listeners of the one gateway that owns it, but this Secret is shared by
+# both gateways, and only public-lb has the apex listener.
+resource "kubectl_manifest" "load_balancer_zone_certificate" {
+  count = local.load_balancer_enabled ? 1 : 0
+
+  yaml_body = yamlencode({
+    apiVersion = "cert-manager.io/v1"
+    kind       = "Certificate"
+
+    metadata = {
+      namespace = local.load_balancer_namespace
+      name      = local.zone_certificate_secret
+    }
+
+    spec = {
+      issuerRef = {
+        group = "cert-manager.io"
+        kind  = "ClusterIssuer"
+        name  = "lets-encrypt"
+      }
+      dnsNames = [
+        local.load_balancer_domain,
+        "*.${local.load_balancer_domain}"
+      ]
+      secretName = local.zone_certificate_secret
+    }
+  })
+
+  depends_on = [kubectl_manifest.cert_manager_issuer_lets_encrypt]
 }
 
 resource "kubectl_manifest" "load_balancer_private" {
@@ -188,10 +194,6 @@ resource "kubectl_manifest" "load_balancer_private" {
     metadata = {
       namespace = local.load_balancer_namespace
       name      = local.private_load_balancer_name
-
-      annotations = local.cert_manager_enabled ? {
-        "cert-manager.io/cluster-issuer" = "lets-encrypt"
-      } : {}
     }
 
     spec = {
@@ -211,43 +213,39 @@ resource "kubectl_manifest" "load_balancer_private" {
         }
       }
 
-      listeners = concat(
-        [
-          {
-            name     = "http"
-            protocol = "HTTP"
-            port     = 80
-            hostname = "*.${local.load_balancer_domain}"
-            allowedRoutes = {
-              namespaces = {
-                from = "All"
-              }
+      listeners = [
+        {
+          name     = "http"
+          protocol = "HTTP"
+          port     = 80
+          hostname = "*.${local.load_balancer_domain}"
+          allowedRoutes = {
+            namespaces = {
+              from = "All"
             }
           }
-        ],
-        local.cert_manager_enabled ? [
-          {
-            name     = "https"
-            protocol = "HTTPS"
-            port     = 443
-            hostname = "*.${local.load_balancer_domain}"
-            allowedRoutes = {
-              namespaces = {
-                from = "All"
-              }
-            }
-            tls = {
-              mode = "Terminate"
-              certificateRefs = [
-                {
-                  kind = "Secret"
-                  name = "wildcard-${replace(local.load_balancer_domain, ".", "-")}"
-                }
-              ]
+        },
+        {
+          name     = "https"
+          protocol = "HTTPS"
+          port     = 443
+          hostname = "*.${local.load_balancer_domain}"
+          allowedRoutes = {
+            namespaces = {
+              from = "All"
             }
           }
-        ] : []
-      )
+          tls = {
+            mode = "Terminate"
+            certificateRefs = [
+              {
+                kind = "Secret"
+                name = local.zone_certificate_secret
+              }
+            ]
+          }
+        }
+      ]
     }
   })
 
@@ -268,14 +266,10 @@ resource "kubectl_manifest" "load_balancer_public" {
       namespace = local.load_balancer_namespace
       name      = local.public_load_balancer_name
 
-      annotations = merge(
-        {
-          "external-dns.alpha.kubernetes.io/target" = var.ddns_host
-        },
-        local.cert_manager_enabled ? {
-          "cert-manager.io/cluster-issuer" = "lets-encrypt"
-        } : {},
-      )
+      annotations = {
+        "external-dns.alpha.kubernetes.io/target" = var.ddns_host
+        "cert-manager.io/cluster-issuer"          = "lets-encrypt"
+      }
     }
 
     spec = {
@@ -306,7 +300,7 @@ resource "kubectl_manifest" "load_balancer_public" {
 }
 
 resource "kubectl_manifest" "load_balancer_private_http_to_https" {
-  count = local.load_balancer_enabled && local.cert_manager_enabled ? 1 : 0
+  count = local.load_balancer_enabled ? 1 : 0
 
   yaml_body = yamlencode({
     apiVersion = "gateway.networking.k8s.io/v1"
@@ -342,7 +336,7 @@ resource "kubectl_manifest" "load_balancer_private_http_to_https" {
 }
 
 resource "kubectl_manifest" "load_balancer_public_http_to_https" {
-  count = local.load_balancer_enabled && local.cert_manager_enabled ? 1 : 0
+  count = local.load_balancer_enabled ? 1 : 0
 
   yaml_body = yamlencode({
     apiVersion = "gateway.networking.k8s.io/v1"

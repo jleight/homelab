@@ -1,0 +1,23 @@
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: nginx
+spec:
+  image: docker.io/nginxinc/nginx-unprivileged
+  interval: 1h
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: nginx
+spec:
+  imageRepositoryRef:
+    name: nginx
+  filterTags:
+    pattern: '^(?P<version>\d+\.\d+\.\d+)-alpine$'
+    extract: '$version'
+  policy:
+    semver:
+      range: "^1.31.0"
+  digestReflectionPolicy: Always
+  interval: 1h

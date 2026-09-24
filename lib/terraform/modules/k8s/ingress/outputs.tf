@@ -19,34 +19,39 @@ output "load_balancer_domain" {
 
 output "public_https_refs" {
   description = "Public wildcard *.<domain> HTTPS listener(s)."
-  value       = local.public_refs_by_role.https
+  value       = local.public_refs.https
 }
 
 output "public_corescope_refs" {
   description = "Public CoreScope app listeners (mesh.<domain> + map.wnymeshcore.org)."
-  value       = local.public_refs_by_role.corescope
+  value       = local.public_refs.corescope
 }
 
 # Companion hostname lists for the routes whose served hostnames come from the
 # listener set (parentRefs fan out across gateways; hostnames do not).
 output "public_corescope_hostnames" {
   description = "Hostnames the CoreScope HTTPRoute serves."
-  value       = [for l in local.public_lb_app_listeners : l.hostname]
+  value       = local.load_balancer_enabled ? local.public_lb_apps.corescope : []
 }
 
 output "public_mqtt_hostnames" {
   description = "Hostnames the VerneMQ WSS HTTPRoute serves."
-  value       = [for l in local.public_lb_mqtt_listeners : l.hostname]
+  value       = local.load_balancer_enabled ? local.public_lb_apps.mqtt : []
 }
 
 output "public_mqtt_refs" {
   description = "Public VerneMQ MQTT-over-WSS listeners."
-  value       = local.public_refs_by_role.mqtt
+  value       = local.public_refs.mqtt
 }
 
 output "public_meshtender_refs" {
   description = "Public MeshTender listeners (apex + wildcard)."
-  value       = local.public_refs_by_role.meshtender
+  value       = local.public_refs.meshtender
+}
+
+output "public_apex_refs" {
+  description = "Public zone-apex (<domain>) HTTPS listener(s)."
+  value       = local.public_refs.apex
 }
 
 output "private_https_refs" {

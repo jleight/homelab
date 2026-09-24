@@ -1,0 +1,43 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: apex
+spec:
+  parentRefs: ${gateway_parent_refs}
+  hostnames:
+    - ${domain}
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /.well-known/
+      backendRefs:
+        - name: apex
+          port: 8080
+    # Everything else keeps the old Cloudflare behaviour: a 302 to the
+    # redirect host's root, dropping the path.
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            hostname: ${redirect_hostname}
+            path:
+              type: ReplaceFullPath
+              replaceFullPath: /
+            statusCode: 302
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: apex-www
+spec:
+  parentRefs: ${www_gateway_parent_refs}
+  hostnames:
+    - www.${domain}
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            hostname: ${domain}
+            statusCode: 301
