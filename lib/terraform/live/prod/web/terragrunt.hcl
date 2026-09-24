@@ -10,6 +10,10 @@ dependency "k8s_ingress" {
   config_path = "../k8s/ingress"
 }
 
+dependency "social" {
+  config_path = "../social"
+}
+
 inputs = {
   stack = "web"
 
@@ -19,5 +23,7 @@ inputs = {
     gateway_domain    = dependency.k8s_ingress.outputs.load_balancer_domain
 
     redirect_hostname = "jleight.com"
+
+    matrix_client_base_url = dependency.social.outputs.matrix_client_base_url
   }
 }

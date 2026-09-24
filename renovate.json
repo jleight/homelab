@@ -90,7 +90,8 @@
       "matchPackageNames": [
         "ghcr.io/mealie-recipes/mealie",
         "ghcr.io/dmunozv04/isponsorblocktv",
-        "ghcr.io/open-webui/open-webui"
+        "ghcr.io/open-webui/open-webui",
+        "ghcr.io/element-hq/synapse"
       ],
       "extractVersion": "^v(?<version>.+)$"
     },

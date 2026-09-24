@@ -1,0 +1,27 @@
+# Non-secret Synapse config. /secrets/secrets.yaml (a Terraform-owned Secret)
+# is merged on top with the shared secrets and the whole database block.
+server_name: "${server_name}"
+public_baseurl: "https://${domain}/"
+pid_file: /tmp/homeserver.pid
+signing_key_path: /secrets/signing.key
+media_store_path: /media
+log_config: /config/log.config
+report_stats: false
+
+listeners:
+  - port: 8008
+    type: http
+    tls: false
+    x_forwarded: true
+    bind_addresses: ["0.0.0.0"]
+    resources:
+      - names: [client]
+        compress: false
+
+# Closed server: no federation and no open registration. Create accounts with
+# register_new_matrix_user against the shared secret.
+federation_domain_whitelist: []
+allow_public_rooms_over_federation: false
+trusted_key_servers: []
+enable_registration: false
+url_preview_enabled: false

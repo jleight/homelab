@@ -1,0 +1,13 @@
+# Uploaded media and its thumbnails; everything else is in Postgres or the
+# ConfigMap/Secret. SMB sizes are nominal.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: synapse-media
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ${media_storage_class}
+  resources:
+    requests:
+      storage: 100Gi

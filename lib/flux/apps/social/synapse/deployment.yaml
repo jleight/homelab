@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synapse
+  labels:
+    app.kubernetes.io/name: synapse
+    app.kubernetes.io/instance: synapse
+    app.kubernetes.io/component: homeserver
+    app.kubernetes.io/part-of: social
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: synapse
+      app.kubernetes.io/instance: synapse
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: synapse
+        app.kubernetes.io/instance: synapse
+        app.kubernetes.io/component: homeserver
+        app.kubernetes.io/part-of: social
+    spec:
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 991
+        runAsGroup: 991
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: synapse
+          image: ghcr.io/element-hq/synapse:v1.161.0@sha256:6b95dd129e35e97e8032cb759e5db4a516a5f7ef6c98d34d716fea1ae239b62a # {"$imagepolicy": "social:synapse"}
+          imagePullPolicy: IfNotPresent
+          # Skip the image's start.py (config generation, chown + gosu) and run
+          # the homeserver directly as the unprivileged user.
+          command:
+            - python
+            - -m
+            - synapse.app.homeserver
+          args:
+            - --config-path
+            - /config/homeserver.yaml
+            - --config-path
+            - /secrets/secrets.yaml
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          ports:
+            - name: http
+              containerPort: 8008
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+            - name: secrets
+              mountPath: /secrets
+              readOnly: true
+            - name: media
+              mountPath: /media
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+          # First start runs the full schema migration.
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 30
+      volumes:
+        - name: config
+          configMap:
+            name: synapse-config
+        - name: secrets
+          secret:
+            secretName: synapse
+        - name: media
+          persistentVolumeClaim:
+            claimName: synapse-media
+        - name: tmp
+          emptyDir: {}

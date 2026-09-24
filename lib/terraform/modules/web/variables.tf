@@ -21,5 +21,9 @@ variable "apex" {
 
     # Everything outside /.well-known/ is redirected here.
     redirect_hostname = string
+
+    # Published at /.well-known/matrix/client so @user:<domain> IDs find the
+    # homeserver.
+    matrix_client_base_url = string
   })
 }

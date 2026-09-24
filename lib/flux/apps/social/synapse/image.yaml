@@ -1,0 +1,23 @@
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: synapse
+spec:
+  image: ghcr.io/element-hq/synapse
+  interval: 1h
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: synapse
+spec:
+  imageRepositoryRef:
+    name: synapse
+  filterTags:
+    pattern: '^v(?P<version>\d+\.\d+\.\d+)$'
+    extract: '$version'
+  policy:
+    semver:
+      range: "^1.161.0"
+  digestReflectionPolicy: Always
+  interval: 1h
