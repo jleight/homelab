@@ -63,7 +63,7 @@ inputs = {
   romm = {
     renovate = "docker"
     image    = "rommapp/romm"
-    version  = "5.2.0"
+    version  = "5.3.1"
 
     bridge = {
       renovate = "docker"
