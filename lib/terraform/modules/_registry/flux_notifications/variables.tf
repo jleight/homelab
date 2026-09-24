@@ -10,7 +10,7 @@ variable "vault" {
 }
 
 variable "failure_event_sources" {
-  description = "Kinds the error-severity Discord alert watches in the namespace. Overlaps update_event_sources on purpose: the updates alert only passes success messages, so those kinds' errors are reported here."
+  description = "Kinds the error-severity alert watches in the namespace. Overlaps update_event_sources on purpose: the updates alert only passes success messages, so those kinds' errors are reported here."
   type        = set(string)
   default = [
     "Kustomization",
@@ -43,7 +43,7 @@ variable "failure_exclusions" {
 }
 
 variable "update_event_sources" {
-  description = "Kinds the info-severity Discord alert watches in the namespace: a new image tag selected, or a chart installed or upgraded."
+  description = "Kinds the info-severity alert watches in the namespace: a new image tag selected, or a chart installed or upgraded."
   type        = set(string)
   default     = ["ImagePolicy", "HelmRelease"]
 }

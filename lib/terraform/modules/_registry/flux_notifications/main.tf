@@ -1,17 +1,17 @@
-resource "kubernetes_secret_v1" "discord" {
+resource "kubernetes_secret_v1" "matrix" {
   count = local.enabled ? 1 : 0
 
   metadata {
     namespace = var.namespace
-    name      = "discord-notifications"
+    name      = "matrix-notifications"
   }
 
   data = {
-    address = local.discord_webhook_address
+    token = local.matrix_access_token
   }
 }
 
-resource "kubectl_manifest" "discord" {
+resource "kubectl_manifest" "matrix" {
   count = local.enabled ? 1 : 0
 
   server_side_apply = true
@@ -22,14 +22,16 @@ resource "kubectl_manifest" "discord" {
 
     metadata = {
       namespace = var.namespace
-      name      = "discord"
+      name      = "matrix"
     }
 
     spec = {
-      type = "discord"
+      type    = "matrix"
+      address = local.matrix_homeserver_url
+      channel = local.matrix_room_id
 
       secretRef = {
-        name = kubernetes_secret_v1.discord[0].metadata[0].name
+        name = kubernetes_secret_v1.matrix[0].metadata[0].name
       }
     }
   })
@@ -51,7 +53,7 @@ resource "kubectl_manifest" "failures" {
 
     spec = {
       providerRef = {
-        name = kubectl_manifest.discord[0].name
+        name = kubectl_manifest.matrix[0].name
       }
 
       eventSeverity = "error"
@@ -77,7 +79,7 @@ resource "kubectl_manifest" "updates" {
 
     spec = {
       providerRef = {
-        name = kubectl_manifest.discord[0].name
+        name = kubectl_manifest.matrix[0].name
       }
 
       eventSeverity = "info"

@@ -1,5 +1,13 @@
 locals {
-  discord_webhook_url     = local.enabled ? data.onepassword_item.discord_webhook[0].url : null
-  discord_webhook_key     = local.enabled ? data.onepassword_item.discord_webhook[0].password : null
-  discord_webhook_address = "${local.discord_webhook_url}/${local.discord_webhook_key}"
+  matrix_fields = local.enabled ? {
+    for f in flatten(data.onepassword_item.matrix[0].section[*].field) : f.label => f.value
+  } : {}
+
+  matrix_homeserver_url = "http://synapse.social.svc.cluster.local:8008"
+  matrix_access_token   = lookup(local.matrix_fields, "access token", null)
+
+  matrix_room_id = try(
+    nonsensitive(local.matrix_fields["room id"]),
+    lookup(local.matrix_fields, "room id", null)
+  )
 }
