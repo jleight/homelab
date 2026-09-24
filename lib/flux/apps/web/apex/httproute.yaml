@@ -19,7 +19,6 @@ spec:
     - filters:
         - type: RequestRedirect
           requestRedirect:
-            scheme: https
             hostname: ${redirect_hostname}
             path:
               type: ReplaceFullPath
@@ -38,6 +37,5 @@ spec:
     - filters:
         - type: RequestRedirect
           requestRedirect:
-            scheme: https
             hostname: ${domain}
             statusCode: 301
