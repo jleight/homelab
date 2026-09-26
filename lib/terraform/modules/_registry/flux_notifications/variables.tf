@@ -38,7 +38,12 @@ variable "failure_exclusions" {
     # The API server rejecting a controller's token, seen while etcd was unhealthy.
     "^Unauthorized$",
     # A new ImagePolicy asked before its ImageRepository's first scan landed.
-    "no tags in database"
+    "no tags in database",
+    # GitHub occasionally refuses the homelab-push deploy key on an image
+    # automation's checkout; the retry seconds later succeeds. Anchored to the
+    # automation's wording so a truly revoked key still surfaces through the
+    # homelab-push GitRepository ("failed to checkout and determine revision").
+    "^failed to checkout source: .*ssh: handshake failed"
   ]
 }
 
