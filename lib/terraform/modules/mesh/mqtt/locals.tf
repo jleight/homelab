@@ -11,9 +11,9 @@ locals {
   auth_name = "${local.name}-auth"
   auth_port = 8080
 
-  # Username -> generated password. Both the in-cluster CoreScope subscriber
-  # and external in-cluster consumers (e.g. MeshBug) authenticate against
-  # entries in this map; the webhook short-circuits the JWT path for them.
+  # Username -> generated password. In-cluster subscribers (e.g. CoreScope)
+  # authenticate against entries in this map; the webhook short-circuits the
+  # JWT path for them.
   internal_users = local.enabled ? {
     for u in var.internal_users : u => random_password.user[u].result
   } : {}

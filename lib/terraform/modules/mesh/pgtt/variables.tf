@@ -79,7 +79,7 @@ variable "expected_audiences" {
 variable "internal_users" {
   description = "List of usernames that bypass the JWT path via username/password (in-cluster subscribers). One password is generated per name and surfaced via outputs."
   type        = list(string)
-  default     = ["core_scope", "mesh_bug"]
+  default     = ["core_scope"]
 }
 
 variable "pgtt" {

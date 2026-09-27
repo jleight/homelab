@@ -25,8 +25,8 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 USERNAME_PREFIX = "v1_"
 # Map of {username: password} for internal callers that bypass the JWT path.
-# CoreScope subscribes under one entry; other in-cluster services (e.g.
-# MeshBug) get their own entry so they can be rotated independently.
+# Each in-cluster service (e.g. CoreScope) gets its own entry so they can be
+# rotated independently.
 INTERNAL_USERS = json.loads(os.environ["INTERNAL_USERS"])
 # Comma-separated list — clients may set their `audience` to any of these and
 # the JWT will be accepted. Lets us serve the same broker under multiple

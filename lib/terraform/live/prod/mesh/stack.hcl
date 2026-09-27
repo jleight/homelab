@@ -50,16 +50,6 @@ inputs = {
     }
   }
 
-  mesh_bug = {
-    renovate = "docker"
-    image    = "ghcr.io/jleight/charts/meshbug"
-    version  = "2026.6.1"
-
-    # ^ hack for renovate to support oci://
-    repository = "oci://ghcr.io/jleight/charts"
-    chart      = "meshbug"
-  }
-
   mqtt = {
     renovate   = "helm"
     repository = "https://vernemq.github.io/docker-vernemq"

@@ -10,7 +10,7 @@ resource "kubernetes_service_v1" "this" {
 
   spec {
     # ws: the public HTTPRoute backends here. mqtt: in-cluster subscribers
-    # (CoreScope, MeshBug) at cutover.
+    # (CoreScope) at cutover.
     port {
       name        = "ws"
       port        = local.ws_port
