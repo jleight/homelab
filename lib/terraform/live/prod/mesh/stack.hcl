@@ -81,11 +81,4 @@ inputs = {
       reply_to = "MeshTender Support <support@meshtender.com>"
     }
   }
-
-  pgtt = {
-    image  = "git.leightha.us/ci/jleight/pgtt"
-    commit = "ad4d4a2ddd6de71fc09defe163694e92052f6284"
-
-    replicas = 2
-  }
 }
