@@ -51,7 +51,7 @@ inputs = {
   chaptarr = {
     renovate = "docker"
     image    = "chaptarr/chaptarr"
-    version  = "0.9.958"
+    version  = "0.9.965"
   }
 
   radarr = {
