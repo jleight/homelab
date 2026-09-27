@@ -28,6 +28,13 @@ module "app" {
     TZ = var.openwebrx.timezone
   }
 
+  # Requesting the device-plugin resources pins the pod to the node with the
+  # dongles attached and mounts their /dev/bus/usb nodes in with the right
+  # cgroup permissions. Kubernetes mirrors extended-resource limits into requests.
+  resource_limits = {
+    for r in var.openwebrx.device_resources : r => "1"
+  }
+
   secret_env = {
     OPENWEBRX_ADMIN_USER = {
       secret_name = local.admin_user_secret
@@ -57,9 +64,11 @@ module "app" {
 
   # Deep-merge the Terraform-managed receiver identity + SDR profiles
   # (local.settings_seed) over the live settings.json before OpenWebRX starts.
-  # `.[0] * .[1]` makes our keys win while preserving anything else the web UI
-  # owns (rendering prefs, UI-added profiles, rf_gain — which we never set). The
-  # schema version is left as-is, or defaulted to 8 on a fresh, empty volume.
+  # `.[0] * $s` makes our keys win while preserving anything else the web UI
+  # owns (rendering prefs, UI-added profiles, rf_gain — which we never set).
+  # Devices are the exception: any `sdrs` entry not in the seed is dropped, so
+  # removing a dongle here removes it from OpenWebRX too. The schema version is
+  # left as-is, or defaulted to 8 on a fresh, empty volume.
   # Reuses the OpenWebRX image (ships jq) and chowns the file back to the
   # openwebrx user (uid 103) so the app can keep rewriting it at runtime.
   init_containers = [
@@ -72,7 +81,7 @@ module "app" {
           "set -e;",
           "f=/var/lib/openwebrx/settings.json;",
           "[ -s \"$f\" ] || echo '{}' > \"$f\";",
-          "jq -s '.[0] * .[1] | (.version //= 8)' \"$f\" /seed/settings.json > \"$f.tmp\";",
+          "jq -s '.[1] as $s | .[0] * $s | .sdrs |= with_entries(select(.key as $k | $s.sdrs | has($k))) | (.version //= 8)' \"$f\" /seed/settings.json > \"$f.tmp\";",
           "mv \"$f.tmp\" \"$f\";",
           "chown 103:104 \"$f\"",
         ])

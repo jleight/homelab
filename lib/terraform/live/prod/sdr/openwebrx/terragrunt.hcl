@@ -10,10 +10,6 @@ dependency "namespace" {
   config_path = "../namespace"
 }
 
-dependency "rtl_tcp" {
-  config_path = "../rtl_tcp"
-}
-
 dependency "k8s_storage" {
   config_path = "../../k8s/storage"
 }
@@ -31,7 +27,4 @@ inputs = {
 
   gateway_refs   = dependency.k8s_ingress.outputs.private_https_refs
   gateway_domain = dependency.k8s_ingress.outputs.load_balancer_domain
-
-  rtl_tcp_host = dependency.rtl_tcp.outputs.service_host
-  rtl_tcp_port = dependency.rtl_tcp.outputs.service_port
 }

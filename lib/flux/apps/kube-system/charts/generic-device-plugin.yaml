@@ -66,22 +66,6 @@ spec:
                     product: "2838"
                     serial: "00000001"
 
-          # Nooelec NESDR Nano 3 (RTL2832U) on the 1090 MHz antenna for ADS-B.
-          - name: sdr-adsb
-            groups:
-              - usb:
-                  - vendor: "0bda"
-                    product: "2838"
-                    serial: "stx:1090:0"
-
-          # Nooelec NESDR Nano 3 (RTL2832U) on the 978 MHz antenna for UAT.
-          - name: sdr-uat
-            groups:
-              - usb:
-                  - vendor: "0bda"
-                    product: "2838"
-                    serial: "stx:978:0"
-
           # Nooelec SMArt XTR v5 (RTL2832U).
           - name: sdr-trunk
             groups:

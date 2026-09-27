@@ -13,16 +13,6 @@ variable "data_storage_class" {
   type        = string
 }
 
-variable "rtl_tcp_host" {
-  description = "In-cluster hostname of the rtl_tcp server OpenWebRX connects to."
-  type        = string
-}
-
-variable "rtl_tcp_port" {
-  description = "Port of the rtl_tcp server OpenWebRX connects to."
-  type        = number
-}
-
 variable "gateway_refs" {
   description = "Gateway API parentRefs the HTTPRoute attaches to."
   type = list(object({
@@ -68,6 +58,10 @@ variable "openwebrx" {
         lon = number
       })
     })
+
+    # Generic-device-plugin resources for the dongles OpenWebRX claims over USB.
+    # Requesting all of them pins the pod to the node they're plugged into.
+    device_resources = list(string)
 
     # SDR device + band profiles, passed through verbatim into settings.json's
     # `sdrs` key. Free-form (OpenWebRX's own schema), so typed as `any`. Omit

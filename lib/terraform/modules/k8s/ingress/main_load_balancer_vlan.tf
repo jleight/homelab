@@ -10,7 +10,7 @@
 # This file defines the shared pieces — the GatewayClass, the pool, and the L2
 # announcement policy. Individual LoadBalancers opt in by using the cilium-vlan
 # class (gateways) or the lb-pool=vlan label (plain Services); see public-lb and
-# private-lb in main_load_balancer.tf and the mqtt/rtl LAN VIPs.
+# private-lb in main_load_balancer.tf and the mqtt LAN VIP.
 
 locals {
   # Gate the node-VLAN stack on IPAM defining a load-balancer block.

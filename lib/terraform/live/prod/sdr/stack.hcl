@@ -1,22 +1,6 @@
 inputs = {
   stack = "sdr"
 
-  audioplayer = {
-    renovate = "docker"
-    image    = "php"
-    version  = "8.5-apache"
-
-    timezone = "UTC"
-  }
-
-  dump978 = {
-    renovate = "docker"
-    image    = "ghcr.io/sdr-enthusiasts/docker-dump978"
-    version  = "latest"
-
-    replicas = 0
-  }
-
   openwebrx = {
     renovate = "docker"
     image    = "docker.io/slechev/openwebrxplus-softmbe"
@@ -37,10 +21,19 @@ inputs = {
       }
     }
 
+    # Both dongles hang off the same node; OpenWebRX claims them directly.
+    device_resources = [
+      "devices.k8s.leightha.us/sdr-shortwave",
+      "devices.k8s.leightha.us/sdr-trunk"
+    ]
+
+    # Devices are picked by USB serial (matching generic-device-plugin.yaml) so
+    # they can't swap if enumeration order changes.
     sdrs = {
-      rtlsdr = {
-        name = "RTL-SDR"
-        type = "rtl_tcp"
+      shortwave = {
+        name   = "RTL-SDR Blog V4"
+        type   = "rtl_sdr"
+        device = "00000001"
 
         profiles = {
           "FM-92.9" = {
@@ -334,76 +327,23 @@ inputs = {
           }
         }
       }
-    }
-  }
 
-  readsb = {
-    renovate = "docker"
-    image    = "ghcr.io/sdr-enthusiasts/docker-readsb-protobuf"
-    version  = "latest"
+      xtr = {
+        name   = "Nooelec SMArt XTR"
+        type   = "rtl_sdr"
+        device = "14658255"
 
-    replicas = 0
-
-    latitude  = 42.961356
-    longitude = -78.868374
-
-    gain = "autogain"
-  }
-
-  rtl_tcp = {
-    renovate = "docker"
-    image    = "ghcr.io/lizenzfass78851/docker-rtl-tcp"
-    version  = "latest"
-  }
-
-  tar1090 = {
-    renovate = "docker"
-    image    = "ghcr.io/sdr-enthusiasts/docker-tar1090"
-    version  = "latest"
-
-    subdomain = "adsb"
-
-    beast_host = "readsb.leightha.us"
-    uat_host   = "readsb.leightha.us"
-
-    latitude  = 42.961356
-    longitude = -78.868374
-  }
-
-  trunk_recorder = {
-    renovate = "docker"
-    image    = "robotastic/trunk-recorder"
-    version  = "5.2.1"
-
-    timezone = "UTC"
-
-    source = {
-      center = 460500000
-      gain   = 39
-    }
-
-    systems = [
-      {
-        short_name = "ecp25"
-        type       = "conventionalP25"
-        modulation = "fsk4"
-        squelch    = -60
-
-        channel_csv = <<-CSV
-          TG Number,Frequency,Tone,Alpha Tag,Description,Tag
-          1,460075000,,EC Shrf Patrol,Sheriff Patrol Dispatch,Law Dispatch
-          2,460450000,,EC Shrf Ch 2,Sheriff Ch. 2 Jail Transport,Law Tac
-          3,460325000,,BPD 1 Car-Car,Police Ch 1 Car to Car,Law Talk
-          4,460350000,,BPD 2 Dists B/D,Police Ch 2 Districts B/D,Law Dispatch
-          5,460425000,,BPD 3 Dists C/E,Police Ch 3 Districts C/E,Law Dispatch
-          6,460475000,,BPD 4 Dist A,Police Ch 4 District A,Law Dispatch
-          7,460025000,,BPD 5 Warrants,Police Ch 5 Information and Warrant Checks,Law Tac
-          8,460437500,,T/Hamburg PD Dsp,Police Dispatch,Law Dispatch
-          9,460500000,,Kenmore PD,Police Ch. 1,Law Dispatch
-          10,460225000,,TPD 1 Disp,City Police Dispatch,Law Dispatch
-          11,460100000,,Tonawanda PD,Police Dispatch,Law Dispatch
-        CSV
+        profiles = {
+          "2m" = {
+            name        = "2m Amateur (144–148 MHz)"
+            center_freq = 146000000
+            samp_rate   = 2400000
+            start_freq  = 146520000
+            start_mod   = "nfm"
+            tuning_step = 5000
+          }
+        }
       }
-    ]
+    }
   }
 }
