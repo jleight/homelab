@@ -38,14 +38,6 @@ resource "kubectl_manifest" "this" {
             passwordSecret = {
               name = local.pgtt_secret
             }
-          },
-          {
-            name   = local.beacon_username
-            ensure = "present"
-            login  = true
-            passwordSecret = {
-              name = local.beacon_secret
-            }
           }
         ]
       }
