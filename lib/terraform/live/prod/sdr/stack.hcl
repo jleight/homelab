@@ -333,14 +333,65 @@ inputs = {
         type   = "rtl_sdr"
         device = "14658255"
 
+        # The loop on the V4 covers everything up to 180 MHz, so this dongle is
+        # UHF-only. Its antenna is the Blog dipole kit in a V with both elements
+        # fully collapsed. That isn't cut for any one frequency, but it pulled in
+        # trunk-recorder's 460 MHz channels fine, so these stay near there.
+        #
+        # Profiles whose signal sits at one known frequency (LoRa, ISM) are
+        # centered 300 kHz off it, keeping it clear of the zero-IF DC spike.
         profiles = {
-          "2m" = {
-            name        = "2m Amateur (144–148 MHz)"
-            center_freq = 146000000
+          "70cm" = {
+            name        = "70cm Ham FM (443.8–446.2 MHz)"
+            center_freq = 445000000
             samp_rate   = 2400000
-            start_freq  = 146520000
+            start_freq  = 446000000
             start_mod   = "nfm"
             tuning_step = 5000
+          }
+          "ISM-433" = {
+            name        = "433 MHz ISM Sensors"
+            center_freq = 433620000
+            samp_rate   = 1200000
+            start_freq  = 433920000
+            start_mod   = "ism"
+            tuning_step = 1000
+          }
+          "GMRS" = {
+            name        = "GMRS / FRS (462–463 MHz)"
+            center_freq = 462637500
+            samp_rate   = 2400000
+            start_freq  = 462562500
+            start_mod   = "nfm"
+            tuning_step = 12500
+          }
+
+          # 900 MHz is well off what the antenna was set up for, but strong local
+          # signals (the cluster's own MeshCore radios, pagers) still come through.
+          # The Meshcore decoder wants a 1 MHz IF, which still fits in the band.
+          "LoRa-910" = {
+            name        = "LoRa / MeshCore (910.525 MHz)"
+            center_freq = 910225000
+            samp_rate   = 2400000
+            start_freq  = 910525000
+            start_mod   = "meshcore"
+            tuning_step = 1000
+          }
+          "ISM-915" = {
+            name        = "915 MHz ISM Sensors"
+            center_freq = 914700000
+            samp_rate   = 2400000
+            start_freq  = 915000000
+            start_mod   = "ism"
+            tuning_step = 1000
+          }
+          "Pagers" = {
+            name        = "Pagers (929.3–931.7 MHz)"
+            center_freq = 930500000
+            samp_rate   = 2400000
+            start_freq  = 930500000
+            start_mod   = "page"
+            tuning_step = 12500
           }
         }
       }
