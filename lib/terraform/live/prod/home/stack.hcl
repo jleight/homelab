@@ -15,7 +15,7 @@ inputs = {
     yq = {
       renovate = "docker"
       image    = "docker.io/mikefarah/yq"
-      version  = "4.53.6"
+      version  = "4.54.1"
     }
   }
 
@@ -40,7 +40,7 @@ inputs = {
     yq = {
       renovate = "docker"
       image    = "docker.io/mikefarah/yq"
-      version  = "4.53.6"
+      version  = "4.54.1"
     }
   }
 
@@ -52,7 +52,7 @@ inputs = {
     yq = {
       renovate = "docker"
       image    = "docker.io/mikefarah/yq"
-      version  = "4.53.6"
+      version  = "4.54.1"
     }
   }
 }
