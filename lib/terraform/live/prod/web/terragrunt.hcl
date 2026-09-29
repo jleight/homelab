@@ -26,4 +26,9 @@ inputs = {
 
     matrix_client_base_url = dependency.social.outputs.matrix_client_base_url
   }
+
+  github_proxy = {
+    gateway_refs   = dependency.k8s_ingress.outputs.private_https_refs
+    gateway_domain = dependency.k8s_ingress.outputs.load_balancer_domain
+  }
 }

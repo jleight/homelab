@@ -27,3 +27,20 @@ variable "apex" {
     matrix_client_base_url = string
   })
 }
+
+variable "github_proxy" {
+  description = "Settings for the token-injecting GitHub API proxy Obtainium uses."
+  type = object({
+    gateway_refs = list(object({
+      namespace   = string
+      name        = string
+      sectionName = string
+    }))
+    gateway_domain = string
+    subdomain      = optional(string, "github-proxy")
+
+    # API Credential item holding a no-permission, public-repos-only
+    # fine-grained PAT.
+    token_item = optional(string, "GitHub - Proxy Token")
+  })
+}

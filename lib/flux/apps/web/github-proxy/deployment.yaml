@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: github-proxy
+  labels:
+    app.kubernetes.io/name: github-proxy
+    app.kubernetes.io/instance: github-proxy
+    app.kubernetes.io/component: proxy
+    app.kubernetes.io/part-of: web
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: github-proxy
+      app.kubernetes.io/instance: github-proxy
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: github-proxy
+        app.kubernetes.io/instance: github-proxy
+        app.kubernetes.io/component: proxy
+        app.kubernetes.io/part-of: web
+      annotations:
+        checksum/token: ${token_checksum}
+    spec:
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: nginx
+          image: docker.io/nginxinc/nginx-unprivileged:1.31.6-alpine@sha256:26b0bf6fbf07297983cb341998d79c831508787de26627dd2a112321b9c3a4af # {"$imagepolicy": "web:nginx"}
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          env:
+            - name: NGINX_ENVSUBST_FILTER
+              value: ^GITHUB_PROXY_
+          envFrom:
+            - secretRef:
+                name: ${token_secret}
+          ports:
+            - name: http
+              containerPort: 8080
+          volumeMounts:
+            - name: templates
+              mountPath: /etc/nginx/templates
+              readOnly: true
+            # The entrypoint renders the template here at startup.
+            - name: conf
+              mountPath: /etc/nginx/conf.d
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              memory: 64Mi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 30
+      volumes:
+        - name: templates
+          configMap:
+            name: github-proxy-nginx
+        - name: conf
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}

@@ -1,10 +1,8 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: apex
+  name: image
 spec:
-  dependsOn:
-    - name: image
   interval: 30m
   retryInterval: 2m
   timeout: 5m
@@ -14,8 +12,4 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  path: ./lib/flux/apps/web/apex
-  postBuild:
-    substituteFrom:
-      - kind: ConfigMap
-        name: apex-subst
+  path: ./lib/flux/apps/web/_image

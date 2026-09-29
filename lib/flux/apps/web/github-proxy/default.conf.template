@@ -1,0 +1,47 @@
+# Obtainium's "hubproxy instance" setting prefixes every GitHub API URL with
+# this host (https://<host>/api.github.com/...) and drops its own token, so
+# the token is added here instead.
+#
+# The nginx entrypoint envsubsts this into /etc/nginx/conf.d at startup
+# (NGINX_ENVSUBST_FILTER limits it to GITHUB_PROXY_*); Flux substitution is
+# disabled on the ConfigMap so nginx $variables survive.
+resolver kube-dns.kube-system.svc.cluster.local valid=300s ipv6=off;
+
+server {
+    listen 8080;
+    server_name _;
+
+    location = /healthz {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok";
+    }
+
+    location /api.github.com/ {
+        limit_except GET {
+            deny all;
+        }
+
+        # A variable in proxy_pass makes nginx re-resolve via the resolver
+        # above instead of pinning the startup IP.
+        set $upstream api.github.com;
+        rewrite ^/api\.github\.com(/.*)$ $1 break;
+        proxy_pass https://$upstream;
+
+        proxy_ssl_server_name on;
+        proxy_ssl_verify on;
+        proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt;
+
+        proxy_set_header Host api.github.com;
+        proxy_set_header Authorization "Bearer ${GITHUB_PROXY_TOKEN}";
+
+        # Release asset downloads 302 to a pre-signed objects host; the
+        # Location passes through untouched so the client fetches it
+        # directly, without the token.
+        proxy_redirect off;
+    }
+
+    location / {
+        return 404;
+    }
+}

@@ -6,6 +6,9 @@ resources:
   - service.yaml
   - httproute.yaml
 configMapGenerator:
-  - name: apex-nginx
+  - name: github-proxy-nginx
     files:
-      - default.conf
+      - default.conf.template
+    options:
+      annotations:
+        kustomize.toolkit.fluxcd.io/substitute: disabled

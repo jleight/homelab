@@ -3,5 +3,3 @@ kind: Kustomization
 namespace: web
 resources:
   - image.yaml
-  - apex.yaml
-  - github-proxy.yaml
