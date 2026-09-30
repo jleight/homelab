@@ -45,7 +45,7 @@ inputs = {
   audiobookshelf = {
     renovate = "docker"
     image    = "ghcr.io/advplyr/audiobookshelf"
-    version  = "2.36.1"
+    version  = "2.37.1"
   }
 
   chaptarr = {
