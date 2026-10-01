@@ -35,7 +35,7 @@ inputs = {
   zigbee2mqtt = {
     renovate = "docker"
     image    = "ghcr.io/koenkk/zigbee2mqtt"
-    version  = "2.14.1"
+    version  = "2.14.2"
 
     yq = {
       renovate = "docker"
