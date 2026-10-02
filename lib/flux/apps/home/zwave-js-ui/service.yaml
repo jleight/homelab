@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: zwave-js-ui
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: zwave-js-ui
+    app.kubernetes.io/instance: zwave-js-ui
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+    - name: ws
+      port: 3000
+      targetPort: ws
+      protocol: TCP

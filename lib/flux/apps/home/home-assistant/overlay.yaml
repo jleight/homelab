@@ -1,0 +1,10 @@
+# Deep-merged into /config/configuration.yaml by the merge-config init
+# container. Edit this file, not the one on the volume.
+#
+# recorder.db_url points the recorder at Postgres instead of the default
+# write-heavy SQLite. This is enforced here, not just via the env var, because
+# HA only honors HASS_RECORDER_DB_URL if configuration.yaml references it — a
+# default or restored-from-HAOS config does not, and would silently fall back
+# to SQLite.
+recorder:
+  db_url: !env_var HASS_RECORDER_DB_URL

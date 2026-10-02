@@ -6,6 +6,8 @@ resource "kubernetes_config_map_v1" "esphome_subst" {
   }
 
   data = {
-    data_storage_class = var.data_storage_class
+    data_storage_class  = var.data_storage_class
+    gateway_parent_refs = jsonencode(var.gateway_refs)
+    domain              = "${var.esphome.subdomain}.${var.gateway_domain}"
   }
 }

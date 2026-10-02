@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zwave-js-ui
+  labels:
+    app.kubernetes.io/name: zwave-js-ui
+    app.kubernetes.io/instance: zwave-js-ui
+    app.kubernetes.io/component: zwave
+    app.kubernetes.io/part-of: home
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zwave-js-ui
+      app.kubernetes.io/instance: zwave-js-ui
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: zwave-js-ui
+        app.kubernetes.io/instance: zwave-js-ui
+        app.kubernetes.io/component: zwave
+        app.kubernetes.io/part-of: home
+      annotations:
+        checksum/config: ${config_checksum}
+    spec:
+      enableServiceLinks: false
+      initContainers:
+        # Deep-merges the Terraform-managed settings (serial port, WS server,
+        # security keys) into the persisted settings.json, so those keys win
+        # while zwave-js-ui's runtime state is preserved. Runs as root because
+        # the store is root-owned and the yq image defaults to uid 1000.
+        - name: merge-config
+          image: docker.io/mikefarah/yq:4.53.6@sha256:cfc4eee658595834ef304eadb0c3ea721f3b7cb6404ad8b7cb909cc5b5145b23 # {"$imagepolicy": "home:yq"}
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 0
+          command:
+            - sh
+            - -c
+            - f=/usr/src/app/store/settings.json; [ -f "$f" ] || echo '{}' > "$f"; yq -i -p=json -o=json '. *= load("/managed/settings.json")' "$f"
+          volumeMounts:
+            - name: data
+              mountPath: /usr/src/app/store
+            - name: managed-config
+              mountPath: /managed
+              readOnly: true
+      containers:
+        - name: zwave-js-ui
+          image: ghcr.io/zwave-js/zwave-js-ui:11.24.1@sha256:00abebce88205b47c3b611e983bbc692753170e3603c691bc5765f82265cafa4 # {"$imagepolicy": "home:zwave-js-ui"}
+          imagePullPolicy: IfNotPresent
+          env:
+            # The gateway appends X-Forwarded-For, but Express defaults to
+            # `trust proxy: false`, so express-rate-limit refuses to derive a
+            # client IP from that header and throws
+            # ERR_ERL_UNEXPECTED_X_FORWARDED_FOR — leaving every client sharing
+            # one rate-limit bucket keyed on the gateway's IP. 1 = trust exactly
+            # one hop (the gateway). Not `true`, which trusts the whole chain
+            # and lets a client spoof the leftmost XFF entry.
+            - name: TRUST_PROXY
+              value: "1"
+          ports:
+            - name: http
+              containerPort: 8091
+            # The Z-Wave JS websocket server Home Assistant connects to.
+            - name: ws
+              containerPort: 3000
+          resources:
+            limits:
+              # The Z-Wave stick, bind-mounted at /dev/zwave by the
+              # generic-device-plugin.
+              devices.k8s.leightha.us/zwave: "1"
+          volumeMounts:
+            - name: data
+              mountPath: /usr/src/app/store
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: zwave-js-ui-data
+        - name: managed-config
+          secret:
+            secretName: zwave-js-ui-config

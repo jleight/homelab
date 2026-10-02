@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: esphome
+  labels:
+    app.kubernetes.io/name: esphome
+    app.kubernetes.io/instance: esphome
+    app.kubernetes.io/component: firmware
+    app.kubernetes.io/part-of: home
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: esphome
+      app.kubernetes.io/instance: esphome
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: esphome
+        app.kubernetes.io/instance: esphome
+        app.kubernetes.io/component: firmware
+        app.kubernetes.io/part-of: home
+    spec:
+      enableServiceLinks: false
+      # Host networking for mDNS discovery of the devices. ClusterFirstWithHostNet
+      # keeps cluster DNS working from the host network namespace.
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: esphome
+          image: ghcr.io/esphome/esphome:2026.9.1@sha256:776a845d508909bf426d2ee7bdd81796361ebe6a7f091807ce1d6d0b48985413 # {"$imagepolicy": "home:esphome"}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 6052
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: cache
+              mountPath: /cache
+            - name: build
+              mountPath: /config/.esphome
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: esphome-config
+        # The build cache (platformio/compiled artifacts) and the compiled
+        # firmware ESPHome writes into /config/.esphome are both regenerable, so
+        # they live on emptyDirs rather than filling the small config volume.
+        - name: cache
+          emptyDir: {}
+        - name: build
+          emptyDir: {}

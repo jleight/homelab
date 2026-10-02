@@ -1,0 +1,49 @@
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: home-assistant
+spec:
+  image: ghcr.io/home-assistant/home-assistant
+  interval: 1h
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: home-assistant
+spec:
+  imageRepositoryRef:
+    name: home-assistant
+  filterTags:
+    pattern: '^(?P<version>\d+\.\d+\.\d+)$'
+    extract: '$version'
+  policy:
+    semver:
+      range: ">=2026.0.0"
+  digestReflectionPolicy: Always
+  interval: 1h
+---
+# Shared by the merge-config init containers of home-assistant, zigbee2mqtt
+# and zwave-js-ui.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: yq
+spec:
+  image: docker.io/mikefarah/yq
+  interval: 1h
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: yq
+spec:
+  imageRepositoryRef:
+    name: yq
+  filterTags:
+    pattern: '^(?P<version>\d+\.\d+\.\d+)$'
+    extract: '$version'
+  policy:
+    semver:
+      range: "^4.0.0"
+  digestReflectionPolicy: Always
+  interval: 1h

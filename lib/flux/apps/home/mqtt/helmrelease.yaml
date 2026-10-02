@@ -1,0 +1,70 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mqtt
+spec:
+  releaseName: mqtt
+  interval: 30m
+  chart:
+    spec:
+      chart: vernemq
+      version: "^2.2.0"
+      interval: 1h
+      sourceRef:
+        kind: HelmRepository
+        name: vernemq
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    # Pinned so the Service is mqtt.home.svc, which the Terraform side hands
+    # to Home Assistant and Zigbee2MQTT.
+    fullnameOverride: mqtt
+
+    replicaCount: 1
+
+    service:
+      type: ClusterIP
+      mqtt:
+        enabled: true
+
+    persistentVolume:
+      enabled: false
+
+    # The chart's 90s initialDelaySeconds is sized for a multi-node cluster
+    # negotiating netsplit/queue handoff on boot. At one replica with no
+    # persistent volume this broker is serving in ~11s, so the default left it
+    # marked unready — and every client disconnected — for ~84s of doing
+    # nothing.
+    #
+    # initialDelaySeconds is a hard floor: kubelet will not probe before it
+    # elapses no matter how fast the app is. This chart renders no
+    # startupProbe, so the floor is the only lever. Readiness polls from 5s
+    # every 5s; liveness keeps a 30s floor so a slow start (the entrypoint
+    # retries the API server until cluster DNS answers) can't get the
+    # container killed before it finishes.
+    statefulset:
+      readinessProbe:
+        initialDelaySeconds: 5
+        periodSeconds: 5
+      livenessProbe:
+        initialDelaySeconds: 30
+
+    additionalEnv:
+      - name: DOCKER_VERNEMQ_ACCEPT_EULA
+        value: "yes"
+      - name: DOCKER_VERNEMQ_ALLOW_ANONYMOUS
+        value: "on"
+      - name: DOCKER_VERNEMQ_MAX_CLIENT_ID_SIZE
+        value: "256"
+      - name: DOCKER_VERNEMQ_ALLOW_REGISTER_DURING_NETSPLIT
+        value: "on"
+      - name: DOCKER_VERNEMQ_ALLOW_PUBLISH_DURING_NETSPLIT
+        value: "on"
+      - name: DOCKER_VERNEMQ_ALLOW_SUBSCRIBE_DURING_NETSPLIT
+        value: "on"
+      - name: DOCKER_VERNEMQ_ALLOW_UNSUBSCRIBE_DURING_NETSPLIT
+        value: "on"

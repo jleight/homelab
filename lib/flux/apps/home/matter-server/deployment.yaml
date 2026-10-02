@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: matter-server
+  labels:
+    app.kubernetes.io/name: matter-server
+    app.kubernetes.io/instance: matter-server
+    app.kubernetes.io/component: matter
+    app.kubernetes.io/part-of: home
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: matter-server
+      app.kubernetes.io/instance: matter-server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: matter-server
+        app.kubernetes.io/instance: matter-server
+        app.kubernetes.io/component: matter
+        app.kubernetes.io/part-of: home
+    spec:
+      enableServiceLinks: false
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: matter-server
+          image: ghcr.io/matter-js/python-matter-server:8.1.2@sha256:6827e352011e2d8c2bde771e446fcf72acc49150ef66bad978816bac1762aad3 # {"$imagepolicy": "home:matter-server"}
+          imagePullPolicy: IfNotPresent
+          # Mirrors the image's default CMD (storage + PAA cert dir under /data)
+          # and adds --primary-interface to scope mDNS to the LAN NIC. Without
+          # it the server listens on every interface — on a host-network node
+          # that's every Cilium veth too, which floods the logs with DNSSD parse
+          # errors. All nodes use enp1s0.
+          args:
+            - --storage-path
+            - /data
+            - --paa-root-cert-dir
+            - /data/credentials
+            - --primary-interface
+            - enp1s0
+          ports:
+            - name: http
+              containerPort: 5580
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: matter-server-data

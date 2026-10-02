@@ -1,0 +1,23 @@
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: zwave-js-ui
+spec:
+  image: ghcr.io/zwave-js/zwave-js-ui
+  interval: 1h
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: zwave-js-ui
+spec:
+  imageRepositoryRef:
+    name: zwave-js-ui
+  filterTags:
+    pattern: '^(?P<version>\d+\.\d+\.\d+)$'
+    extract: '$version'
+  policy:
+    semver:
+      range: "^11.0.0"
+  digestReflectionPolicy: Always
+  interval: 1h

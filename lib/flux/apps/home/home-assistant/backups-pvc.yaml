@@ -1,0 +1,18 @@
+# The nas02 SMB share HA writes its backups to. The storage class keys the
+# share's subdirectory on namespace and claim name, so this lands on the same
+# directory as the claim it replaces, and the share itself is never deleted
+# (onDelete: retain).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: home-assistant-backups
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ${backups_storage_class}
+  resources:
+    requests:
+      # Nominal: SMB ignores it.
+      storage: 50Gi

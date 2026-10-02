@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: home-assistant
+  labels:
+    app.kubernetes.io/name: home-assistant
+    app.kubernetes.io/instance: home-assistant
+    app.kubernetes.io/component: automation
+    app.kubernetes.io/part-of: home
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: home-assistant
+      app.kubernetes.io/instance: home-assistant
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: home-assistant
+        app.kubernetes.io/instance: home-assistant
+        app.kubernetes.io/component: automation
+        app.kubernetes.io/part-of: home
+      annotations:
+        checksum/secret: ${secret_checksum}
+    spec:
+      enableServiceLinks: false
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      initContainers:
+        # Deep-merges the overlay into configuration.yaml before HA starts, so
+        # the recorder always points at Postgres regardless of what config is
+        # present (fresh, or restored from a HAOS backup that defaults to
+        # SQLite). yq preserves the rest of the file, including comments and
+        # HA's !secret/!include tags. Runs as root because /config is
+        # root-owned and the yq image defaults to uid 1000.
+        - name: merge-config
+          image: docker.io/mikefarah/yq:4.53.6@sha256:cfc4eee658595834ef304eadb0c3ea721f3b7cb6404ad8b7cb909cc5b5145b23 # {"$imagepolicy": "home:yq"}
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 0
+          command:
+            - sh
+            - -c
+            - f=/config/configuration.yaml; [ -f "$f" ] || printf 'default_config:\n' > "$f"; yq -i '. *= load("/managed/overlay.yaml")' "$f"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: config-overlay
+              mountPath: /managed
+              readOnly: true
+      containers:
+        - name: home-assistant
+          image: ghcr.io/home-assistant/home-assistant:2026.9.4@sha256:3e6710a7ab2a61311d9d899b719f6c3657791c63e8f4942cec4ebc42401d6b76 # {"$imagepolicy": "home:home-assistant"}
+          imagePullPolicy: IfNotPresent
+          # HASS_MQTT_HOST/HASS_MQTT_PORT and HASS_RECORDER_DB_URL, referenced
+          # from configuration.yaml with !env_var.
+          envFrom:
+            - configMapRef:
+                name: home-assistant-env
+            - secretRef:
+                name: home-assistant
+          ports:
+            - name: http
+              containerPort: 8123
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            # The SMB share on nas02, where HA writes its backups.
+            - name: backups
+              mountPath: /config/backups
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: home-assistant-config
+        - name: backups
+          persistentVolumeClaim:
+            claimName: home-assistant-backups
+        - name: config-overlay
+          configMap:
+            name: home-assistant-config-overlay
