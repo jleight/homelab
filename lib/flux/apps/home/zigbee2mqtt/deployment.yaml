@@ -32,7 +32,7 @@ spec:
         # (network_key, pan_id, devices) is preserved. Runs as root because the
         # data volume is root-owned and the yq image defaults to uid 1000.
         - name: merge-config
-          image: docker.io/mikefarah/yq:4.53.6@sha256:cfc4eee658595834ef304eadb0c3ea721f3b7cb6404ad8b7cb909cc5b5145b23 # {"$imagepolicy": "home:yq"}
+          image: docker.io/mikefarah/yq:4.54.1@sha256:4b3d9475d65571d28cbb19544d3820ec2945e4c8b2f18279394282b8dc3a592e # {"$imagepolicy": "home:yq"}
           imagePullPolicy: IfNotPresent
           securityContext:
             runAsUser: 0
@@ -48,7 +48,7 @@ spec:
               readOnly: true
       containers:
         - name: zigbee2mqtt
-          image: ghcr.io/koenkk/zigbee2mqtt:2.14.1@sha256:fef0de769dcd04c27b3a6d277b61046eb96284bdd4198dcb1687c3a01b3020f3 # {"$imagepolicy": "home:zigbee2mqtt"}
+          image: ghcr.io/koenkk/zigbee2mqtt:2.14.2@sha256:addbfb08fcef2e4477de1535636118241e10d13e898fbe4d9faba8a4d7396311 # {"$imagepolicy": "home:zigbee2mqtt"}
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
