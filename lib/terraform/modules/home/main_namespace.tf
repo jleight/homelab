@@ -9,9 +9,3 @@ module "namespace" {
   # privileged Pod Security Standard.
   pod_security_enforcement = "privileged"
 }
-
-# The namespace predates this stack, so adopt it instead of creating it.
-import {
-  to = module.namespace.kubernetes_namespace_v1.this[0]
-  id = "home"
-}
