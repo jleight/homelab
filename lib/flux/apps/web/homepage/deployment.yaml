@@ -56,6 +56,22 @@ spec:
           ports:
             - name: http
               containerPort: 3000
+          # The image prerenders the page with default settings at build time,
+          # and Homepage only revalidates when a browser holding an older
+          # config hash comes back. Force it once the server is up so the
+          # mounted settings.yaml applies from the first load. No shell
+          # variables here: Flux would substitute them.
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - >-
+                    timeout 60 sh -c 'until wget -q -O /dev/null
+                    --header "Host: ${domain}"
+                    http://127.0.0.1:3000/api/revalidate; do sleep 1; done'
+                    || true
           # The config directory is an emptyDir so Homepage can write its logs
           # and copy in defaults for any file not mounted here.
           volumeMounts:

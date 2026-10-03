@@ -3,14 +3,16 @@
 # annotations when the app migrates to Flux. Anything discovered lands in the
 # groups below by name.
 #
-# namespace/app (or podSelector) drive the pod status dot; siteMonitor covers
-# reverse-proxied backends that have no pod of their own.
+# namespace/app drive the pod status dot, and Homepage only shows one when app
+# is set; podSelector overrides the app.kubernetes.io/name=<app> match.
+# siteMonitor covers reverse-proxied backends that have no pod of their own.
 - Household:
     - Immich:
         icon: immich.png
         description: Photos
         href: https://photos.${gateway_domain}
         namespace: immich
+        app: immich-server
         podSelector: app.kubernetes.io/instance=immich,app.kubernetes.io/name=server
     - OctoPrint:
         icon: octoprint.png
@@ -31,7 +33,7 @@
         siteMonitor: https://odysseus.${gateway_domain}
 - Radio:
     - OpenWebRX:
-        icon: openwebrx.png
+        icon: mdi-radio-handheld
         description: SDR receiver
         href: https://owrx.${gateway_domain}
         namespace: sdr
@@ -66,6 +68,7 @@
         description: CI/CD
         href: https://ci.${gateway_domain}
         namespace: forgejo
+        app: woodpecker-ci-server
         podSelector: app.kubernetes.io/instance=woodpecker-ci,app.kubernetes.io/name=server
 - Infrastructure:
     - Longhorn:
@@ -73,6 +76,7 @@
         description: Storage
         href: https://longhorn.${gateway_domain}
         namespace: longhorn-system
+        app: longhorn-ui
         podSelector: app=longhorn-ui
     - SmokePing:
         icon: smokeping.png
