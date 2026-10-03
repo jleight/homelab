@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chaptarr
+  labels:
+    app.kubernetes.io/name: chaptarr
+    app.kubernetes.io/instance: chaptarr
+    app.kubernetes.io/component: books
+    app.kubernetes.io/part-of: servarr
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: chaptarr
+      app.kubernetes.io/instance: chaptarr
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: chaptarr
+        app.kubernetes.io/instance: chaptarr
+        app.kubernetes.io/component: books
+        app.kubernetes.io/part-of: servarr
+      annotations:
+        checksum/config: ${config_checksum}
+    spec:
+      enableServiceLinks: false
+      initContainers:
+        # config.xml is rendered whole by Terraform -- API key, URL base and
+        # database credentials -- and copied over the volume's copy on every
+        # start. Chaptarr's entrypoint chowns /config and the files it creates
+        # itself but never config.xml, so a root-owned copy would leave the
+        # app, running as PUID:PGID, unable to open it.
+        - name: chaptarr-config
+          image: docker.io/chaptarr/chaptarr:0.9.958@sha256:941effc0c12c632328c1d6bb032b5e5687a87a8fbe0e37241bcf876e6d4bf868 # {"$imagepolicy": "servarr:chaptarr"}
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - cp /config/config.xml /data/config.xml && chown 99:100 /data/config.xml
+          volumeMounts:
+            - name: config
+              mountPath: /config/config.xml
+              subPath: config.xml
+              readOnly: true
+            - name: data
+              mountPath: /data
+      containers:
+        - name: chaptarr
+          image: docker.io/chaptarr/chaptarr:0.9.958@sha256:941effc0c12c632328c1d6bb032b5e5687a87a8fbe0e37241bcf876e6d4bf868 # {"$imagepolicy": "servarr:chaptarr"}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PUID
+              value: "99"
+            - name: PGID
+              value: "100"
+          ports:
+            - name: http
+              containerPort: 8789
+          volumeMounts:
+            - name: data
+              mountPath: /config
+            - name: media
+              mountPath: /books
+              subPath: books
+            - name: media
+              mountPath: /downloads
+              subPath: unsorted
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: chaptarr-data
+        - name: media
+          persistentVolumeClaim:
+            claimName: chaptarr-media
+        - name: config
+          secret:
+            secretName: ${config_secret}

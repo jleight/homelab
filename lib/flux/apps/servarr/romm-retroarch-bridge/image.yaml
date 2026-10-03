@@ -1,0 +1,23 @@
+# Our own image, published only as :latest, so this follows its digest.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: romm-retroarch-bridge
+spec:
+  image: ghcr.io/jleight/retroarch-romm-bridge
+  interval: 1h
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: romm-retroarch-bridge
+spec:
+  imageRepositoryRef:
+    name: romm-retroarch-bridge
+  filterTags:
+    pattern: '^latest$'
+  policy:
+    alphabetical:
+      order: asc
+  digestReflectionPolicy: Always
+  interval: 1h

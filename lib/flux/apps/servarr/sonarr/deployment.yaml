@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarr
+  labels:
+    app.kubernetes.io/name: sonarr
+    app.kubernetes.io/instance: sonarr
+    app.kubernetes.io/component: tv
+    app.kubernetes.io/part-of: servarr
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sonarr
+      app.kubernetes.io/instance: sonarr
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sonarr
+        app.kubernetes.io/instance: sonarr
+        app.kubernetes.io/component: tv
+        app.kubernetes.io/part-of: servarr
+      annotations:
+        checksum/config: ${config_checksum}
+    spec:
+      enableServiceLinks: false
+      initContainers:
+        # config.xml is rendered whole by Terraform -- API key, URL base and
+        # database credentials -- and copied over the volume's copy on every
+        # start.
+        - name: sonarr-config
+          image: ghcr.io/linuxserver/sonarr:4.0.20@sha256:f247545d23ba8b233d6604575347e48a623fe6ad75dda02348bf81917f3b5c06 # {"$imagepolicy": "servarr:sonarr"}
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - cp /config/config.xml /data/config.xml
+          volumeMounts:
+            - name: config
+              mountPath: /config/config.xml
+              subPath: config.xml
+              readOnly: true
+            - name: data
+              mountPath: /data
+      containers:
+        - name: sonarr
+          image: ghcr.io/linuxserver/sonarr:4.0.20@sha256:f247545d23ba8b233d6604575347e48a623fe6ad75dda02348bf81917f3b5c06 # {"$imagepolicy": "servarr:sonarr"}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8989
+          volumeMounts:
+            - name: data
+              mountPath: /config
+            - name: media
+              mountPath: /tv
+              subPath: shows
+            - name: media
+              mountPath: /downloads
+              subPath: unsorted
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: sonarr-data
+        - name: media
+          persistentVolumeClaim:
+            claimName: sonarr-media
+        - name: config
+          secret:
+            secretName: ${config_secret}

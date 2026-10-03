@@ -107,6 +107,19 @@
         "docker.io/searxng/searxng"
       ],
       "extractVersion": "^(?<version>\\d+\\.\\d+\\.\\d+)-"
+    },
+    {
+      "description": "Only the libtorrent v1 builds, matching the ImagePolicy's filter. The repo also carries a stray 20.04.1 tag that would otherwise look like a major.",
+      "matchFileNames": [
+        "lib/flux/**"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "ghcr.io/linuxserver/qbittorrent"
+      ],
+      "extractVersion": "^(?<version>\\d+\\.\\d+\\.\\d+)-libtorrentv1$"
     }
   ]
 }

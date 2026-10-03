@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: romm-retroarch-bridge
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: romm-retroarch-bridge
+    app.kubernetes.io/instance: romm-retroarch-bridge
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP

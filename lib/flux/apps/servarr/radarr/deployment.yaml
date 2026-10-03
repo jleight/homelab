@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: radarr
+  labels:
+    app.kubernetes.io/name: radarr
+    app.kubernetes.io/instance: radarr
+    app.kubernetes.io/component: movies
+    app.kubernetes.io/part-of: servarr
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: radarr
+      app.kubernetes.io/instance: radarr
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: radarr
+        app.kubernetes.io/instance: radarr
+        app.kubernetes.io/component: movies
+        app.kubernetes.io/part-of: servarr
+      annotations:
+        checksum/config: ${config_checksum}
+    spec:
+      enableServiceLinks: false
+      initContainers:
+        # config.xml is rendered whole by Terraform -- API key, URL base and
+        # database credentials -- and copied over the volume's copy on every
+        # start.
+        - name: radarr-config
+          image: ghcr.io/linuxserver/radarr:6.4.4@sha256:adb6c09d6b729ea5e642c99cea35af72702ef476bf4763f153299ac5db9f0b4f # {"$imagepolicy": "servarr:radarr"}
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - cp /config/config.xml /data/config.xml
+          volumeMounts:
+            - name: config
+              mountPath: /config/config.xml
+              subPath: config.xml
+              readOnly: true
+            - name: data
+              mountPath: /data
+      containers:
+        - name: radarr
+          image: ghcr.io/linuxserver/radarr:6.4.4@sha256:adb6c09d6b729ea5e642c99cea35af72702ef476bf4763f153299ac5db9f0b4f # {"$imagepolicy": "servarr:radarr"}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 7878
+          volumeMounts:
+            - name: data
+              mountPath: /config
+            - name: media
+              mountPath: /movies
+              subPath: movies
+            - name: media
+              mountPath: /downloads
+              subPath: unsorted
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: radarr-data
+        - name: media
+          persistentVolumeClaim:
+            claimName: radarr-media
+        - name: config
+          secret:
+            secretName: ${config_secret}

@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qbittorrent
+  labels:
+    app.kubernetes.io/name: qbittorrent
+    app.kubernetes.io/instance: qbittorrent
+    app.kubernetes.io/component: torrent
+    app.kubernetes.io/part-of: servarr
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: qbittorrent
+      app.kubernetes.io/instance: qbittorrent
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: qbittorrent
+        app.kubernetes.io/instance: qbittorrent
+        app.kubernetes.io/component: torrent
+        app.kubernetes.io/part-of: servarr
+      annotations:
+        checksum/config: ${config_checksum}
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: qbittorrent
+          image: ghcr.io/linuxserver/qbittorrent:5.2.3-libtorrentv1@sha256:190bfe3f28bef1aba8bea5f11640d61de39072e6730704b943e1d1e0dd7d3f1b # {"$imagepolicy": "servarr:qbittorrent"}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: qbittorrent
+              containerPort: 8080
+          volumeMounts:
+            # Rendered by Terraform, including the WebUI login, and mounted
+            # read-only over the copy qBittorrent would otherwise rewrite.
+            - name: config
+              mountPath: /config/qBittorrent/qBittorrent.conf
+              subPath: qBittorrent.conf
+              readOnly: true
+            - name: data
+              mountPath: /config/qBittorrent
+            - name: media
+              mountPath: /media
+        # The web UI. It reaches qBittorrent over localhost.
+        - name: flood
+          image: docker.io/jesec/flood:4.16.1@sha256:2e18f1fa2578082da70f8917bb733b1ee6593aaf9a79ded91f2890d82daca3c1 # {"$imagepolicy": "servarr:flood"}
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: qbittorrent-flood-env
+            - secretRef:
+                name: qbittorrent-flood
+          ports:
+            - name: http
+              containerPort: 3000
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: qbittorrent-data
+        - name: media
+          persistentVolumeClaim:
+            claimName: qbittorrent-media
+        - name: config
+          configMap:
+            name: qbittorrent-config

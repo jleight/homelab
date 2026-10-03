@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: romm-retroarch-bridge
+  labels:
+    app.kubernetes.io/name: romm-retroarch-bridge
+    app.kubernetes.io/instance: romm-retroarch-bridge
+    app.kubernetes.io/component: retroarch
+    app.kubernetes.io/part-of: servarr
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: romm-retroarch-bridge
+      app.kubernetes.io/instance: romm-retroarch-bridge
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: romm-retroarch-bridge
+        app.kubernetes.io/instance: romm-retroarch-bridge
+        app.kubernetes.io/component: retroarch
+        app.kubernetes.io/part-of: servarr
+      annotations:
+        checksum/secret: ${secret_checksum}
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: romm-retroarch-bridge
+          image: ghcr.io/jleight/retroarch-romm-bridge:latest@sha256:06ffa380dd3653f8ca1059f84ab99b381da6357257ad75e366d5a50006c1a559 # {"$imagepolicy": "servarr:romm-retroarch-bridge"}
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - secretRef:
+                name: romm-retroarch-bridge
+          env:
+            - name: ROMM_BASE_URL
+              value: http://romm.servarr.svc.cluster.local
+            - name: INDEX_REFRESH_INTERVAL
+              value: 1h
+            - name: STORE_PATH
+              value: /data/pairings.json
+            - name: LOG_LEVEL
+              value: info
+          ports:
+            - name: http
+              containerPort: 8080
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: romm-retroarch-bridge-data

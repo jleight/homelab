@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: romm
+  labels:
+    app.kubernetes.io/name: romm
+    app.kubernetes.io/instance: romm
+    app.kubernetes.io/component: games
+    app.kubernetes.io/part-of: servarr
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: romm
+      app.kubernetes.io/instance: romm
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: romm
+        app.kubernetes.io/instance: romm
+        app.kubernetes.io/component: games
+        app.kubernetes.io/part-of: servarr
+      annotations:
+        checksum/secret: ${secret_checksum}
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: romm
+          image: docker.io/rommapp/romm:5.2.0@sha256:3512f2ca455782f90247271bed23116e6bc675bc74e379be2c41696e607ab11e # {"$imagepolicy": "servarr:romm"}
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: romm-env
+            - secretRef:
+                name: romm
+          env:
+            - name: ROMM_DB_DRIVER
+              value: postgresql
+            - name: ROMM_PORT
+              value: "8080"
+            - name: HASHEOUS_API_ENABLED
+              value: "true"
+          ports:
+            - name: http
+              containerPort: 8080
+          volumeMounts:
+            - name: config
+              mountPath: /romm/config/config.yml
+              subPath: config.yml
+              readOnly: true
+            # The bundled Redis is only a cache and a task queue.
+            - name: redis-data
+              mountPath: /redis-data
+            - name: media
+              mountPath: /romm/library/roms
+              subPath: roms/roms
+            - name: media
+              mountPath: /romm/library/bios
+              subPath: roms/bios
+            - name: media
+              mountPath: /romm/resources
+              subPath: roms/resources
+            - name: media
+              mountPath: /romm/assets
+              subPath: roms/assets
+      volumes:
+        - name: media
+          persistentVolumeClaim:
+            claimName: romm-media
+        - name: config
+          configMap:
+            name: romm-config
+        - name: redis-data
+          emptyDir: {}

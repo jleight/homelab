@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: qbittorrent
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: qbittorrent
+    app.kubernetes.io/instance: qbittorrent
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+    # qBittorrent's own WebUI/API, which the *arrs use as a download client.
+    - name: qbittorrent
+      port: 8080
+      targetPort: qbittorrent
+      protocol: TCP

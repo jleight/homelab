@@ -1,0 +1,57 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: romm-retroarch-bridge-https
+spec:
+  parentRefs: ${gateway_parent_refs}
+  hostnames:
+    - ${domain}
+  rules:
+    # The bridge routes on root-relative paths, so strip the prefix. Its
+    # longer prefix wins over RomM's own / route.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: ${path}
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
+      backendRefs:
+        - name: romm-retroarch-bridge
+          port: 80
+---
+# Some RetroArch builds can't do HTTPS, so the bridge is served on plain
+# HTTP too.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: romm-retroarch-bridge-http
+spec:
+  parentRefs: ${gateway_http_parent_refs}
+  hostnames:
+    - ${domain}
+  rules:
+    # The bridge routes on root-relative paths, so strip the prefix. Its
+    # longer prefix wins over RomM's own / route.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: ${path}
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
+      backendRefs:
+        - name: romm-retroarch-bridge
+          port: 80
+    # Everything else on plain HTTP goes to HTTPS.
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 302
