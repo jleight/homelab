@@ -1,0 +1,16 @@
+# The whole Media share on nas02. The storage class has no subDir, so every
+# claim on it mounts the same tree, and the share is never deleted
+# (onDelete: retain). Capacity is nominal: SMB ignores it.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sabnzbd-media
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ${media_storage_class}
+  resources:
+    requests:
+      storage: 10Ti

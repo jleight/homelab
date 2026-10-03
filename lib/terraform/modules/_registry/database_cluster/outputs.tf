@@ -9,11 +9,12 @@ output "port" {
 }
 
 output "databases" {
-  description = "The database name, owner and credentials secret for each managed database."
+  description = "The database names, owner and credentials secret for each managed database user."
 
   value = {
     for k, v in var.managed_databases : k => {
-      database = k
+      database = length(local.user_databases[k]) == 1 ? one(local.user_databases[k]) : null
+      names    = local.user_databases[k]
       username = k
       secret   = kubernetes_secret_v1.credentials[k].metadata[0].name
     }

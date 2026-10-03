@@ -1,0 +1,15 @@
+# In-progress downloads. longhorn-ephemeral is single-replica, strict-local
+# and never backed up, so losing this costs a re-download at worst.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sabnzbd-incomplete
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ${incomplete_storage_class}
+  resources:
+    requests:
+      storage: 300Gi

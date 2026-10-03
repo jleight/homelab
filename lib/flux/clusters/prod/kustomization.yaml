@@ -6,5 +6,6 @@ resources:
   - household
   - kube-system
   - monitoring
+  - servarr
   - social
   - web

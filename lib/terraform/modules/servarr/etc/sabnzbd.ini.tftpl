@@ -1,0 +1,71 @@
+__version__ = 19
+__encoding__ = utf-8
+
+[misc]
+api_key = ${api_key}
+nzb_key = ${nzb_key}
+download_dir = ${download_dir}
+complete_dir = ${complete_dir}
+url_base = ${url_path}
+host_whitelist = ${url_host},${url_service}
+tv_categories = tv,
+movie_categories = movies,
+date_categories = tv,
+
+[servers]
+%{~ for k, v in servers }
+[[${k}]]
+name = ${v.host}
+displayname = ${v.host}
+host = ${v.host}
+port = ${v.port}
+username = ${v.username}
+password = ${v.password}
+connections = ${v.connections}
+ssl = ${v.ssl}
+ssl_verify = ${v.ssl_verify}
+enable = ${v.enabled}
+priority = ${v.priority}
+%{ endfor ~}
+
+[categories]
+[[*]]
+name = *
+order = 0
+pp = 3
+script = None
+dir = ""
+newzbin = ""
+priority = 0
+[[movies]]
+name = movies
+order = 1
+pp = ""
+script = Default
+dir = ""
+newzbin = ""
+priority = -100
+[[audio]]
+name = audio
+order = 3
+pp = ""
+script = Default
+dir = ""
+newzbin = ""
+priority = -100
+[[software]]
+name = software
+order = 4
+pp = ""
+script = Default
+dir = ""
+newzbin = ""
+priority = -100
+[[tv]]
+name = tv
+order = 2
+pp = ""
+script = Default
+dir = ""
+newzbin = ""
+priority = -100

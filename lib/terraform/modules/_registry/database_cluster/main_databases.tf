@@ -1,5 +1,5 @@
 resource "kubectl_manifest" "database" {
-  for_each = var.managed_databases
+  for_each = local.databases
 
   yaml_body = yamlencode({
     apiVersion = "postgresql.cnpg.io/v1"
@@ -18,7 +18,7 @@ resource "kubectl_manifest" "database" {
 
         name   = each.key
         ensure = "present"
-        owner  = each.key
+        owner  = each.value.owner
       },
       length(each.value.extensions) > 0 ? {
         extensions = [
