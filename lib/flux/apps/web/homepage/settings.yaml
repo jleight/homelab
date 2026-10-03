@@ -1,0 +1,34 @@
+title: Leighthaus
+theme: dark
+color: slate
+headerStyle: clean
+statusStyle: dot
+hideVersion: true
+useEqualHeights: true
+# Keys fix the group order. Groups come from the gethomepage.dev/group
+# annotation on discovered routes and from services.yaml, merged by name.
+layout:
+  Home:
+    style: row
+    columns: 4
+  Media:
+    style: row
+    columns: 4
+  Household:
+    style: row
+    columns: 4
+  AI:
+    style: row
+    columns: 4
+  Radio:
+    style: row
+    columns: 4
+  Mesh:
+    style: row
+    columns: 4
+  Dev:
+    style: row
+    columns: 4
+  Infrastructure:
+    style: row
+    columns: 4

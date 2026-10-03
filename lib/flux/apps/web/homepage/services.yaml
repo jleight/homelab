@@ -1,0 +1,82 @@
+# Apps whose routes are still Terraform-owned, so they cannot carry
+# gethomepage.dev annotations from here. Move each entry onto its route's
+# annotations when the app migrates to Flux. Anything discovered lands in the
+# groups below by name.
+#
+# namespace/app (or podSelector) drive the pod status dot; siteMonitor covers
+# reverse-proxied backends that have no pod of their own.
+- Household:
+    - Immich:
+        icon: immich.png
+        description: Photos
+        href: https://photos.${gateway_domain}
+        namespace: immich
+        podSelector: app.kubernetes.io/instance=immich,app.kubernetes.io/name=server
+    - OctoPrint:
+        icon: octoprint.png
+        description: 3D printer
+        href: https://octo.${gateway_domain}
+        namespace: octoprint
+        app: octoprint
+    - AMP:
+        icon: amp.png
+        description: Game servers
+        href: https://games.${gateway_domain}
+        siteMonitor: https://games.${gateway_domain}
+- AI:
+    - Odysseus:
+        icon: mdi-robot-outline
+        description: LLM harness
+        href: https://odysseus.${gateway_domain}
+        siteMonitor: https://odysseus.${gateway_domain}
+- Radio:
+    - OpenWebRX:
+        icon: openwebrx.png
+        description: SDR receiver
+        href: https://owrx.${gateway_domain}
+        namespace: sdr
+        app: openwebrx
+    - ADS-B:
+        icon: mdi-airplane
+        description: Aircraft tracking
+        href: https://sdr.${gateway_domain}
+        siteMonitor: https://sdr.${gateway_domain}
+- Mesh:
+    - CoreScope:
+        icon: mdi-radio-tower
+        description: MeshCore map
+        href: https://mesh.${gateway_domain}
+        namespace: mesh
+        app: core-scope
+    - MeshTender:
+        icon: mdi-access-point-network
+        description: MeshCore configuration
+        href: https://meshtender.com
+        namespace: mesh
+        app: meshtender
+- Dev:
+    - Forgejo:
+        icon: forgejo.png
+        description: Git
+        href: https://git.${gateway_domain}
+        namespace: forgejo
+        app: forgejo
+    - Woodpecker:
+        icon: woodpecker-ci.png
+        description: CI/CD
+        href: https://ci.${gateway_domain}
+        namespace: forgejo
+        podSelector: app.kubernetes.io/instance=woodpecker-ci,app.kubernetes.io/name=server
+- Infrastructure:
+    - Longhorn:
+        icon: longhorn.png
+        description: Storage
+        href: https://longhorn.${gateway_domain}
+        namespace: longhorn-system
+        podSelector: app=longhorn-ui
+    - SmokePing:
+        icon: smokeping.png
+        description: Latency
+        href: https://ping.${gateway_domain}
+        namespace: smokeping
+        app: smokeping

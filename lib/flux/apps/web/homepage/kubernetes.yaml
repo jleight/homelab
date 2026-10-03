@@ -1,0 +1,5 @@
+mode: cluster
+# Discover HTTPRoutes annotated gethomepage.dev/enabled: "true".
+gateway: true
+ingress: false
+traefik: false

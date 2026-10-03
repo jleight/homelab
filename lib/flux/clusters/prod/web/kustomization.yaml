@@ -5,3 +5,4 @@ resources:
   - image.yaml
   - apex.yaml
   - github-proxy.yaml
+  - homepage.yaml

@@ -2,6 +2,12 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: open-webui
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: AI
+    gethomepage.dev/name: Open WebUI
+    gethomepage.dev/description: Chat
+    gethomepage.dev/icon: open-webui.png
 spec:
   parentRefs: ${gateway_parent_refs}
   hostnames:

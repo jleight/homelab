@@ -44,3 +44,16 @@ variable "github_proxy" {
     token_item = optional(string, "GitHub - Proxy Token")
   })
 }
+
+variable "homepage" {
+  description = "Settings for the Homepage service dashboard."
+  type = object({
+    gateway_refs = list(object({
+      namespace   = string
+      name        = string
+      sectionName = string
+    }))
+    gateway_domain = string
+    subdomain      = optional(string, "dash")
+  })
+}

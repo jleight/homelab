@@ -1,12 +1,7 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: zigbee2mqtt
-  annotations:
-    gethomepage.dev/enabled: "true"
-    gethomepage.dev/group: Home
-    gethomepage.dev/name: Zigbee2MQTT
-    gethomepage.dev/icon: zigbee2mqtt.png
+  name: homepage
 spec:
   parentRefs: ${gateway_parent_refs}
   hostnames:
@@ -17,5 +12,5 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: zigbee2mqtt
-          port: 80
+        - name: homepage
+          port: 3000

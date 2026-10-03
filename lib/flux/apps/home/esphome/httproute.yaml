@@ -2,6 +2,11 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: esphome
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Home
+    gethomepage.dev/name: ESPHome
+    gethomepage.dev/icon: esphome.png
 spec:
   parentRefs: ${gateway_parent_refs}
   hostnames:
