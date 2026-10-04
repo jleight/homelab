@@ -26,7 +26,7 @@ spec:
       enableServiceLinks: false
       containers:
         - name: searxng
-          image: docker.io/searxng/searxng:2026.10.2-19ffbcd30@sha256:c642712fcedcdaa78fac44f71eada86aff510745826ba1bd1a368211fea2ce7f # {"$imagepolicy": "ai:searxng"}
+          image: docker.io/searxng/searxng:2026.10.4-44b98e610@sha256:2ddcbc64e1b96cd4c73fce2e0ddd9351f0c405d3282bed7dcbc27a4905f0811e # {"$imagepolicy": "ai:searxng"}
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
