@@ -31,7 +31,7 @@ spec:
         # database credentials -- and copied over the volume's copy on every
         # start.
         - name: radarr-config
-          image: ghcr.io/linuxserver/radarr:6.4.4@sha256:adb6c09d6b729ea5e642c99cea35af72702ef476bf4763f153299ac5db9f0b4f # {"$imagepolicy": "servarr:radarr"}
+          image: ghcr.io/linuxserver/radarr:6.4.4@sha256:7dfd049e79c00b16fbc29c3f5d96a9e7b9e73a23930b4c5b3c4541d60b366814 # {"$imagepolicy": "servarr:radarr"}
           imagePullPolicy: IfNotPresent
           command:
             - /bin/sh
@@ -46,7 +46,7 @@ spec:
               mountPath: /data
       containers:
         - name: radarr
-          image: ghcr.io/linuxserver/radarr:6.4.4@sha256:adb6c09d6b729ea5e642c99cea35af72702ef476bf4763f153299ac5db9f0b4f # {"$imagepolicy": "servarr:radarr"}
+          image: ghcr.io/linuxserver/radarr:6.4.4@sha256:7dfd049e79c00b16fbc29c3f5d96a9e7b9e73a23930b4c5b3c4541d60b366814 # {"$imagepolicy": "servarr:radarr"}
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
