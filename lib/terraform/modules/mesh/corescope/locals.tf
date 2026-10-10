@@ -13,6 +13,15 @@ locals {
       port   = local.port
       apiKey = local.api_key
 
+      webSocket = {
+        trustedProxies = [
+          module.ipam.nodes.v4_cidr,
+          module.ipam.nodes.v6_cidr,
+          module.ipam.resources.pods,
+          module.ipam.resources.services
+        ]
+      }
+
       mqttSources = [
         {
           name     = "vernemq"
