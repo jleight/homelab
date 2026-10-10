@@ -13,6 +13,15 @@ locals {
       port   = local.port
       apiKey = local.api_key
 
+      webSocket = {
+        trustedProxies = [
+          module.ipam.nodes.v4_cidr,
+          module.ipam.nodes.v6_cidr,
+          module.ipam.resources.pods,
+          module.ipam.resources.services
+        ]
+      }
+
       mqttSources = [
         {
           name     = "vernemq"
@@ -44,6 +53,20 @@ locals {
       hashRegions  = var.core_scope.hash_regions
       channelKeys  = var.core_scope.channel_keys
       hashChannels = var.core_scope.hash_channels
+
+      packetStore = {
+        retentionHours = var.core_scope.packet_store.retention_hours
+        maxMemoryMB    = var.core_scope.packet_store.max_memory_mb
+      }
+
+      # Unset retention fields fall back to the app defaults.
+      retention = {
+        packetDays = var.core_scope.packet_days
+      }
+
+      db = {
+        vacuumOnStartup = var.core_scope.vacuum_on_startup
+      }
     },
     var.core_scope.default_region == null ? {} : {
       defaultRegion = var.core_scope.default_region

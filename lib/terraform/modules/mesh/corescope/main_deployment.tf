@@ -116,6 +116,19 @@ resource "kubernetes_deployment_v1" "this" {
             container_port = local.port
           }
 
+          # Above the Go soft limit (packetStore.maxMemoryMB x 1.5) so the
+          # server GCs before the kernel kills it, and a runaway is contained
+          # to this pod rather than taking down the node.
+          resources {
+            requests = {
+              memory = var.core_scope.resources.memory_request
+            }
+
+            limits = {
+              memory = var.core_scope.resources.memory_limit
+            }
+          }
+
           volume_mount {
             name       = "data"
             mount_path = "/app/data"
