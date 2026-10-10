@@ -17,5 +17,7 @@ data "kubectl_file_documents" "this" {
 resource "kubectl_manifest" "this" {
   for_each = local.enabled ? data.kubectl_file_documents.this[0].manifests : {}
 
+  server_side_apply = true
+
   yaml_body = each.value
 }
