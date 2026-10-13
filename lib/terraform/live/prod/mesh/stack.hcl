@@ -59,7 +59,7 @@ inputs = {
     auth = {
       renovate = "docker"
       image    = "python"
-      version  = "3.14-slim"
+      version  = "3.15-slim"
     }
   }
 

@@ -21,7 +21,7 @@ inputs = {
   ghcr_deploy = {
     renovate = "docker"
     image    = "python"
-    version  = "3.14-slim"
+    version  = "3.15-slim"
 
     targets = {
       "meshtender/meshtender" = {
