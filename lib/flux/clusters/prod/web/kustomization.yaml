@@ -6,3 +6,5 @@ resources:
   - apex.yaml
   - github-proxy.yaml
   - homepage.yaml
+  - reverse-proxy-private.yaml
+  - reverse-proxy-public.yaml

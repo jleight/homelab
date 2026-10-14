@@ -36,4 +36,10 @@ inputs = {
     gateway_refs   = dependency.k8s_ingress.outputs.private_https_refs
     gateway_domain = dependency.k8s_ingress.outputs.load_balancer_domain
   }
+
+  reverse_proxy = {
+    public_gateway_refs  = dependency.k8s_ingress.outputs.public_https_refs
+    private_gateway_refs = dependency.k8s_ingress.outputs.private_https_refs
+    gateway_domain       = dependency.k8s_ingress.outputs.load_balancer_domain
+  }
 }

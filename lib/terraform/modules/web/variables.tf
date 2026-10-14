@@ -57,3 +57,20 @@ variable "homepage" {
     subdomain      = optional(string, "dash")
   })
 }
+
+variable "reverse_proxy" {
+  description = "Settings for the nginx proxies publishing non-cluster backends."
+  type = object({
+    public_gateway_refs = list(object({
+      namespace   = string
+      name        = string
+      sectionName = string
+    }))
+    private_gateway_refs = list(object({
+      namespace   = string
+      name        = string
+      sectionName = string
+    }))
+    gateway_domain = string
+  })
+}
