@@ -31,3 +31,20 @@ spec:
       backendRefs:
         - name: reverse-proxy-public
           port: 8082
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: adsb
+spec:
+  parentRefs: ${public_gateway_parent_refs}
+  hostnames:
+    - adsb.${gateway_domain}
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: reverse-proxy-public
+          port: 8083

@@ -15,6 +15,9 @@ spec:
     - name: sdr
       port: 8082
       targetPort: sdr
+    - name: adsb
+      port: 8083
+      targetPort: adsb
   selector:
     app.kubernetes.io/name: reverse-proxy-public
     app.kubernetes.io/instance: reverse-proxy-public

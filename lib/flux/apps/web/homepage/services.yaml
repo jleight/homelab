@@ -41,6 +41,11 @@
     - ADS-B:
         icon: mdi-airplane
         description: Aircraft tracking
+        href: https://adsb.${gateway_domain}
+        siteMonitor: https://adsb.${gateway_domain}
+    - SDR:
+        icon: mdi-radio-tower
+        description: Web-888 SDR receiver
         href: https://sdr.${gateway_domain}
         siteMonitor: https://sdr.${gateway_domain}
 - Mesh:
