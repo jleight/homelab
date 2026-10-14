@@ -66,33 +66,6 @@ inputs = {
     version    = "0.29.1"
   }
 
-  reverse_proxy = {
-    renovate = "docker"
-    image    = "nginx"
-    version  = "1.31.6-alpine"
-
-    services = {
-      amp = {
-        frontend_subdomain = "games"
-        backend_host       = "fwd01.leightha.us"
-        backend_port       = 8080
-        public             = true
-      }
-      odysseus = {
-        frontend_subdomain = "odysseus"
-        backend_host       = "fwd01.leightha.us"
-        backend_port       = 7000
-        public             = false
-      }
-      sdr = {
-        frontend_subdomain = "sdr"
-        backend_host       = "192.168.1.245"
-        backend_port       = 8073
-        public             = true
-      }
-    }
-  }
-
   smokeping = {
     renovate = "docker"
     image    = "lscr.io/linuxserver/smokeping"
