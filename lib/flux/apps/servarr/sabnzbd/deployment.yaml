@@ -32,7 +32,7 @@ spec:
         # sabnzbd.ini is rendered whole by Terraform and copied over the
         # volume's copy on every start.
         - name: sabnzbd-config
-          image: ghcr.io/linuxserver/sabnzbd:5.1.3@sha256:382f9bd4e3f6df2abf7bcc92edada0c5bd4d4ff26eb5416f257ac54989464fa1 # {"$imagepolicy": "servarr:sabnzbd"}
+          image: ghcr.io/linuxserver/sabnzbd:5.1.3@sha256:7a13af91cf296399e302d2fb6fc709d6e2ea15e3094f220684611fbe1dd43625 # {"$imagepolicy": "servarr:sabnzbd"}
           imagePullPolicy: IfNotPresent
           command:
             - /bin/sh
@@ -47,7 +47,7 @@ spec:
               mountPath: /config
       containers:
         - name: sabnzbd
-          image: ghcr.io/linuxserver/sabnzbd:5.1.3@sha256:382f9bd4e3f6df2abf7bcc92edada0c5bd4d4ff26eb5416f257ac54989464fa1 # {"$imagepolicy": "servarr:sabnzbd"}
+          image: ghcr.io/linuxserver/sabnzbd:5.1.3@sha256:7a13af91cf296399e302d2fb6fc709d6e2ea15e3094f220684611fbe1dd43625 # {"$imagepolicy": "servarr:sabnzbd"}
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
