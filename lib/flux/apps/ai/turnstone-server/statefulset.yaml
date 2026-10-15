@@ -32,7 +32,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: turnstone-server
-          image: ghcr.io/turnstonelabs/turnstone:1.8.6@sha256:92fdaa81e5f9ea22dc16a596b0519381b8a57beb1a09b0a32913a70852499ded # {"$imagepolicy": "ai:turnstone"}
+          image: ghcr.io/turnstonelabs/turnstone:1.8.7@sha256:8205913c5fd15405798049f15034321b54b666d4eb80a12467aae067f4d2ba56 # {"$imagepolicy": "ai:turnstone"}
           imagePullPolicy: IfNotPresent
           args:
             - turnstone-server
