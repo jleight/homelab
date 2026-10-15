@@ -18,6 +18,12 @@ variable "k8s_flux" {
       version    = string
     })
 
+    image_build_controller = object({
+      repository = string
+      chart      = string
+      version    = string
+    })
+
     distribution = object({
       registry = optional(string, "ghcr.io/fluxcd")
       version  = optional(string, "2.x")

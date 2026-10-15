@@ -132,6 +132,16 @@ inputs = {
       chart      = "flux-operator"
     }
 
+    image_build_controller = {
+      renovate = "docker"
+      image    = "ghcr.io/leightweight/charts/image-build-controller"
+      version  = "0.1.0"
+
+      # ^ hack for renovate to support oci://
+      repository = "oci://ghcr.io/leightweight/charts"
+      chart      = "image-build-controller"
+    }
+
     distribution = {
       version = "2.x"
     }
