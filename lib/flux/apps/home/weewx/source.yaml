@@ -1,0 +1,10 @@
+# WeeWX publishes no image, so it is built from its release tags.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: weewx
+spec:
+  url: https://github.com/weewx/weewx
+  ref:
+    semver: "^5"
+  interval: 1h

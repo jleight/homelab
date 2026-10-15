@@ -142,6 +142,12 @@ inputs = {
       chart      = "image-build-controller"
     }
 
+    registry = {
+      renovate = "docker"
+      image    = "docker.io/library/registry"
+      version  = "3.1.2"
+    }
+
     distribution = {
       version = "2.x"
     }

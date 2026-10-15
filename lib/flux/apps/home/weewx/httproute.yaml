@@ -1,0 +1,46 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: weewx-https
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Home
+    gethomepage.dev/name: Weather
+    gethomepage.dev/icon: mdi-weather-partly-cloudy
+spec:
+  parentRefs: ${gateway_parent_refs}
+  hostnames:
+    - ${domain}
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: weewx
+          port: 80
+---
+# The WS-2000 console's custom-server upload can't do HTTPS. Point it at this
+# hostname on port 80 with the path /data/report/?.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: weewx-http
+spec:
+  parentRefs: ${gateway_http_parent_refs}
+  hostnames:
+    - ${domain}
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /data/report
+      backendRefs:
+        - name: weewx
+          port: 8000
+    # Everything else on plain HTTP goes to HTTPS.
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 302

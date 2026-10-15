@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weewx
+  labels:
+    app.kubernetes.io/name: weewx
+    app.kubernetes.io/instance: weewx
+    app.kubernetes.io/component: weather
+    app.kubernetes.io/part-of: home
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: weewx
+      app.kubernetes.io/instance: weewx
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: weewx
+        app.kubernetes.io/instance: weewx
+        app.kubernetes.io/component: weather
+        app.kubernetes.io/part-of: home
+    spec:
+      enableServiceLinks: false
+      imagePullSecrets:
+        - name: ${registry_secret}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: weewx
+          # Starts on a tag that never exists; image automation replaces it
+          # once the first build is pushed.
+          image: ${image}:pending # {"$imagepolicy": "home:weewx"}
+          imagePullPolicy: IfNotPresent
+          # The image carries a generic station; the site goes in at startup.
+          command:
+            - sh
+            - -c
+            - >-
+              weectl station reconfigure --no-prompt
+              --config=/home/weewx/weewx-data/weewx.conf
+              --location="Buffalo, NY"
+              --latitude=42.961252
+              --longitude=-78.868401
+              --altitude=200,meter
+              && exec weewxd --config=/home/weewx/weewx-data/weewx.conf
+          ports:
+            - name: ingest
+              containerPort: 8000
+              protocol: TCP
+          volumeMounts:
+            - name: archive
+              mountPath: /home/weewx/weewx-data/archive
+            - name: html
+              mountPath: /home/weewx/weewx-data/public_html
+          resources:
+            requests:
+              cpu: 20m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+        # WeeWX only writes static reports; this serves them.
+        - name: nginx
+          image: docker.io/nginxinc/nginx-unprivileged:1.31.7-alpine@sha256:378d0c32f6562f7fd9629170797f57d2b953aa09be983b3daaf4809bb039ca00 # {"$imagepolicy": "home:weewx-nginx"}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+          volumeMounts:
+            - name: html
+              mountPath: /usr/share/nginx/html
+              readOnly: true
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              memory: 64Mi
+      volumes:
+        - name: archive
+          persistentVolumeClaim:
+            claimName: weewx-archive
+        # Reports are regenerated every archive interval, so they need not
+        # survive a restart.
+        - name: html
+          emptyDir: {}

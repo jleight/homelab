@@ -1,0 +1,53 @@
+# nginx comes first: Renovate pairs each image with the next range in the
+# file, and the weewx policy below has none.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: weewx-nginx
+spec:
+  image: docker.io/nginxinc/nginx-unprivileged
+  interval: 1h
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: weewx-nginx
+spec:
+  imageRepositoryRef:
+    name: weewx-nginx
+  filterTags:
+    pattern: '^(?P<version>\d+\.\d+\.\d+)-alpine$'
+    extract: '$version'
+  policy:
+    semver:
+      range: "^1.31.0"
+  digestReflectionPolicy: Always
+  interval: 1h
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: weewx
+spec:
+  image: ${image}
+  secretRef:
+    name: ${registry_secret}
+  interval: 5m
+---
+# Build tags are <release tag>-<short SHA>-<Unix time>, so the newest build
+# wins, whether it is a new release or a weekly rebuild of the same one.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: weewx
+spec:
+  imageRepositoryRef:
+    name: weewx
+  filterTags:
+    pattern: '^v\d+\.\d+\.\d+-[a-f0-9]+-(?P<ts>\d+)$'
+    extract: '$ts'
+  policy:
+    numerical:
+      order: asc
+  digestReflectionPolicy: Always
+  interval: 5m

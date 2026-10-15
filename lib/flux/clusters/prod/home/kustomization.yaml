@@ -7,4 +7,5 @@ resources:
   - matter-server.yaml
   - mqtt.yaml
   - zigbee2mqtt.yaml
+  - weewx.yaml
   - zwave-js-ui.yaml

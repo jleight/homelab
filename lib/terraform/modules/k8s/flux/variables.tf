@@ -9,6 +9,25 @@ variable "vault" {
   default     = "Terraform"
 }
 
+variable "backups_storage_class" {
+  description = "SMB-backed StorageClass on nas02 for the image registry's volume, which keeps it off Longhorn and out of offsite backups."
+  type        = string
+}
+
+variable "gateway_refs" {
+  description = "Gateway API parentRefs the image registry's HTTPRoute attaches to."
+  type = list(object({
+    namespace   = string
+    name        = string
+    sectionName = string
+  }))
+}
+
+variable "gateway_domain" {
+  description = "Domain for the gateway for private ingress."
+  type        = string
+}
+
 variable "k8s_flux" {
   description = "Settings for Flux and the operator that manages it."
   type = object({
@@ -22,6 +41,13 @@ variable "k8s_flux" {
       repository = string
       chart      = string
       version    = string
+    })
+
+    registry = object({
+      image     = string
+      version   = string
+      size      = optional(string, "20Gi")
+      subdomain = optional(string, "registry")
     })
 
     distribution = object({

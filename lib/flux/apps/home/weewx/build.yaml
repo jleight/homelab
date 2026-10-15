@@ -1,0 +1,51 @@
+apiVersion: build.fluxcd.leightweight.io/v1alpha1
+kind: ImageBuild
+metadata:
+  name: weewx
+spec:
+  sourceRef:
+    kind: GitRepository
+    name: weewx
+  dockerfile:
+    inline: |
+      FROM python:3.13-slim
+
+      RUN useradd --uid 1000 --create-home weewx
+
+      RUN --mount=type=bind,target=/src,rw \
+          pip install --no-cache-dir /src
+
+      USER weewx
+      WORKDIR /home/weewx
+
+      # A station with the interceptor driver, which receives the console's
+      # custom-server uploads over HTTP. observer is the Ambient/Fine Offset
+      # protocol, and 8000 keeps it off a privileged port. Logs go to stdout,
+      # since there is no syslog in the container.
+      RUN weectl station create /home/weewx/weewx-data --no-prompt \
+       && weectl extension install --yes \
+            --config=/home/weewx/weewx-data/weewx.conf \
+            https://github.com/matthewwall/weewx-interceptor/archive/master.zip \
+       && weectl station reconfigure --no-prompt \
+            --config=/home/weewx/weewx-data/weewx.conf \
+            --driver=user.interceptor \
+       && sed -i \
+            -e 's/^    device_type = .*/    device_type = observer\n    port = 8000/' \
+            /home/weewx/weewx-data/weewx.conf \
+       && printf '\n[Logging]\n    [[root]]\n        handlers = console,\n' \
+            >> /home/weewx/weewx-data/weewx.conf
+
+      EXPOSE 8000
+      ENTRYPOINT ["weewxd", "--config=/home/weewx/weewx-data/weewx.conf"]
+  push:
+    image: ${image}
+    secretRef:
+      name: ${registry_secret}
+  # A new WeeWX release rebuilds on its own; this picks up base image patches.
+  rebuildInterval: 168h
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      memory: 2Gi

@@ -49,6 +49,14 @@ variable "home_assistant" {
   default = {}
 }
 
+variable "weewx" {
+  description = "Settings for WeeWX's Terraform-owned resources."
+  type = object({
+    subdomain = optional(string, "weather")
+  })
+  default = {}
+}
+
 variable "zigbee2mqtt" {
   description = "Settings for Zigbee2MQTT's Terraform-owned resources."
   type = object({

@@ -18,6 +18,9 @@ terraform {
     onepassword = {
       source = "1Password/onepassword"
     }
+    random = {
+      source = "hashicorp/random"
+    }
     tls = {
       source = "hashicorp/tls"
     }

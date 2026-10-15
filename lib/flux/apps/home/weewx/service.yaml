@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: weewx
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: weewx
+    app.kubernetes.io/instance: weewx
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+    - name: ingest
+      port: 8000
+      targetPort: ingest
+      protocol: TCP
