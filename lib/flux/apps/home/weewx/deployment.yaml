@@ -35,20 +35,14 @@ spec:
         - name: weewx
           # Starts on a tag that never exists; image automation replaces it
           # once the first build is pushed.
-          image: ${image}:pending # {"$imagepolicy": "home:weewx"}
+          image: registry.leightha.us/home/weewx:v5.5.2-2e54b45-1792108156@sha256:abca6dcf729806d6252c7ccb52d93a4da8759359f49fc84093fe128e4931408b # {"$imagepolicy": "home:weewx"}
           imagePullPolicy: IfNotPresent
           # The image carries a generic station; the site goes in at startup.
           command:
             - sh
             - -c
             - >-
-              weectl station reconfigure --no-prompt
-              --config=/home/weewx/weewx-data/weewx.conf
-              --location="Buffalo, NY"
-              --latitude=42.961252
-              --longitude=-78.868401
-              --altitude=200,meter
-              && exec weewxd --config=/home/weewx/weewx-data/weewx.conf
+              weectl station reconfigure --no-prompt --config=/home/weewx/weewx-data/weewx.conf --location="Buffalo, NY" --latitude=42.961252 --longitude=-78.868401 --altitude=200,meter && exec weewxd --config=/home/weewx/weewx-data/weewx.conf
           ports:
             - name: ingest
               containerPort: 8000
