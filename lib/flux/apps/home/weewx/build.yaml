@@ -43,6 +43,8 @@ spec:
       name: ${registry_secret}
   # A new WeeWX release rebuilds on its own; this picks up base image patches.
   rebuildInterval: 168h
+  # Only failed builds are worth keeping around to read.
+  successfulBuildsHistoryLimit: 0
   resources:
     requests:
       cpu: 250m
