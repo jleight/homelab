@@ -2,8 +2,8 @@ module "notifications" {
   source  = "../../_registry/flux_notifications"
   context = local.context
 
-  namespace = local.namespace
-  vault     = var.vault
+  vault       = var.vault
 
-  depends_on = [kubectl_manifest.instance]
+  namespace   = local.namespace
+  instance_id = one(kubectl_manifest.instance[*].id)
 }

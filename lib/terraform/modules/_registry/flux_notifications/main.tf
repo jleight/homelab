@@ -35,6 +35,8 @@ resource "kubectl_manifest" "matrix" {
       }
     }
   })
+
+  depends_on = [var.instance_id]
 }
 
 resource "kubectl_manifest" "failures" {

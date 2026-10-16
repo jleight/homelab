@@ -1,12 +1,18 @@
+variable "vault" {
+  description = "The name of the 1Password vault containing Terraform secrets."
+  type        = string
+  default     = "Terraform"
+}
+
 variable "namespace" {
   description = "The namespace the Provider and its Alerts are created in."
   type        = string
 }
 
-variable "vault" {
-  description = "The name of the 1Password vault containing Terraform secrets."
+variable "instance_id" {
+  description = "ID of the FluxInstance that installs the notification CRDs, when it is created alongside this module. Only the Provider waits on it; a module-level depends_on would also defer the 1Password reads to apply time and show the Secret and Provider as changed whenever the instance or operator has a pending change."
   type        = string
-  default     = "Terraform"
+  default     = null
 }
 
 variable "failure_event_sources" {
