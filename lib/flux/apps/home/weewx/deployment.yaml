@@ -42,7 +42,7 @@ spec:
             - sh
             - -c
             - >-
-              weectl station reconfigure --no-prompt --config=/home/weewx/weewx-data/weewx.conf --location="Buffalo, NY" --latitude=42.961252 --longitude=-78.868401 --altitude=200,meter && exec weewxd --config=/home/weewx/weewx-data/weewx.conf
+              weectl station reconfigure --no-prompt --config=/home/weewx/weewx-data/weewx.conf --location="Kenmore, NY" --latitude=42.961252 --longitude=-78.868401 --altitude=200,meter && exec weewxd --config=/home/weewx/weewx-data/weewx.conf
           ports:
             - name: ingest
               containerPort: 8000
