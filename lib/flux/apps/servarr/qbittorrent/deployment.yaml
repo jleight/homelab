@@ -46,7 +46,7 @@ spec:
               mountPath: /media
         # The web UI. It reaches qBittorrent over localhost.
         - name: flood
-          image: docker.io/jesec/flood:4.16.2@sha256:cda0afbf900d625f9a01f11999c7f36ffa9bd7af93be058ab41e991105de75ec # {"$imagepolicy": "servarr:flood"}
+          image: docker.io/jesec/flood:4.16.3@sha256:241f172786fe958a09a55615cb4cd1b15d0aec9751f2d87dd8d7a67bcd24f0fa # {"$imagepolicy": "servarr:flood"}
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
