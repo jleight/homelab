@@ -18,9 +18,15 @@ inputs = {
     }
 
     hash_regions = [
+      "#east",
+      "#na",
+      "#northeast",
+      "#onny",
       "#us",
       "#us-ny",
-      "#us-ny-buf"
+      "#us-ny-buf",
+      "#us-ny-wny",
+      "#wny"
     ]
 
     map_defaults = {
