@@ -35,6 +35,19 @@ spec:
        && printf '\n[Logging]\n    [[root]]\n        handlers = console,\n' \
             >> /home/weewx/weewx-data/weewx.conf
 
+      # New Belchertown is the site; the stock Seasons report moves to /seasons.
+      RUN weectl extension install --yes \
+            --config=/home/weewx/weewx-data/weewx.conf \
+            https://github.com/uajqq/weewx-belchertown-new/archive/master.zip \
+       && python - <<'EOF'
+      import configobj
+      path = '/home/weewx/weewx-data/weewx.conf'
+      conf = configobj.ConfigObj(path, encoding='utf-8')
+      conf['StdReport']['SeasonsReport']['HTML_ROOT'] = 'public_html/seasons'
+      conf['StdReport']['new-belchertown']['HTML_ROOT'] = 'public_html'
+      conf.write()
+      EOF
+
       EXPOSE 8000
       ENTRYPOINT ["weewxd", "--config=/home/weewx/weewx-data/weewx.conf"]
   push:

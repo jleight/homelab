@@ -33,16 +33,16 @@ spec:
         fsGroup: 1000
       containers:
         - name: weewx
-          # Starts on a tag that never exists; image automation replaces it
-          # once the first build is pushed.
           image: registry.leightha.us/home/weewx:v5.5.2-2e54b45-1792108156@sha256:abca6dcf729806d6252c7ccb52d93a4da8759359f49fc84093fe128e4931408b # {"$imagepolicy": "home:weewx"}
           imagePullPolicy: IfNotPresent
-          # The image carries a generic station; the site goes in at startup.
+          # The image carries a generic station; site/configure.py applies
+          # this one's settings, and site/ambient.py maps its extra sensors.
           command:
             - sh
             - -c
             - >-
-              weectl station reconfigure --no-prompt --config=/home/weewx/weewx-data/weewx.conf --location="Kenmore, NY" --latitude=42.961252 --longitude=-78.868401 --altitude=200,meter && exec weewxd --config=/home/weewx/weewx-data/weewx.conf
+              python /home/weewx/site/configure.py
+              && exec weewxd --config=/home/weewx/weewx-data/weewx.conf
           ports:
             - name: ingest
               containerPort: 8000
@@ -52,6 +52,14 @@ spec:
               mountPath: /home/weewx/weewx-data/archive
             - name: html
               mountPath: /home/weewx/weewx-data/public_html
+            - name: site
+              mountPath: /home/weewx/site/configure.py
+              subPath: configure.py
+              readOnly: true
+            - name: site
+              mountPath: /home/weewx/weewx-data/bin/user/ambient.py
+              subPath: ambient.py
+              readOnly: true
           resources:
             requests:
               cpu: 20m
@@ -88,3 +96,6 @@ spec:
         # survive a restart.
         - name: html
           emptyDir: {}
+        - name: site
+          configMap:
+            name: weewx-site

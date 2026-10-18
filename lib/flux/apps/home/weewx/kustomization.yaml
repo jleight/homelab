@@ -9,3 +9,9 @@ resources:
   - deployment.yaml
   - service.yaml
   - httproute.yaml
+configMapGenerator:
+  # The name gets a content hash, so editing either file rolls the pod.
+  - name: weewx-site
+    files:
+      - site/configure.py
+      - site/ambient.py
