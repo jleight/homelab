@@ -35,7 +35,7 @@ spec:
         # The kubelet creates a missing subPath as root, which neither
         # container could use, so make the pages directory first.
         - name: html-dir
-          image: registry.leightha.us/home/weewx:v5.5.2-2e54b45-1792108156@sha256:abca6dcf729806d6252c7ccb52d93a4da8759359f49fc84093fe128e4931408b # {"$imagepolicy": "home:weewx"}
+          image: registry.leightha.us/home/weewx:v5.5.2-2e54b45-1792356741@sha256:f2cc57fd96b44cb27b678dd9eef124628862e33f17533a5c395c621d635cb31d # {"$imagepolicy": "home:weewx"}
           imagePullPolicy: IfNotPresent
           command:
             - mkdir
