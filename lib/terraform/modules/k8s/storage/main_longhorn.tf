@@ -66,6 +66,19 @@ resource "helm_release" "longhorn" {
       name  = "defaultSettings.defaultBackupBlockSize"
       value = "16"
       type  = "string"
+    },
+    {
+      name  = "defaultSettings.offlineReplicaRebuilding"
+      value = "true"
+      type  = "string"
+    },
+    {
+      # The default policy blocks draining a node that holds a strict-local
+      # (single replica) volume forever, e.g. sabnzbd's scratch volume.
+      # Revisit once https://github.com/longhorn/longhorn/issues/8753 ships.
+      name  = "defaultSettings.nodeDrainPolicy"
+      value = "allow-if-replica-is-stopped"
+      type  = "string"
     }
   ]
 }
