@@ -36,6 +36,7 @@ You should upgrade to the latest patch version before upgrading to the next mino
 1. Modify the version in the `k8s/cluster/variables.tf` file.
 2. Apply the module.
 3. Run the `talosctl upgrade` commands (one for each node) that the module outputs.
+   Wait for Longhorn to finish rebuilding (no `degraded` volumes) before moving on to the next node.
 
 Then, upgrade kubernetes.
 Again, upgrade to the latest patch version before upgrading to the next minor version.

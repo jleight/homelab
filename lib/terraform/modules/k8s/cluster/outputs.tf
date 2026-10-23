@@ -16,8 +16,7 @@ output "upgrade_machines" {
         "--nodes",
         local.node_ips.v4[k],
         "--image",
-        local.node_images[k],
-        "--preserve"
+        local.node_images[k]
       ]
     )
   }

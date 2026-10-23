@@ -11,6 +11,12 @@ data "talos_machine_configuration" "control_plane" {
   machine_secrets = try(talos_machine_secrets.this[0].machine_secrets, null)
   machine_type    = "controlplane"
 
+  # Pinned on purpose, independent of the installed Talos version. Without it
+  # the provider generates config for its own (newer) Talos, which older nodes
+  # can't decode and which turns on new-cluster defaults (e.g. 1.14's workload
+  # isolation). Newer Talos keeps accepting older config, so this only moves
+  # when the patches are migrated to the new config documents.
+  talos_version      = "v1.13"
   kubernetes_version = var.k8s_version
 }
 
