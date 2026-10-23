@@ -41,6 +41,10 @@ resource "kubectl_manifest" "postgres" {
 
       primaryUpdateStrategy = "unsupervised"
 
+      # Default 180s waits for long-lived clients to disconnect before a
+      # switchover, refusing new connections the whole time (e.g. node drains).
+      smartShutdownTimeout = 15
+
       storage = {
         storageClass = var.data_storage_class
         size         = "5Gi"
