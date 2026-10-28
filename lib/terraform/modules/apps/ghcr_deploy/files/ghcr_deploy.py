@@ -5,6 +5,11 @@ GitHub cannot deliver webhooks for a container registry directly; it delivers a
 listens for those, and for any package it has been explicitly told about, rolls
 the matching Deployment onto the current digest of the tracked tag.
 
+GitHub's package deliveries are not prompt - they have been observed arriving
+hours after the push - so the same reconcile also runs on a timer against every
+target. The webhook is the fast path; the poll bounds how stale a Deployment can
+get when GitHub is slow.
+
 Deliberately stdlib-only. This is the one process in the cluster that is exposed
 to the internet *and* holds write access to a Deployment, so it carries no
 dependency supply chain, needs no build step, and ships as a single file mounted
@@ -28,6 +33,7 @@ import json
 import os
 import ssl
 import sys
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -56,6 +62,11 @@ SA_CA_FILE = f"{SA_DIR}/ca.crt"
 MAX_BODY_BYTES = 1 << 20
 
 HTTP_TIMEOUT = 10
+
+# Serializes reconciles. A single build fires several package events at once and
+# the poll can land alongside them; the patch is idempotent either way, but one at
+# a time keeps the compare-then-patch honest and the logs readable.
+DEPLOY_LOCK = threading.Lock()
 
 
 def log(message):
@@ -232,13 +243,21 @@ def patch_image(namespace, name, container, image, digest_env_var=None, digest=N
 # ──────────────────────────────────────────────────────────────────────────────
 
 
-def deploy(key, target):
+def deploy(key, target, quiet=False):
     """Reconcile one target onto the current digest of its tracked tag.
 
     Pinning by digest rather than tag is what makes this both idempotent (a
     redelivery resolves the same digest and no-ops) and honest about what is
     running (the Deployment records exactly which build it is on).
+
+    quiet suppresses the no-op log line, which the poll would otherwise emit for
+    every target on every pass.
     """
+    with DEPLOY_LOCK:
+        return _deploy(key, target, quiet)
+
+
+def _deploy(key, target, quiet):
     repository = target["repository"]
     tag = target["tag"]
 
@@ -266,7 +285,8 @@ def deploy(key, target):
     # variable was never populated (first rollout after enabling it) still needs
     # the patch.
     if running == image and (not digest_env_var or running_digest_env == digest):
-        log(f"{key}: {namespace}/{name} already on {digest}, nothing to do")
+        if not quiet:
+            log(f"{key}: {namespace}/{name} already on {digest}, nothing to do")
         return "unchanged"
 
     patch_image(namespace, name, container, image, digest_env_var, digest)
@@ -274,6 +294,22 @@ def deploy(key, target):
     extra = f" ({digest_env_var}={digest})" if digest_env_var else ""
     log(f"{key}: patched {namespace}/{name} {running} -> {image}{extra}")
     return "patched"
+
+
+def poll(targets, interval):
+    """Reconcile every target now, then every `interval` seconds, forever.
+
+    The first pass runs at startup, so anything published while this pod was
+    down is picked up without waiting for a delivery that may already be spent.
+    """
+    while True:
+        for key, target in sorted(targets.items()):
+            try:
+                deploy(key, target, quiet=True)
+            except Exception as error:  # noqa: BLE001 - next pass retries
+                log(f"{key}: poll failed: {type(error).__name__}: {error}")
+
+        time.sleep(interval)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -412,9 +448,18 @@ def main():
 
     port = int(os.environ.get("GHCR_DEPLOY_PORT", "8080"))
 
+    # Zero disables the poll and leaves the webhook as the only trigger.
+    poll_interval = int(os.environ.get("GHCR_DEPLOY_POLL_INTERVAL", "300"))
+
     log(f"listening on :{port}{Handler.webhook_path} for {len(targets)} target(s)")
     for key, target in sorted(targets.items()):
         log(f"  {key}:{target['tag']} -> {target['namespace']}/{target['deployment']}")
+
+    if poll_interval > 0:
+        log(f"polling all targets every {poll_interval}s")
+        threading.Thread(
+            target=poll, args=(targets, poll_interval), name="poll", daemon=True
+        ).start()
 
     ThreadingHTTPServer(("", port), Handler).serve_forever()
 

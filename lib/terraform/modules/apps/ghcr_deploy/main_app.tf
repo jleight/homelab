@@ -28,6 +28,8 @@ module "app" {
     GHCR_DEPLOY_PORT    = tostring(local.port)
     GHCR_DEPLOY_PATH    = var.ghcr_deploy.webhook_path
     GHCR_DEPLOY_TARGETS = "/etc/ghcr-deploy/targets.json"
+
+    GHCR_DEPLOY_POLL_INTERVAL = tostring(var.ghcr_deploy.poll_interval)
   }
 
   env_from_secrets = [local.secret_name]

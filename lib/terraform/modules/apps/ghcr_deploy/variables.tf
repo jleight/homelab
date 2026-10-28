@@ -37,6 +37,11 @@ variable "ghcr_deploy" {
     # Path the webhook is served on. Anything else 404s, signature or not.
     webhook_path = optional(string, "/webhook")
 
+    # Seconds between reconciles of every target, independent of the webhook.
+    # GitHub's package deliveries can lag the push by hours, so this bounds how
+    # long a published build can sit undeployed. 0 disables it.
+    poll_interval = optional(number, 300)
+
     # Optional PAT for reading private GHCR packages. Public packages resolve
     # anonymously and need nothing here.
     ghcr_token = optional(string)
