@@ -27,13 +27,13 @@ variable "gateway_hostnames" {
 variable "internal_users" {
   description = "List of usernames that bypass the JWT path via username/password. One password is generated per name and surfaced via outputs."
   type        = list(string)
-  default     = ["core_scope", "meshtender"]
+  default     = ["core_scope"]
 }
 
 variable "subscriber_users" {
   description = "List of usernames for read-only third-party subscribers. They authenticate with a generated password, may subscribe under meshcore/, and may never publish."
   type        = list(string)
-  default     = ["neonx"]
+  default     = ["meshtender", "neonx"]
 
   validation {
     condition     = length(setintersection(var.subscriber_users, var.internal_users)) == 0
