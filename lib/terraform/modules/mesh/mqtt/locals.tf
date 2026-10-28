@@ -18,7 +18,14 @@ locals {
     for u in var.internal_users : u => random_password.user[u].result
   } : {}
 
-  internal_users_json = jsonencode(local.internal_users)
+  # Username -> generated password for read-only third-party subscribers. The
+  # webhook lets these subscribe under meshcore/ and denies every publish.
+  subscriber_users = local.enabled ? {
+    for u in var.subscriber_users : u => random_password.subscriber[u].result
+  } : {}
+
+  internal_users_json   = jsonencode(local.internal_users)
+  subscriber_users_json = jsonencode(local.subscriber_users)
 
   auth_match_labels = {
     "app.kubernetes.io/name"     = local.auth_name

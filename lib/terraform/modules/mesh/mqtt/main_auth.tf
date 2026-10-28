@@ -5,6 +5,13 @@ resource "random_password" "user" {
   special = false
 }
 
+resource "random_password" "subscriber" {
+  for_each = local.enabled ? toset(var.subscriber_users) : []
+
+  length  = 32
+  special = false
+}
+
 resource "kubernetes_config_map_v1" "auth_code" {
   count = local.enabled ? 1 : 0
 
@@ -31,7 +38,8 @@ resource "kubernetes_secret_v1" "auth_internal" {
   }
 
   data = {
-    users = local.internal_users_json
+    users       = local.internal_users_json
+    subscribers = local.subscriber_users_json
   }
 }
 
@@ -78,6 +86,9 @@ resource "kubernetes_deployment_v1" "auth" {
           # effect until the pods restart. Hash the map in so Terraform rolls
           # them for us.
           "checksum/internal-users" = sha256(local.internal_users_json)
+
+          # Same story for SUBSCRIBER_USERS.
+          "checksum/subscriber-users" = sha256(local.subscriber_users_json)
         }
       }
 
@@ -104,6 +115,16 @@ resource "kubernetes_deployment_v1" "auth" {
               secret_key_ref {
                 name = kubernetes_secret_v1.auth_internal[0].metadata[0].name
                 key  = "users"
+              }
+            }
+          }
+
+          env {
+            name = "SUBSCRIBER_USERS"
+            value_from {
+              secret_key_ref {
+                name = kubernetes_secret_v1.auth_internal[0].metadata[0].name
+                key  = "subscribers"
               }
             }
           }

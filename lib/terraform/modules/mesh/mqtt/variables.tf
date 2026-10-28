@@ -30,6 +30,17 @@ variable "internal_users" {
   default     = ["core_scope", "meshtender"]
 }
 
+variable "subscriber_users" {
+  description = "List of usernames for read-only third-party subscribers. They authenticate with a generated password, may subscribe under meshcore/, and may never publish."
+  type        = list(string)
+  default     = ["neonx"]
+
+  validation {
+    condition     = length(setintersection(var.subscriber_users, var.internal_users)) == 0
+    error_message = "A username cannot be both an internal user and a subscriber user."
+  }
+}
+
 variable "mqtt" {
   description = "VerneMQ + auth webhook configuration."
   type = object({

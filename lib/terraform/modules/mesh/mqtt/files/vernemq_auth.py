@@ -9,6 +9,9 @@ External publishers authenticate with:
 
 The internal listener (used by CoreScope to subscribe) bypasses the JWT path
 via a fixed username/password pair injected through the environment.
+
+Read-only third-party subscribers also use a username/password pair, but may
+only subscribe under meshcore/ and may never publish.
 """
 
 import base64
@@ -28,6 +31,9 @@ USERNAME_PREFIX = "v1_"
 # Each in-cluster service (e.g. CoreScope) gets its own entry so they can be
 # rotated independently.
 INTERNAL_USERS = json.loads(os.environ["INTERNAL_USERS"])
+# Map of {username: password} for read-only third-party subscribers.
+SUBSCRIBER_USERS = json.loads(os.environ["SUBSCRIBER_USERS"])
+SUBSCRIBER_TOPIC_PREFIX = "meshcore/"
 # Comma-separated list — clients may set their `audience` to any of these and
 # the JWT will be accepted. Lets us serve the same broker under multiple
 # public hostnames (e.g. leightha.us and wnymeshcore.org).
@@ -140,6 +146,13 @@ def handle_register(body, peer):
         log.warning("register deny: internal user=%s bad password client_id=%s peer=%s", username, client_id, peer)
         return deny("bad internal credentials")
 
+    if username in SUBSCRIBER_USERS:
+        if password == SUBSCRIBER_USERS[username]:
+            log.info("register ok: subscriber user=%s client_id=%s peer=%s", username, client_id, peer)
+            return ok()
+        log.warning("register deny: subscriber user=%s bad password client_id=%s peer=%s", username, client_id, peer)
+        return deny("bad subscriber credentials")
+
     pubkey = extract_pubkey(username)
     if pubkey is None:
         log.warning(
@@ -168,6 +181,10 @@ def handle_publish(body, peer):
 
     if username in INTERNAL_USERS:
         return ok()
+
+    if username in SUBSCRIBER_USERS:
+        log.warning("publish deny: subscriber user=%s topic=%s client_id=%s", username, topic, client_id)
+        return deny("subscribers may not publish")
 
     pubkey = extract_pubkey(username)
     if pubkey is None:
@@ -203,6 +220,17 @@ def handle_subscribe(body, peer):
     if username in INTERNAL_USERS:
         log.info("subscribe ok: internal user=%s topics=%s client_id=%s", username, topics, client_id)
         return ok()
+
+    if username in SUBSCRIBER_USERS:
+        # Each entry is {"topic": ..., "qos": ...}. Deny the whole request if any
+        # filter reaches outside meshcore/ — that also rules out bare `#`,
+        # leading wildcards, and $share/ shared subscriptions.
+        filters = [t.get("topic") or "" for t in topics]
+        if filters and all(f.startswith(SUBSCRIBER_TOPIC_PREFIX) for f in filters):
+            log.info("subscribe ok: subscriber user=%s topics=%s client_id=%s", username, filters, client_id)
+            return ok()
+        log.warning("subscribe deny: subscriber user=%s topics=%s client_id=%s", username, filters, client_id)
+        return deny("topic not allowed for subscriber")
 
     pubkey = extract_pubkey(username)
     log.warning(
@@ -263,8 +291,9 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     log.info(
-        "listening on :8080 (audiences=%s, internal_users=%s)",
+        "listening on :8080 (audiences=%s, internal_users=%s, subscriber_users=%s)",
         sorted(EXPECTED_AUDIENCES),
         sorted(INTERNAL_USERS),
+        sorted(SUBSCRIBER_USERS),
     )
     HTTPServer(("0.0.0.0", 8080), Handler).serve_forever()

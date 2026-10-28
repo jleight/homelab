@@ -14,6 +14,17 @@ output "users" {
   sensitive = true
 }
 
+output "subscriber_users" {
+  description = "Map of read-only subscriber user => {username, password}, for handing to third parties."
+  value = local.enabled ? {
+    for u in var.subscriber_users : u => {
+      username = u
+      password = local.subscriber_users[u]
+    }
+  } : {}
+  sensitive = true
+}
+
 output "public_hostnames" {
   description = "Public hostnames the broker serves via the LB."
   value       = var.gateway_hostnames
