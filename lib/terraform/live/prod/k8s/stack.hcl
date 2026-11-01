@@ -135,7 +135,7 @@ inputs = {
     image_build_controller = {
       renovate = "docker"
       image    = "ghcr.io/leightweight/charts/image-build-controller"
-      version  = "0.2.1"
+      version  = "0.2.2"
 
       # ^ hack for renovate to support oci://
       repository = "oci://ghcr.io/leightweight/charts"
