@@ -94,7 +94,7 @@ inputs = {
     cloudflare = {
       renovate   = "github-tags"
       repository = "adyanth/cloudflare-operator"
-      version    = "v0.13.1"
+      version    = "v0.14.0"
       url_format = "https://github.com/%s/config/default?ref=%s"
     }
 
