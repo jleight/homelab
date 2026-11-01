@@ -1,0 +1,47 @@
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: openwebrx
+spec:
+  image: docker.io/slechev/openwebrxplus-softmbe
+  interval: 1h
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: openwebrx
+spec:
+  imageRepositoryRef:
+    name: openwebrx
+  filterTags:
+    pattern: '^(?P<version>\d+\.\d+\.\d+)$'
+    extract: '$version'
+  policy:
+    semver:
+      range: "^1.0.0"
+  digestReflectionPolicy: Always
+  interval: 1h
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: yq
+spec:
+  image: docker.io/mikefarah/yq
+  interval: 1h
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: yq
+spec:
+  imageRepositoryRef:
+    name: yq
+  filterTags:
+    pattern: '^(?P<version>\d+\.\d+\.\d+)$'
+    extract: '$version'
+  policy:
+    semver:
+      range: "^4.0.0"
+  digestReflectionPolicy: Always
+  interval: 1h

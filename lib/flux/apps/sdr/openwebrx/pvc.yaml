@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: openwebrx-data
+  annotations:
+    # Holds the admin account and everything set in the web UI. Never let a
+    # bad commit prune it.
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ${data_storage_class}
+  resources:
+    requests:
+      storage: 1Gi

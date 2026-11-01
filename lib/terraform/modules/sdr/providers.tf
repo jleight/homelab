@@ -15,14 +15,6 @@ terraform {
   }
 }
 
-provider "kubectl" {
-  config_path = local.kubeconfig_file
-}
-
-provider "kubernetes" {
-  config_path = local.kubeconfig_file
-}
-
 provider "onepassword" {
   account = "my.1password.com"
 }

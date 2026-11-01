@@ -1,0 +1,111 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openwebrx
+  labels:
+    app.kubernetes.io/name: openwebrx
+    app.kubernetes.io/instance: openwebrx
+    app.kubernetes.io/component: receiver
+    app.kubernetes.io/part-of: sdr
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: openwebrx
+      app.kubernetes.io/instance: openwebrx
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: openwebrx
+        app.kubernetes.io/instance: openwebrx
+        app.kubernetes.io/component: receiver
+        app.kubernetes.io/part-of: sdr
+    spec:
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      initContainers:
+        # Deep-merges the committed settings.yaml (receiver identity, devices
+        # and band profiles) over the live settings.json, so those keys win
+        # while anything set in the web UI (rendering prefs, reporting,
+        # rf_gain) is kept. Devices are the exception: any `sdrs` entry not in
+        # settings.yaml is dropped, so removing a dongle there removes it from
+        # OpenWebRX too. The schema version is left as-is, or defaulted to 8 on
+        # an empty volume. Runs as root to chown the file back to the openwebrx
+        # user (103:104) so the app can keep rewriting it.
+        - name: merge-settings
+          image: docker.io/mikefarah/yq:4.54.1@sha256:4b3d9475d65571d28cbb19544d3820ec2945e4c8b2f18279394282b8dc3a592e # {"$imagepolicy": "sdr:yq"}
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 0
+          command:
+            - sh
+            - -c
+            - >-
+              set -e;
+              f=/var/lib/openwebrx/settings.json;
+              [ -s "$f" ] || echo '{}' > "$f";
+              yq -i -p json -o json
+              'load("/managed/settings.yaml") as $s
+              | (. * $s)
+              | .sdrs |= with_entries(select(.key as $k | $s.sdrs | has($k)))
+              | .version = (.version // 8)'
+              "$f";
+              chown 103:104 "$f"
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/openwebrx
+              subPath: var
+            - name: managed-settings
+              mountPath: /managed
+              readOnly: true
+      containers:
+        - name: openwebrx
+          image: docker.io/slechev/openwebrxplus-softmbe:1.2.128@sha256:484625f4f158d18b57b6d5590b0de3c41d59cce7f3fae60e070fe352a6d98a26 # {"$imagepolicy": "sdr:openwebrx"}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TZ
+              value: America/New_York
+            # Only read on first boot, to create the admin account on an empty
+            # volume.
+            - name: OPENWEBRX_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ${admin_user_secret}
+                  key: username
+            - name: OPENWEBRX_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ${admin_user_secret}
+                  key: password
+          ports:
+            - name: http
+              containerPort: 8073
+          resources:
+            limits:
+              # Both dongles, bind-mounted by the generic-device-plugin. They
+              # hang off the same node, so this also pins the pod there.
+              devices.k8s.leightha.us/sdr-shortwave: "1"
+              devices.k8s.leightha.us/sdr-trunk: "1"
+          volumeMounts:
+            # One volume holds both the config and data trees, each under its
+            # own subPath.
+            - name: data
+              mountPath: /etc/openwebrx
+              subPath: config
+            - name: data
+              mountPath: /var/lib/openwebrx
+              subPath: var
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: openwebrx-data
+        - name: managed-settings
+          configMap:
+            name: openwebrx-settings
+        # Fast scratch space for the decoders, kept off the PVC.
+        - name: tmp
+          emptyDir: {}
