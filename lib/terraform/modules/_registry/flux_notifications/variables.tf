@@ -41,6 +41,9 @@ variable "failure_exclusions" {
     "server misbehaving",
     # Registry or forge having a bad moment.
     "status code 50[234]",
+    # GHCR throttling the paginated tag listing of huge linuxserver repos
+    # (radarr, sabnzbd) around the top of the hour; the backoff retry lands.
+    "^scan failed: .*TOOMANYREQUESTS",
     # The API server rejecting a controller's token, seen while etcd was unhealthy.
     "^Unauthorized$",
     # A new ImagePolicy asked before its ImageRepository's first scan landed.
