@@ -41,8 +41,14 @@ inputs = {
 
     hash_channels = [
       "#bbq",
+      "#east",
       "#emergency",
+      "#na",
+      "#northeast",
+      "#ny",
+      "#onny",
       "#test",
+      "#us",
       "#wardriving",
       "#weather",
       "#wny",
