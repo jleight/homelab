@@ -44,3 +44,18 @@ variable "mealie" {
     allow_signup = optional(bool, false)
   })
 }
+
+variable "orca_tasks" {
+  description = "Settings for orca-tasks' Terraform-owned resources."
+  type = object({
+    attachments_storage_class = string
+
+    gateway_refs = list(object({
+      namespace   = string
+      name        = string
+      sectionName = string
+    }))
+    gateway_domain = string
+    subdomain      = optional(string, "tasks")
+  })
+}

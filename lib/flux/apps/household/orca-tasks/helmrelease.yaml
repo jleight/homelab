@@ -1,0 +1,41 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: orca-tasks
+spec:
+  releaseName: orca-tasks
+  interval: 30m
+  chart:
+    spec:
+      chart: orca-tasks
+      # The chart's appVersion is the image tag, so this one range follows both.
+      # Admits the release candidate until 0.1.0 is out; then it becomes ^0.
+      version: ">=0.1.0-rc.1"
+      interval: 1h
+      sourceRef:
+        kind: HelmRepository
+        name: leightweight
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    baseURL: https://${domain}
+
+    database:
+      existingSecret: ${secret_name}
+      key: database-url
+
+    secretKey:
+      existingSecret: ${secret_name}
+      key: secret-key
+
+    trustedProxies: ${trusted_proxies}
+
+    persistence:
+      existingClaim: orca-tasks-attachments
+
+    podAnnotations:
+      checksum/secret: ${secret_checksum}

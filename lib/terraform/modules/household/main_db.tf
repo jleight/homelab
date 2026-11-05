@@ -5,6 +5,7 @@ module "database_cluster" {
   data_storage_class = var.database_storage_class
 
   managed_databases = {
-    mealie = {}
+    mealie    = {}
+    orcatasks = {}
   }
 }

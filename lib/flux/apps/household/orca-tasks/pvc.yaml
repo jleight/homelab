@@ -1,0 +1,15 @@
+# Owned here rather than by the chart, so the storage class comes from
+# Terraform and the claim never depends on the chart's keep annotation.
+# Attachments are opened, read and written whole, so the SMB share is safe,
+# like Open WebUI's uploads.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: orca-tasks-attachments
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ${attachments_storage_class}
+  resources:
+    requests:
+      storage: 10Gi

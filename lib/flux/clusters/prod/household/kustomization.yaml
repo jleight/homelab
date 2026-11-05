@@ -4,3 +4,4 @@ namespace: household
 resources:
   - isponsorblocktv.yaml
   - mealie.yaml
+  - orca-tasks.yaml
