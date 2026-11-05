@@ -9,8 +9,7 @@ spec:
     spec:
       chart: orca-tasks
       # The chart's appVersion is the image tag, so this one range follows both.
-      # Admits the release candidate until 0.1.0 is out; then it becomes ^0.
-      version: ">=0.1.0-rc.1"
+      version: "^0"
       interval: 1h
       sourceRef:
         kind: HelmRepository
