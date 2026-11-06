@@ -35,7 +35,7 @@ spec:
         # an empty volume. Runs as root to chown the file back to the openwebrx
         # user (103:104) so the app can keep rewriting it.
         - name: merge-settings
-          image: docker.io/mikefarah/yq:4.54.1@sha256:4b3d9475d65571d28cbb19544d3820ec2945e4c8b2f18279394282b8dc3a592e # {"$imagepolicy": "sdr:yq"}
+          image: docker.io/mikefarah/yq:4.54.2@sha256:5d56494617dce8311106e905aac5c080a2087c905a7f7de2984db2e2cc60ab2e # {"$imagepolicy": "sdr:yq"}
           imagePullPolicy: IfNotPresent
           securityContext:
             runAsUser: 0
@@ -43,16 +43,7 @@ spec:
             - sh
             - -c
             - >-
-              set -e;
-              f=/var/lib/openwebrx/settings.json;
-              [ -s "$f" ] || echo '{}' > "$f";
-              yq -i -p json -o json
-              'load("/managed/settings.yaml") as $s
-              | (. * $s)
-              | .sdrs |= with_entries(select(.key as $k | $s.sdrs | has($k)))
-              | .version = (.version // 8)'
-              "$f";
-              chown 103:104 "$f"
+              set -e; f=/var/lib/openwebrx/settings.json; [ -s "$f" ] || echo '{}' > "$f"; yq -i -p json -o json 'load("/managed/settings.yaml") as $s | (. * $s) | .sdrs |= with_entries(select(.key as $k | $s.sdrs | has($k))) | .version = (.version // 8)' "$f"; chown 103:104 "$f"
           volumeMounts:
             - name: data
               mountPath: /var/lib/openwebrx
