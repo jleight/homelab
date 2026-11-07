@@ -28,7 +28,7 @@ spec:
       enableServiceLinks: false
       containers:
         - name: turnstone-console
-          image: ghcr.io/turnstonelabs/turnstone:1.9.2@sha256:c4a0734784c5d3230f1c87c4a24aeee93b888a4b4a56d34efb70a0132a5f70d7 # {"$imagepolicy": "ai:turnstone"}
+          image: ghcr.io/turnstonelabs/turnstone:1.9.3@sha256:5d70c470b5474e9f854296fda47545aff931bf446b750462c31e47174c83897a # {"$imagepolicy": "ai:turnstone"}
           imagePullPolicy: IfNotPresent
           args:
             - turnstone-console
