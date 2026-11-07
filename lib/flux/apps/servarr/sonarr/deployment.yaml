@@ -31,7 +31,7 @@ spec:
         # database credentials -- and copied over the volume's copy on every
         # start.
         - name: sonarr-config
-          image: ghcr.io/linuxserver/sonarr:4.0.20@sha256:3b8c947d7fa173f70e40047d2c8d02835fb8416aeb5ae36def57d9ad15e2f906 # {"$imagepolicy": "servarr:sonarr"}
+          image: ghcr.io/linuxserver/sonarr:4.0.20@sha256:673dc4609a5672bc8e46069c86ffcea283a86b48d34a6c93d8da8c24a1b87571 # {"$imagepolicy": "servarr:sonarr"}
           imagePullPolicy: IfNotPresent
           command:
             - /bin/sh
@@ -46,7 +46,7 @@ spec:
               mountPath: /data
       containers:
         - name: sonarr
-          image: ghcr.io/linuxserver/sonarr:4.0.20@sha256:3b8c947d7fa173f70e40047d2c8d02835fb8416aeb5ae36def57d9ad15e2f906 # {"$imagepolicy": "servarr:sonarr"}
+          image: ghcr.io/linuxserver/sonarr:4.0.20@sha256:673dc4609a5672bc8e46069c86ffcea283a86b48d34a6c93d8da8c24a1b87571 # {"$imagepolicy": "servarr:sonarr"}
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
