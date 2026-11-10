@@ -33,7 +33,7 @@ spec:
         # itself but never config.xml, so a root-owned copy would leave the
         # app, running as PUID:PGID, unable to open it.
         - name: chaptarr-config
-          image: docker.io/chaptarr/chaptarr:0.9.999@sha256:4a38f9600281ec0d27aaabf6d90086edc2c67d44168fa41d0426c06a27f53da1 # {"$imagepolicy": "servarr:chaptarr"}
+          image: docker.io/chaptarr/chaptarr:0.9.1000@sha256:7bc5774c79bd6e2deb633dd8555116a672b56be03e2b756b29fb86bedd44944c # {"$imagepolicy": "servarr:chaptarr"}
           imagePullPolicy: IfNotPresent
           command:
             - /bin/sh
@@ -48,7 +48,7 @@ spec:
               mountPath: /data
       containers:
         - name: chaptarr
-          image: docker.io/chaptarr/chaptarr:0.9.999@sha256:4a38f9600281ec0d27aaabf6d90086edc2c67d44168fa41d0426c06a27f53da1 # {"$imagepolicy": "servarr:chaptarr"}
+          image: docker.io/chaptarr/chaptarr:0.9.1000@sha256:7bc5774c79bd6e2deb633dd8555116a672b56be03e2b756b29fb86bedd44944c # {"$imagepolicy": "servarr:chaptarr"}
           imagePullPolicy: IfNotPresent
           env:
             - name: PUID
