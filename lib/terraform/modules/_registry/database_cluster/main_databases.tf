@@ -22,10 +22,16 @@ resource "kubectl_manifest" "database" {
       },
       length(each.value.extensions) > 0 ? {
         extensions = [
-          for name in each.value.extensions : {
-            name   = name
-            ensure = "present"
-          }
+          for name in each.value.extensions : merge(
+            {
+              name   = name
+              ensure = "present"
+            },
+            # Pinning the version is what upgrades an extension in place when its image changes.
+            contains(keys(var.extension_images), name) ? {
+              version = var.extension_images[name].version
+            } : {}
+          )
         ]
       } : {}
     )

@@ -9,6 +9,31 @@ variable "database_storage_class" {
   type        = string
 }
 
+variable "database_extensions" {
+  description = "Extension images for the namespace-wide database cluster. The tags carry the Postgres major, so they move with the cluster's."
+  type = object({
+    vchord = object({
+      image   = string
+      version = string
+    })
+  })
+}
+
+variable "immich" {
+  description = "Settings for Immich's Terraform-owned resources."
+  type = object({
+    media_storage_class = string
+
+    gateway_refs = list(object({
+      namespace   = string
+      name        = string
+      sectionName = string
+    }))
+    gateway_domain = string
+    subdomain      = optional(string, "photos")
+  })
+}
+
 variable "isponsorblocktv" {
   description = "Settings for iSponsorBlockTV's Terraform-owned resources."
   type = object({

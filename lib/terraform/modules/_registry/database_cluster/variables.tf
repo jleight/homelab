@@ -20,6 +20,25 @@ variable "storage" {
   default     = "10Gi"
 }
 
+variable "extension_images" {
+  description = "Extension images mounted into every instance, keyed by the extension each provides. Databases that list the extension get it at this version."
+  type = map(object({
+    image   = string
+    version = string
+
+    # Where the image keeps its files, when that is not CNPG's /lib and /share.
+    dynamic_library_path   = optional(list(string))
+    extension_control_path = optional(list(string))
+  }))
+  default = {}
+}
+
+variable "shared_preload_libraries" {
+  description = "Libraries every instance loads at startup."
+  type        = list(string)
+  default     = []
+}
+
 variable "managed_databases" {
   description = "Configuration for each database in the cluster."
   type = map(object({

@@ -120,6 +120,13 @@
         "ghcr.io/linuxserver/qbittorrent"
       ],
       "extractVersion": "^(?<version>\\d+\\.\\d+\\.\\d+)-libtorrentv1$"
+    },
+    {
+      "description": "VectorChord's CNPG extension image. Tags are pg<major>-v<version>, plus per-arch copies the pattern skips; the Postgres major is compatibility, so only VectorChord itself moves. Terraform derives the extension version from the tag and upgrades it in place.",
+      "matchPackageNames": [
+        "ghcr.io/tensorchord/vchord-scratch"
+      ],
+      "versioning": "regex:^pg(?<compatibility>\\d+)-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$"
     }
   ]
 }
