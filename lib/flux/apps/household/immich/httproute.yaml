@@ -8,6 +8,8 @@ metadata:
     gethomepage.dev/name: Immich
     gethomepage.dev/description: Photos
     gethomepage.dev/icon: immich.png
+    # The chart names its pods after the component, not the release.
+    gethomepage.dev/pod-selector: app.kubernetes.io/instance=immich,app.kubernetes.io/name=server
 spec:
   parentRefs: ${gateway_parent_refs}
   hostnames:

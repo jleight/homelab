@@ -7,13 +7,6 @@
 # is set; podSelector overrides the app.kubernetes.io/name=<app> match.
 # siteMonitor covers reverse-proxied backends that have no pod of their own.
 - Household:
-    - Immich:
-        icon: immich.png
-        description: Photos
-        href: https://photos.${gateway_domain}
-        namespace: immich
-        app: immich-server
-        podSelector: app.kubernetes.io/instance=immich,app.kubernetes.io/name=server
     - OctoPrint:
         icon: octoprint.png
         description: 3D printer

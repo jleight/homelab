@@ -37,22 +37,6 @@ inputs = {
     }
   }
 
-  immich = {
-    renovate = "docker"
-    image    = "ghcr.io/immich-app/immich-charts/immich"
-    version  = "0.13.4"
-
-    # ^ hack for renovate to support oci://
-    repository = "oci://ghcr.io/immich-app/immich-charts"
-    chart      = "immich"
-
-    immich_server = {
-      renovate = "docker"
-      image    = "ghcr.io/immich-app/immich-server"
-      version  = "v3.3.6"
-    }
-  }
-
   octoprint = {
     renovate = "docker"
     image    = "docker.io/octoprint/octoprint"
