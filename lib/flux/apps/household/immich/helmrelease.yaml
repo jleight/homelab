@@ -29,12 +29,10 @@ spec:
           main:
             env:
               REDIS_HOSTNAME: immich-cache
-
     immich:
       persistence:
         library:
           existingClaim: immich-media
-
     server:
       controllers:
         main:
@@ -46,8 +44,8 @@ spec:
           containers:
             main:
               image:
-                tag: v3.3.6 # {"$imagepolicy": "household:immich-server:tag"}
-                digest: sha256:e1981983b1c13f6024b57d72e7ecae3342eed1581201ab09fb248932d86c593a # {"$imagepolicy": "household:immich-server:digest"}
+                tag: v3.4.0 # {"$imagepolicy": "household:immich-server:tag"}
+                digest: sha256:7b7b575029168bfb9eb901d868ce7dbfda0d7818e78aaace29b7b8a08cd4e7d5 # {"$imagepolicy": "household:immich-server:digest"}
               env:
                 DB_HOSTNAME: ${db_host}
                 DB_PORT: "${db_port}"
@@ -65,7 +63,6 @@ spec:
             main:
               main:
                 - subPath: photos
-
     machine-learning:
       controllers:
         main:
