@@ -1,0 +1,9 @@
+apiVersion: dragonflydb.io/v1alpha1
+kind: Dragonfly
+metadata:
+  name: immich-cache
+spec:
+  replicas: 2
+  args:
+    # SEE: https://github.com/immich-app/immich/issues/2542#issuecomment-2564396901
+    - --default_lua_flags=allow-undeclared-keys

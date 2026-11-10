@@ -1,0 +1,87 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: immich
+spec:
+  releaseName: immich
+  interval: 30m
+  # The OpenVINO machine-learning image is several GB on a cold node.
+  timeout: 15m
+  chart:
+    spec:
+      chart: immich
+      version: "^0"
+      interval: 1h
+      sourceRef:
+        kind: HelmRepository
+        name: immich
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    # Shared by the server and machine learning.
+    controllers:
+      main:
+        containers:
+          main:
+            env:
+              REDIS_HOSTNAME: immich-cache
+
+    immich:
+      persistence:
+        library:
+          existingClaim: immich-media
+
+    server:
+      controllers:
+        main:
+          pod:
+            annotations:
+              # Immich only checks VectorChord's version when it starts, so an
+              # extension upgrade has to restart it.
+              vchord-version: "${vchord_version}"
+          containers:
+            main:
+              image:
+                tag: v3.3.6 # {"$imagepolicy": "household:immich-server:tag"}
+                digest: sha256:e1981983b1c13f6024b57d72e7ecae3342eed1581201ab09fb248932d86c593a # {"$imagepolicy": "household:immich-server:digest"}
+              env:
+                DB_HOSTNAME: ${db_host}
+                DB_PORT: "${db_port}"
+                DB_DATABASE_NAME: ${db_name}
+                DB_USERNAME: ${db_user}
+                DB_PASSWORD:
+                  secretKeyRef:
+                    name: ${db_secret}
+                    key: password
+      persistence:
+        data:
+          type: persistentVolumeClaim
+          existingClaim: immich-media
+          advancedMounts:
+            main:
+              main:
+                - subPath: photos
+
+    machine-learning:
+      controllers:
+        main:
+          containers:
+            main:
+              image:
+                tag: v3.3.6-openvino # {"$imagepolicy": "household:immich-machine-learning:tag"}
+                digest: sha256:035c30de002da9d4d4ae3872107bb9d8e195ead1c1f9fd470a2b0149ed37aec1 # {"$imagepolicy": "household:immich-machine-learning:digest"}
+              resources:
+                limits:
+                  gpu.intel.com/i915: 1
+      persistence:
+        cache:
+          type: persistentVolumeClaim
+          existingClaim: immich-media
+          advancedMounts:
+            main:
+              main:
+                - subPath: photos/cache

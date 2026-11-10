@@ -1,0 +1,19 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: immich
+spec:
+  interval: 30m
+  retryInterval: 2m
+  timeout: 15m
+  prune: true
+  wait: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  path: ./lib/flux/apps/household/immich
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: immich-subst

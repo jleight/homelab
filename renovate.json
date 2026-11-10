@@ -91,9 +91,23 @@
         "ghcr.io/mealie-recipes/mealie",
         "ghcr.io/dmunozv04/isponsorblocktv",
         "ghcr.io/open-webui/open-webui",
-        "ghcr.io/element-hq/synapse"
+        "ghcr.io/element-hq/synapse",
+        "ghcr.io/immich-app/immich-server"
       ],
       "extractVersion": "^v(?<version>.+)$"
+    },
+    {
+      "description": "Only the OpenVINO machine-learning builds, matching the ImagePolicy's filter.",
+      "matchFileNames": [
+        "lib/flux/**"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "ghcr.io/immich-app/immich-machine-learning"
+      ],
+      "extractVersion": "^v(?<version>\\d+\\.\\d+\\.\\d+)-openvino$"
     },
     {
       "description": "searxng tags are a calver date with a commit suffix.",

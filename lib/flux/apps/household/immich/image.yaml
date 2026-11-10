@@ -1,0 +1,49 @@
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: immich-server
+spec:
+  image: ghcr.io/immich-app/immich-server
+  interval: 1h
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: immich-server
+spec:
+  imageRepositoryRef:
+    name: immich-server
+  filterTags:
+    pattern: '^v(?P<version>\d+\.\d+\.\d+)$'
+    extract: '$version'
+  policy:
+    semver:
+      range: "^3.0.0"
+  digestReflectionPolicy: Always
+  interval: 1h
+---
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: immich-machine-learning
+spec:
+  image: ghcr.io/immich-app/immich-machine-learning
+  interval: 1h
+---
+# Only the OpenVINO builds, for the Intel GPU. The version is extracted for
+# ordering; the setter writes the original tag back, suffix included.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: immich-machine-learning
+spec:
+  imageRepositoryRef:
+    name: immich-machine-learning
+  filterTags:
+    pattern: '^v(?P<version>\d+\.\d+\.\d+)-openvino$'
+    extract: '$version'
+  policy:
+    semver:
+      range: "^3.0.0"
+  digestReflectionPolicy: Always
+  interval: 1h

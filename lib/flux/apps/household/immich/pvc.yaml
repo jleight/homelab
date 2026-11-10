@@ -1,0 +1,16 @@
+# The class mounts the root of the NAS's Media share rather than a directory per
+# claim, so this binds the existing library in place; the pods pick it out with
+# subPath. Deleting the claim leaves the files alone.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: immich-media
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ${media_storage_class}
+  resources:
+    requests:
+      storage: 10Ti
