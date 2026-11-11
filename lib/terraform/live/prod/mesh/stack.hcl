@@ -4,7 +4,7 @@ inputs = {
   core_scope = {
     renovate = "docker"
     image    = "ghcr.io/kpa-clawbot/corescope"
-    version  = "v3.16.0"
+    version  = "v3.17.0"
 
     default_region = "BUF"
 
@@ -35,8 +35,7 @@ inputs = {
     }
 
     channel_keys = {
-      "Public"      = "8b3387e9c5cdea6ac9e5edbaa115cd72"
-      "Meshcore716" = "096a7faa51e9076040a9d4175ec53afc"
+      "Public" = "8b3387e9c5cdea6ac9e5edbaa115cd72"
     }
 
     hash_channels = [
