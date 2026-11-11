@@ -69,8 +69,8 @@ spec:
           containers:
             main:
               image:
-                tag: v3.4.0-openvino # {"$imagepolicy": "household:immich-machine-learning:tag"}
-                digest: sha256:4744421230e2cd9b34621dd6a03cd7c10b228d4c3756242c0b25b23b258a66b1 # {"$imagepolicy": "household:immich-machine-learning:digest"}
+                tag: v3.4.1-openvino # {"$imagepolicy": "household:immich-machine-learning:tag"}
+                digest: sha256:97f60b06c5938c326d3ba416bcf24bc94d233f34554c05f3b76336f98ffd5ea9 # {"$imagepolicy": "household:immich-machine-learning:digest"}
               resources:
                 limits:
                   gpu.intel.com/i915: 1
