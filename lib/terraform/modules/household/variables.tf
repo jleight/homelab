@@ -112,7 +112,14 @@ variable "sure" {
       request_timeout     = optional(number, 180)
       max_tool_calls      = optional(number, 2)
       response_timeout    = optional(number, 720)
+      probe_timeout       = optional(number, 30)
       pdf_processing      = optional(bool, false)
+
+      # Served from the same endpoint. The dimensions size the pgvector
+      # column when Sure first creates it, so changing the model later means
+      # dropping vector_store_chunks and re-embedding.
+      embedding_model      = string
+      embedding_dimensions = optional(number, 1024)
     }))
   })
 }

@@ -34,6 +34,10 @@ module "database_cluster" {
 
     mealie    = {}
     orcatasks = {}
-    sure      = {}
+
+    # The assistant's document search keeps its embeddings in pgvector.
+    sure = {
+      extensions = ["vector"]
+    }
   }
 }

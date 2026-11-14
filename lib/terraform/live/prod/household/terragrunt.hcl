@@ -62,6 +62,12 @@ inputs = {
     ai = {
       base_url = "http://fwd01.leightha.us:8000/v1"
       model    = "Qwen3.6-35B-A3B-MTP-GGUF-UD-Q8_K_XL"
+
+      embedding_model = "Qwen3-Embedding-0.6B-GGUF"
+
+      # Lemonade loads the mmproj alongside MTP, so PDF statements can go
+      # through the model's vision.
+      pdf_processing = true
     }
   }
 }

@@ -19,8 +19,18 @@ locals {
     ASSISTANT_MAX_TOOL_CALL_ITERATIONS = tostring(var.sure.ai.max_tool_calls)
     AI_RESPONSE_TIMEOUT                = tostring(var.sure.ai.response_timeout)
 
+    # System health's live probes. The 5s default cuts off the PDF vision
+    # probe mid-reply even though the model answers it fine.
+    AI_HEALTH_PROBE_TIMEOUT = tostring(var.sure.ai.probe_timeout)
+
     # PDF import sends page images, so it needs a vision-capable model.
     OPENAI_SUPPORTS_PDF_PROCESSING = tostring(var.sure.ai.pdf_processing)
+
+    # Without this Sure uses OpenAI's hosted vector-store API, which no local
+    # endpoint implements. The embeddings come from OPENAI_URI_BASE too.
+    VECTOR_STORE_PROVIDER = "pgvector"
+    EMBEDDING_MODEL       = var.sure.ai.embedding_model
+    EMBEDDING_DIMENSIONS  = tostring(var.sure.ai.embedding_dimensions)
   }
 }
 
