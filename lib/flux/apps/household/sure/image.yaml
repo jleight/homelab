@@ -1,0 +1,25 @@
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImageRepository
+metadata:
+  name: sure
+spec:
+  image: ghcr.io/we-promise/sure
+  interval: 1h
+---
+# Stable releases only: the repository also carries -alpha.N, -rc.N and
+# -hotfix.N tags, which this filter skips.
+apiVersion: image.toolkit.fluxcd.io/v1
+kind: ImagePolicy
+metadata:
+  name: sure
+spec:
+  imageRepositoryRef:
+    name: sure
+  filterTags:
+    pattern: '^(?P<version>\d+\.\d+\.\d+)$'
+    extract: '$version'
+  policy:
+    semver:
+      range: "^0"
+  digestReflectionPolicy: Always
+  interval: 1h

@@ -1,0 +1,7 @@
+# Sidekiq's queues, schedules and Action Cable.
+apiVersion: dragonflydb.io/v1alpha1
+kind: Dragonfly
+metadata:
+  name: sure-cache
+spec:
+  replicas: 1

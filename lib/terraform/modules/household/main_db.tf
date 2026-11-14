@@ -34,5 +34,6 @@ module "database_cluster" {
 
     mealie    = {}
     orcatasks = {}
+    sure      = {}
   }
 }

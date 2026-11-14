@@ -1,0 +1,16 @@
+# Active Storage: transaction attachments, statements, imports, exports and
+# logos. Permanent data, so it lives on the backed-up app-data class. Web and
+# worker share it from the same pod, so ReadWriteOnce is enough.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sure-storage
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ${data_storage_class}
+  resources:
+    requests:
+      storage: 5Gi

@@ -84,3 +84,20 @@ variable "orca_tasks" {
     subdomain      = optional(string, "tasks")
   })
 }
+
+variable "sure" {
+  description = "Settings for Sure's Terraform-owned resources."
+  type = object({
+    data_storage_class = string
+
+    gateway_refs = list(object({
+      namespace   = string
+      name        = string
+      sectionName = string
+    }))
+    gateway_domain = string
+    subdomain      = optional(string, "finance")
+
+    onboarding_state = optional(string, "open")
+  })
+}
