@@ -88,7 +88,7 @@ inputs = {
       renovate   = "helm"
       repository = "https://pkgs.tailscale.com/helmcharts"
       chart      = "tailscale-operator"
-      version    = "1.104.4"
+      version    = "1.104.7"
     }
 
     external_dns = {
