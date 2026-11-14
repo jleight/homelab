@@ -99,5 +99,20 @@ variable "sure" {
     subdomain      = optional(string, "finance")
 
     onboarding_state = optional(string, "open")
+
+    # An OpenAI-compatible endpoint for the chat assistant and the background
+    # categorization and merchant jobs. Null leaves AI off.
+    ai = optional(object({
+      base_url = string
+      model    = string
+      api_key  = optional(string, "lemonade")
+
+      context_window      = optional(number, 32768)
+      max_response_tokens = optional(number, 4096)
+      request_timeout     = optional(number, 180)
+      max_tool_calls      = optional(number, 2)
+      response_timeout    = optional(number, 720)
+      pdf_processing      = optional(bool, false)
+    }))
   })
 }

@@ -58,5 +58,10 @@ inputs = {
 
     gateway_refs   = dependency.k8s_ingress.outputs.private_https_refs
     gateway_domain = dependency.k8s_ingress.outputs.load_balancer_domain
+
+    ai = {
+      base_url = "http://fwd01.leightha.us:8000/v1"
+      model    = "Qwen3.6-35B-A3B-MTP-GGUF-UD-Q8_K_XL"
+    }
   }
 }
