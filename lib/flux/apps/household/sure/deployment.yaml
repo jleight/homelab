@@ -80,6 +80,10 @@ spec:
           volumeMounts:
             - name: storage
               mountPath: /rails/storage
+            - name: initializers
+              mountPath: /rails/config/initializers/zz_simplefin_money_market.rb
+              subPath: simplefin_money_market.rb
+              readOnly: true
           resources:
             requests:
               cpu: 50m
@@ -122,6 +126,10 @@ spec:
           volumeMounts:
             - name: storage
               mountPath: /rails/storage
+            - name: initializers
+              mountPath: /rails/config/initializers/zz_simplefin_money_market.rb
+              subPath: simplefin_money_market.rb
+              readOnly: true
           resources:
             requests:
               cpu: 50m
@@ -132,3 +140,7 @@ spec:
         - name: storage
           persistentVolumeClaim:
             claimName: sure-storage
+        # Overrides for Sure's own initializers; see simplefin_money_market.rb.
+        - name: initializers
+          configMap:
+            name: sure-initializers

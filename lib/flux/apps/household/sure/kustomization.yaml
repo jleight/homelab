@@ -8,3 +8,7 @@ resources:
   - deployment.yaml
   - service.yaml
   - httproute.yaml
+configMapGenerator:
+  - name: sure-initializers
+    files:
+      - simplefin_money_market.rb
