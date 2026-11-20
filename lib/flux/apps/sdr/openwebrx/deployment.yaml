@@ -53,7 +53,7 @@ spec:
               readOnly: true
       containers:
         - name: openwebrx
-          image: docker.io/slechev/openwebrxplus-softmbe:1.2.130@sha256:b6cadccd02d66e48a526ee7524f972e5247bce50e2447b23a474d14299e99060 # {"$imagepolicy": "sdr:openwebrx"}
+          image: docker.io/slechev/openwebrxplus-softmbe:1.2.131@sha256:def4cb429a599376975ca2ba0bd559e5b62e72e88355dd83c5916d067e99e228 # {"$imagepolicy": "sdr:openwebrx"}
           imagePullPolicy: IfNotPresent
           env:
             - name: TZ
