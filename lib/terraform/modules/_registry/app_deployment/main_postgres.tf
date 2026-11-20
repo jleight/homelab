@@ -67,14 +67,23 @@ resource "kubectl_manifest" "postgres" {
             } : {}
           )
         }
+
+        postgresql = merge(
+          {
+            parameters = {
+              # CNPG defaults to 5min, forcing a 16MB WAL segment switch even
+              # when idle (~5GB/day/instance, x Longhorn replicas). Nothing
+              # consumes the WAL archive; restore a timeout if one ever does.
+              archive_timeout = "0"
+            }
+          },
+          length(var.postgres_shared_preload_libraries) > 0 ? {
+            shared_preload_libraries = var.postgres_shared_preload_libraries
+          } : {}
+        )
       },
       var.postgres_image_name != null ? {
         imageName = var.postgres_image_name
-      } : {},
-      length(var.postgres_shared_preload_libraries) > 0 ? {
-        postgresql = {
-          shared_preload_libraries = var.postgres_shared_preload_libraries
-        }
       } : {}
     )
   })

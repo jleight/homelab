@@ -44,28 +44,38 @@ resource "kubectl_manifest" "this" {
             }
           ]
         }
-      },
-      # Only clusters that use either get the block, so the others see no diff.
-      length(var.extension_images) > 0 || length(var.shared_preload_libraries) > 0 ? {
-        postgresql = {
-          shared_preload_libraries = var.shared_preload_libraries
 
-          extensions = [
-            for name, ext in var.extension_images : merge(
-              {
-                name  = name
-                image = { reference = ext.image }
-              },
-              ext.dynamic_library_path != null ? {
-                dynamic_library_path = ext.dynamic_library_path
-              } : {},
-              ext.extension_control_path != null ? {
-                extension_control_path = ext.extension_control_path
-              } : {}
-            )
-          ]
-        }
-      } : {}
+        postgresql = merge(
+          {
+            parameters = {
+              # CNPG defaults to 5min, forcing a 16MB WAL segment switch even
+              # when idle (~5GB/day/instance, x Longhorn replicas). Nothing
+              # consumes the WAL archive; restore a timeout if one ever does.
+              archive_timeout = "0"
+            }
+          },
+
+          # Only clusters that use either get these keys, so the others see no diff.
+          length(var.extension_images) > 0 || length(var.shared_preload_libraries) > 0 ? {
+            shared_preload_libraries = var.shared_preload_libraries
+
+            extensions = [
+              for name, ext in var.extension_images : merge(
+                {
+                  name  = name
+                  image = { reference = ext.image }
+                },
+                ext.dynamic_library_path != null ? {
+                  dynamic_library_path = ext.dynamic_library_path
+                } : {},
+                ext.extension_control_path != null ? {
+                  extension_control_path = ext.extension_control_path
+                } : {}
+              )
+            ]
+          } : null
+        )
+      }
     )
   })
 }

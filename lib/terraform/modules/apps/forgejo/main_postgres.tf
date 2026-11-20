@@ -49,6 +49,15 @@ resource "kubectl_manifest" "postgres" {
         size         = "10Gi"
       }
 
+      postgresql = {
+        parameters = {
+          # CNPG defaults to 5min, forcing a 16MB WAL segment switch even
+          # when idle (~5GB/day/instance, x Longhorn replicas). Nothing
+          # consumes the WAL archive; restore a timeout if one ever does.
+          archive_timeout = "0"
+        }
+      }
+
       bootstrap = {
         initdb = {
           owner = local.postgres_username
