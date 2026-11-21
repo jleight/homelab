@@ -35,7 +35,7 @@ spec:
         # The kubelet creates a missing subPath as root, which neither
         # container could use, so make the pages directory first.
         - name: html-dir
-          image: registry.leightha.us/home/weewx:v5.5.2-2e54b45-1795046401@sha256:94c0847940c417a58debc930dd5efa1a11fb7aeaf5e0143f3957d6ad95f5c060 # {"$imagepolicy": "home:weewx"}
+          image: registry.leightha.us/home/weewx:v5.6.0-fbdadbd-1795304552@sha256:3a014292bee43da3b6e2948f9f49ef46c9a695ff59a261d973909af17145ddd7 # {"$imagepolicy": "home:weewx"}
           imagePullPolicy: IfNotPresent
           command:
             - mkdir
@@ -52,7 +52,7 @@ spec:
               memory: 64Mi
       containers:
         - name: weewx
-          image: registry.leightha.us/home/weewx:v5.5.2-2e54b45-1795046401@sha256:94c0847940c417a58debc930dd5efa1a11fb7aeaf5e0143f3957d6ad95f5c060 # {"$imagepolicy": "home:weewx"}
+          image: registry.leightha.us/home/weewx:v5.6.0-fbdadbd-1795304552@sha256:3a014292bee43da3b6e2948f9f49ef46c9a695ff59a261d973909af17145ddd7 # {"$imagepolicy": "home:weewx"}
           imagePullPolicy: IfNotPresent
           # The image carries a generic station; site/configure.py applies
           # this one's settings, and site/ambient.py maps its extra sensors.
