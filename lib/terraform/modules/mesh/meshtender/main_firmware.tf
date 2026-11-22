@@ -225,20 +225,20 @@ resource "kubectl_manifest" "firmware_ingress" {
       namespace = local.namespace
       name      = local.firmware_name
 
-      # Proxied through Cloudflare, which owns plain HTTP for this host: observer
-      # nodes fetch over HTTP/1.0, which the gateway's Envoy rejects (426) with
-      # no knob to allow it. Cloudflare's edge accepts HTTP and HTTP/1.0 and
-      # always reaches the origin over HTTPS (needs SSL mode Full or stricter).
+      # Proxied through Cloudflare: observer nodes fetch over HTTP/1.0, which the
+      # gateway's Envoy rejects (426) with no knob to allow it. Cloudflare's edge
+      # accepts it and talks HTTP/1.1 to the origin.
       annotations = {
         "external-dns.alpha.kubernetes.io/cloudflare-proxied" = "true"
       }
     }
 
-    # Same listeners as the app; this host is served by the *.meshtender.com
-    # one. The apex listener (meshtender.com only) never matches it, so that
-    # parentRef reports NoMatchingListenerHostname, which is expected.
+    # HTTPS via the app's listeners (the *.meshtender.com one serves this host),
+    # plus a dedicated plain-HTTP listener: Cloudflare pulls from the origin with
+    # the visitor's scheme, so HTTP requests arrive on :80 and must not hit the
+    # gateway's catch-all https redirect.
     spec = {
-      parentRefs = var.gateway_refs
+      parentRefs = concat(var.gateway_refs, var.firmware_http_gateway_refs)
       hostnames  = [var.meshtender.hosts.firmware]
       rules = [
         {

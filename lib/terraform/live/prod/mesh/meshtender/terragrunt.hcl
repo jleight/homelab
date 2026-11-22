@@ -30,7 +30,8 @@ inputs = {
   data_storage_class     = dependency.k8s_storage.outputs.app_data_storage_class_name
   firmware_storage_class = dependency.k8s_storage.outputs.backups_storage_class_name
 
-  gateway_refs = dependency.k8s_ingress.outputs.public_meshtender_refs
+  gateway_refs               = dependency.k8s_ingress.outputs.public_meshtender_refs
+  firmware_http_gateway_refs = dependency.k8s_ingress.outputs.public_meshtender_firmware_http_refs
 
   ghcr_deploy_service_account_name      = dependency.ghcr_deploy.outputs.service_account_name
   ghcr_deploy_service_account_namespace = dependency.ghcr_deploy.outputs.service_account_namespace

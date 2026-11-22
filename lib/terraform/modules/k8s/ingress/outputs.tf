@@ -49,6 +49,11 @@ output "public_meshtender_refs" {
   value       = local.public_refs.meshtender
 }
 
+output "public_meshtender_firmware_http_refs" {
+  description = "Public plain-HTTP listener for MeshTender firmware (Cloudflare origin pulls)."
+  value       = local.public_meshtender_firmware_http_refs
+}
+
 output "public_apex_refs" {
   description = "Public zone-apex (<domain>) HTTPS listener(s)."
   value       = local.public_refs.apex

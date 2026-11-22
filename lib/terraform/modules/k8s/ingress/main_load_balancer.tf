@@ -25,6 +25,19 @@ locals {
     "https-meshtender-wildcard" = "*.meshtender.com"
   } : {}
 
+  # Hostnames that must answer plain HTTP instead of redirecting, keyed by
+  # listener name. Each gets a hostname-scoped HTTP listener, which wins over
+  # the catch-all `http` listener (and its https redirect) for that host.
+  #
+  # MeshTender firmware: observer nodes fetch over HTTP/1.0, which Envoy
+  # rejects, so the host is proxied by Cloudflare. Cloudflare still pulls from
+  # the origin with the visitor's scheme (HTTP/1.1 on :80), so it needs a
+  # non-redirecting HTTP listener here. Must match the host the meshtender
+  # stack serves firmware on.
+  public_lb_http_hosts = local.load_balancer_enabled ? {
+    "http-meshtender-firmware" = "firmware.meshtender.com"
+  } : {}
+
   # The hostnames each app serves on public-lb. Anything not in
   # public_lb_hosts is served by the wildcard `https` listener.
   #
@@ -72,7 +85,8 @@ locals {
   ] : []
 
   # public-lb's listener set: a catch-all HTTP listener, the wildcard HTTPS
-  # listener, then an HTTPS listener per host.
+  # listener, an HTTPS listener per host, then an HTTP listener per plain-HTTP
+  # host.
   public_lb_listeners = concat(
     [
       # No hostname, so it matches every host and the https redirect covers
@@ -140,8 +154,29 @@ locals {
           ]
         }
       }
+    ],
+    [
+      for section, hostname in local.public_lb_http_hosts : {
+        name     = section
+        protocol = "HTTP"
+        port     = 80
+        hostname = hostname
+        allowedRoutes = {
+          namespaces = {
+            from = "All"
+          }
+        }
+      }
     ]
   )
+
+  public_meshtender_firmware_http_refs = [
+    for section in keys(local.public_lb_http_hosts) : {
+      namespace   = local.load_balancer_namespace
+      name        = local.public_load_balancer_name
+      sectionName = section
+    } if section == "http-meshtender-firmware"
+  ]
 }
 
 resource "kubernetes_namespace_v1" "load_balancer" {

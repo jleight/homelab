@@ -19,6 +19,11 @@ variable "data_storage_class" {
   type        = string
 }
 
+variable "firmware_storage_class" {
+  description = "StorageClass for the SMB share the observer firmware is published to."
+  type        = string
+}
+
 variable "gateway_refs" {
   description = "Gateway API parentRefs the HTTPRoute attaches to."
   type = list(object({
@@ -29,9 +34,14 @@ variable "gateway_refs" {
   default = []
 }
 
-variable "firmware_storage_class" {
-  description = "StorageClass for the SMB share the observer firmware is published to."
-  type        = string
+variable "firmware_http_gateway_refs" {
+  description = "Extra parentRefs for the firmware HTTPRoute: the plain-HTTP listener Cloudflare pulls HTTP requests through."
+  type = list(object({
+    namespace   = string
+    name        = string
+    sectionName = string
+  }))
+  default = []
 }
 
 variable "ghcr_deploy_service_account_name" {
