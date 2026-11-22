@@ -5,8 +5,8 @@ resource "random_password" "user" {
   special = false
 }
 
-resource "random_password" "subscriber" {
-  for_each = local.enabled ? toset(var.subscriber_users) : []
+resource "random_password" "external" {
+  for_each = local.enabled ? var.external_users : {}
 
   length  = 32
   special = false
@@ -38,8 +38,8 @@ resource "kubernetes_secret_v1" "auth_internal" {
   }
 
   data = {
-    users       = local.internal_users_json
-    subscribers = local.subscriber_users_json
+    users    = local.internal_users_json
+    external = local.external_users_json
   }
 }
 
@@ -87,8 +87,8 @@ resource "kubernetes_deployment_v1" "auth" {
           # them for us.
           "checksum/internal-users" = sha256(local.internal_users_json)
 
-          # Same story for SUBSCRIBER_USERS.
-          "checksum/subscriber-users" = sha256(local.subscriber_users_json)
+          # Same story for EXTERNAL_USERS (passwords and permissions).
+          "checksum/external-users" = sha256(local.external_users_json)
         }
       }
 
@@ -120,11 +120,11 @@ resource "kubernetes_deployment_v1" "auth" {
           }
 
           env {
-            name = "SUBSCRIBER_USERS"
+            name = "EXTERNAL_USERS"
             value_from {
               secret_key_ref {
                 name = kubernetes_secret_v1.auth_internal[0].metadata[0].name
-                key  = "subscribers"
+                key  = "external"
               }
             }
           }

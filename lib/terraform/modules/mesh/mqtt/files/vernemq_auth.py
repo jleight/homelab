@@ -10,8 +10,11 @@ External publishers authenticate with:
 The internal listener (used by CoreScope to subscribe) bypasses the JWT path
 via a fixed username/password pair injected through the environment.
 
-Read-only third-party subscribers also use a username/password pair, but may
-only subscribe under meshcore/ and may never publish.
+Third-party (external) users also use a username/password pair, with
+per-user permissions:
+  read  -> may subscribe under meshcore/
+  write -> list of MQTT topic filters the user may publish to (and subscribe to)
+Anything not granted is denied.
 """
 
 import base64
@@ -31,9 +34,11 @@ USERNAME_PREFIX = "v1_"
 # Each in-cluster service (e.g. CoreScope) gets its own entry so they can be
 # rotated independently.
 INTERNAL_USERS = json.loads(os.environ["INTERNAL_USERS"])
-# Map of {username: password} for read-only third-party subscribers.
-SUBSCRIBER_USERS = json.loads(os.environ["SUBSCRIBER_USERS"])
-SUBSCRIBER_TOPIC_PREFIX = "meshcore/"
+# Map of {username: {"password": str, "read": bool, "write": [filter, ...]}}
+# for third-party users.
+EXTERNAL_USERS = json.loads(os.environ["EXTERNAL_USERS"])
+# Filters an external user with `read` may subscribe to.
+READ_FILTERS = ["meshcore/#"]
 # Comma-separated list — clients may set their `audience` to any of these and
 # the JWT will be accepted. Lets us serve the same broker under multiple
 # public hostnames (e.g. leightha.us and wnymeshcore.org).
@@ -125,6 +130,36 @@ def verify_jwt(pubkey_hex: str, token: str) -> str | None:
     return None
 
 
+def covers(allowed: str, requested: str) -> bool:
+    """True if every topic matched by `requested` is matched by `allowed`.
+
+    Both are MQTT topic filters; a publish topic is just a filter without
+    wildcards. `$share/...` requests never match since no grant starts with `$`.
+    """
+    a = allowed.split("/")
+    r = requested.split("/")
+    for i, level in enumerate(a):
+        if level == "#":
+            return True
+        if i >= len(r) or r[i] == "#":
+            return False
+        if level == "+":
+            continue
+        if level != r[i]:
+            return False
+    return len(r) == len(a)
+
+
+def write_filters(username: str) -> list[str]:
+    return EXTERNAL_USERS[username].get("write") or []
+
+
+def read_filters(username: str) -> list[str]:
+    # Users can always read back what they're allowed to write.
+    base = READ_FILTERS if EXTERNAL_USERS[username].get("read") else []
+    return base + write_filters(username)
+
+
 def ok():
     return 200, {"result": "ok"}
 
@@ -146,12 +181,12 @@ def handle_register(body, peer):
         log.warning("register deny: internal user=%s bad password client_id=%s peer=%s", username, client_id, peer)
         return deny("bad internal credentials")
 
-    if username in SUBSCRIBER_USERS:
-        if password == SUBSCRIBER_USERS[username]:
-            log.info("register ok: subscriber user=%s client_id=%s peer=%s", username, client_id, peer)
+    if username in EXTERNAL_USERS:
+        if password == EXTERNAL_USERS[username]["password"]:
+            log.info("register ok: external user=%s client_id=%s peer=%s", username, client_id, peer)
             return ok()
-        log.warning("register deny: subscriber user=%s bad password client_id=%s peer=%s", username, client_id, peer)
-        return deny("bad subscriber credentials")
+        log.warning("register deny: external user=%s bad password client_id=%s peer=%s", username, client_id, peer)
+        return deny("bad external credentials")
 
     pubkey = extract_pubkey(username)
     if pubkey is None:
@@ -182,9 +217,11 @@ def handle_publish(body, peer):
     if username in INTERNAL_USERS:
         return ok()
 
-    if username in SUBSCRIBER_USERS:
-        log.warning("publish deny: subscriber user=%s topic=%s client_id=%s", username, topic, client_id)
-        return deny("subscribers may not publish")
+    if username in EXTERNAL_USERS:
+        if any(covers(f, topic) for f in write_filters(username)):
+            return ok()
+        log.warning("publish deny: external user=%s topic=%s client_id=%s", username, topic, client_id)
+        return deny("topic not allowed for user")
 
     pubkey = extract_pubkey(username)
     if pubkey is None:
@@ -221,16 +258,17 @@ def handle_subscribe(body, peer):
         log.info("subscribe ok: internal user=%s topics=%s client_id=%s", username, topics, client_id)
         return ok()
 
-    if username in SUBSCRIBER_USERS:
+    if username in EXTERNAL_USERS:
         # Each entry is {"topic": ..., "qos": ...}. Deny the whole request if any
-        # filter reaches outside meshcore/ — that also rules out bare `#`,
+        # filter isn't fully covered by a grant — that also rules out bare `#`,
         # leading wildcards, and $share/ shared subscriptions.
+        allowed = read_filters(username)
         filters = [t.get("topic") or "" for t in topics]
-        if filters and all(f.startswith(SUBSCRIBER_TOPIC_PREFIX) for f in filters):
-            log.info("subscribe ok: subscriber user=%s topics=%s client_id=%s", username, filters, client_id)
+        if filters and all(any(covers(a, f) for a in allowed) for f in filters):
+            log.info("subscribe ok: external user=%s topics=%s client_id=%s", username, filters, client_id)
             return ok()
-        log.warning("subscribe deny: subscriber user=%s topics=%s client_id=%s", username, filters, client_id)
-        return deny("topic not allowed for subscriber")
+        log.warning("subscribe deny: external user=%s topics=%s client_id=%s", username, filters, client_id)
+        return deny("topic not allowed for user")
 
     pubkey = extract_pubkey(username)
     log.warning(
@@ -291,9 +329,9 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     log.info(
-        "listening on :8080 (audiences=%s, internal_users=%s, subscriber_users=%s)",
+        "listening on :8080 (audiences=%s, internal_users=%s, external_users=%s)",
         sorted(EXPECTED_AUDIENCES),
         sorted(INTERNAL_USERS),
-        sorted(SUBSCRIBER_USERS),
+        {u: {"read": read_filters(u), "write": write_filters(u)} for u in sorted(EXTERNAL_USERS)},
     )
     HTTPServer(("0.0.0.0", 8080), Handler).serve_forever()

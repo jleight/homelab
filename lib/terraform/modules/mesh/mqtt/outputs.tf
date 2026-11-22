@@ -14,12 +14,12 @@ output "users" {
   sensitive = true
 }
 
-output "subscriber_users" {
-  description = "Map of read-only subscriber user => {username, password}, for handing to third parties."
+output "external_users" {
+  description = "Map of external user => {username, password}, for handing to third parties."
   value = local.enabled ? {
-    for u in var.subscriber_users : u => {
+    for u, c in local.external_users : u => {
       username = u
-      password = local.subscriber_users[u]
+      password = c.password
     }
   } : {}
   sensitive = true

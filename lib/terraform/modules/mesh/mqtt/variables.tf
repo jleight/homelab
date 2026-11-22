@@ -30,14 +30,42 @@ variable "internal_users" {
   default     = ["core_scope"]
 }
 
-variable "subscriber_users" {
-  description = "List of usernames for read-only third-party subscribers. They authenticate with a generated password, may subscribe under meshcore/, and may never publish."
-  type        = list(string)
-  default     = ["meshtender", "neonx"]
+variable "external_users" {
+  description = <<-EOT
+    Third-party users, keyed by username. Each authenticates with a generated
+    password. `read` allows subscribing under meshcore/. `write` lists MQTT topic
+    filters (e.g. "meshtender/#") the user may publish to, and subscribe to.
+    Everything else is denied.
+  EOT
+
+  type = map(object({
+    read  = optional(bool, false)
+    write = optional(list(string), [])
+  }))
+
+  default = {
+    meshtender = {
+      read  = true
+      write = ["meshtender/#"]
+    }
+    neonx = {
+      read = true
+    }
+  }
 
   validation {
-    condition     = length(setintersection(var.subscriber_users, var.internal_users)) == 0
-    error_message = "A username cannot be both an internal user and a subscriber user."
+    condition     = length(setintersection(keys(var.external_users), var.internal_users)) == 0
+    error_message = "A username cannot be both an internal user and an external user."
+  }
+
+  # Keep write grants out of the mesh feed and system topics: the first level
+  # must be a literal, and not meshcore or a $-topic.
+  validation {
+    condition = alltrue([
+      for f in flatten([for c in values(var.external_users) : c.write]) :
+      !contains(["meshcore", "+", "#", ""], split("/", f)[0]) && !startswith(f, "$")
+    ])
+    error_message = "Write filters must start with a literal topic level other than meshcore, and not a $-topic."
   }
 }
 
