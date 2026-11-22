@@ -7,6 +7,12 @@ External publishers authenticate with:
   username = "v1_<hex-ed25519-pubkey>"
   password = <jwt signed by the matching private key, alg=EdDSA>
 
+JWT publishers may publish under meshcore/ on topics carrying their pubkey.
+They may also take part in MeshTender's per-observer TX channel, scoped to their
+own pubkey:
+  subscribe meshtender/<version>/<pubkey>/tx
+  publish   meshtender/<version>/<pubkey>/txresult
+
 The internal listener (used by CoreScope to subscribe) bypasses the JWT path
 via a fixed username/password pair injected through the environment.
 
@@ -160,6 +166,23 @@ def read_filters(username: str) -> list[str]:
     return base + write_filters(username)
 
 
+def observer_topic(pubkey: str, topic: str, leaf: str, allow_wildcard_version: bool) -> bool:
+    """True if topic is exactly meshtender/<version>/<pubkey>/<leaf>.
+
+    The pubkey level must be the caller's own key (case-insensitive) — no
+    wildcards — so one observer can't read or answer another's TX channel.
+    """
+    parts = topic.split("/")
+    if len(parts) != 4:
+        return False
+    root, version, key, last = parts
+    if root != "meshtender" or last != leaf or key.lower() != pubkey.lower():
+        return False
+    if version == "+":
+        return allow_wildcard_version
+    return version != "" and "#" not in version and "+" not in version
+
+
 def ok():
     return 200, {"result": "ok"}
 
@@ -242,6 +265,13 @@ def handle_publish(body, peer):
         )
         return ok()
 
+    if observer_topic(pubkey, topic, "txresult", allow_wildcard_version=False):
+        log.info(
+            "publish ok: pubkey=%s topic=%s qos=%s client_id=%s",
+            short(pubkey), topic, qos, client_id,
+        )
+        return ok()
+
     log.warning(
         "publish deny: topic not allowed pubkey=%s topic=%s client_id=%s",
         short(pubkey), topic, client_id,
@@ -271,8 +301,19 @@ def handle_subscribe(body, peer):
         return deny("topic not allowed for user")
 
     pubkey = extract_pubkey(username)
+    if pubkey is not None:
+        filters = [t.get("topic") or "" for t in topics]
+        if filters and all(
+            observer_topic(pubkey, f, "tx", allow_wildcard_version=True) for f in filters
+        ):
+            log.info(
+                "subscribe ok: pubkey=%s topics=%s client_id=%s",
+                short(pubkey), filters, client_id,
+            )
+            return ok()
+
     log.warning(
-        "subscribe deny: external clients may not subscribe pubkey=%s topics=%s client_id=%s",
+        "subscribe deny: topic not allowed pubkey=%s topics=%s client_id=%s",
         short(pubkey), topics, client_id,
     )
     return deny("subscribe denied")
