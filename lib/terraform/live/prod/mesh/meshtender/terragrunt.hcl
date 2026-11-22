@@ -27,7 +27,8 @@ inputs = {
 
   namespace = dependency.namespace.outputs.namespace
 
-  data_storage_class = dependency.k8s_storage.outputs.app_data_storage_class_name
+  data_storage_class     = dependency.k8s_storage.outputs.app_data_storage_class_name
+  firmware_storage_class = dependency.k8s_storage.outputs.backups_storage_class_name
 
   gateway_refs = dependency.k8s_ingress.outputs.public_meshtender_refs
 

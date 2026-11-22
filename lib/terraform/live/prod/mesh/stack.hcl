@@ -81,15 +81,24 @@ inputs = {
     replicas = 2
 
     hosts = {
-      root    = "meshtender.com"
-      www     = "www.meshtender.com"
-      auth    = "auth.meshtender.com"
-      primary = "app.meshtender.com"
+      root     = "meshtender.com"
+      www      = "www.meshtender.com"
+      auth     = "auth.meshtender.com"
+      primary  = "app.meshtender.com"
+      firmware = "firmware.meshtender.com"
     }
 
     mail = {
       from     = "MeshTender <support@mail.meshtender.com>"
       reply_to = "MeshTender Support <support@meshtender.com>"
+    }
+
+    firmware = {
+      nginx = {
+        renovate = "docker"
+        image    = "docker.io/nginxinc/nginx-unprivileged"
+        version  = "1.31.7-alpine"
+      }
     }
   }
 }

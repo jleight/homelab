@@ -29,6 +29,11 @@ variable "gateway_refs" {
   default = []
 }
 
+variable "firmware_storage_class" {
+  description = "StorageClass for the SMB share the observer firmware is published to."
+  type        = string
+}
+
 variable "ghcr_deploy_service_account_name" {
   description = "Name of the GHCR webhook ServiceAccount granted patch rights on the Deployment."
   type        = string
@@ -50,15 +55,25 @@ variable "meshtender" {
     rp_name = optional(string, "MeshTender")
 
     hosts = object({
-      root    = string
-      www     = string
-      auth    = string
-      primary = string
+      root     = string
+      www      = string
+      auth     = string
+      primary  = string
+      firmware = string
     })
 
     mail = object({
       from     = string
       reply_to = string
+    })
+
+    firmware = object({
+      replicas = optional(number, 1)
+
+      nginx = object({
+        image   = string
+        version = string
+      })
     })
   })
 }
