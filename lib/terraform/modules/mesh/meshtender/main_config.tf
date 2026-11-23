@@ -19,10 +19,11 @@ resource "kubernetes_config_map_v1" "app" {
 
     # Split-host topology, all served by the one binary on :8080. TLS terminates
     # at the gateway, so MESHTENDER_TLS_CERT/KEY are intentionally unset.
-    MESHTENDER_ROOT_HOST    = var.meshtender.hosts.root
-    MESHTENDER_WWW_HOST     = var.meshtender.hosts.www
-    MESHTENDER_AUTH_HOST    = var.meshtender.hosts.auth
-    MESHTENDER_PRIMARY_HOST = var.meshtender.hosts.primary
+    MESHTENDER_ROOT_HOST     = var.meshtender.hosts.root
+    MESHTENDER_WWW_HOST      = var.meshtender.hosts.www
+    MESHTENDER_AUTH_HOST     = var.meshtender.hosts.auth
+    MESHTENDER_PRIMARY_HOST  = var.meshtender.hosts.primary
+    MESHTENDER_FIRMWARE_HOST = var.meshtender.hosts.firmware
 
     # Transactional mail sent through Resend; the API key lives in the secret.
     MESHTENDER_MAIL_FROM     = var.meshtender.mail.from
