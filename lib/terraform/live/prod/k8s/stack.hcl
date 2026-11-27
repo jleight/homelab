@@ -118,7 +118,7 @@ inputs = {
     operator = {
       renovate = "docker"
       image    = "ghcr.io/controlplaneio-fluxcd/charts/flux-operator"
-      version  = "0.63.1"
+      version  = "0.64.0"
 
       # ^ hack for renovate to support oci://
       repository = "oci://ghcr.io/controlplaneio-fluxcd/charts"
