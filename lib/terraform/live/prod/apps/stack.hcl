@@ -40,7 +40,7 @@ inputs = {
   octoprint = {
     renovate = "docker"
     image    = "docker.io/octoprint/octoprint"
-    version  = "1.11.8"
+    version  = "2.0.2"
   }
 
   postgres = {
