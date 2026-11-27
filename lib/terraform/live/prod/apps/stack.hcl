@@ -125,7 +125,7 @@ inputs = {
   woodpecker_ci = {
     renovate = "docker"
     image    = "ghcr.io/woodpecker-ci/helm/woodpecker"
-    version  = "3.7.7"
+    version  = "3.7.8"
 
     # ^ hack for renovate to support oci://
     repository = "oci://ghcr.io/woodpecker-ci/helm"
